@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#120c2b" />
+    <title>Sri Devi College — Admin Management CMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Playfair+Display:ital,wght@0,500..800;1,500..800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <div class="utility">
+      <span>Sri Devi Arts &amp; Science College &nbsp; | &nbsp; Administration Management Console</span>
+      <span>Connected to MongoDB &nbsp; · &nbsp; Real-time Content Sync</span>
+    </div>
+    <div class="admin-app">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo-mark">S</div>
+          <div class="brand-text">
+            <h2>Sri Devi</h2>
+            <small>Arts &amp; Science College</small>
+          </div>
+        </div>
+
+        <div class="db-status-chip" id="dbStatusBadge">
+          <span class="pulse-dot"></span>
+          <span id="dbStatusText">Connecting MongoDB...</span>
+        </div>
+
+
+        <nav class="nav-menu">
+          <button class="nav-tab active" data-tab="dashboard">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-tab" data-tab="gallery">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>Campus Gallery</span>
+            <span class="badge" id="badgePhotoCount">0</span>
+          </button>
+          <button class="nav-tab" data-tab="notices">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span>Notices &amp; Bulletin</span>
+            <span class="badge" id="badgeNoticeCount">0</span>
+          </button>
+          <button class="nav-tab" data-tab="programmes">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            <span>Academics</span>
+            <span class="badge" id="badgeProgCount">0</span>
+          </button>
+          <button class="nav-tab" data-tab="stats">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            <span>Key Statistics</span>
+          </button>
+          <button class="nav-tab" data-tab="content">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <span>Hero &amp; General</span>
+          </button>
+          <button class="nav-tab" data-tab="preview">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span>Live Site Preview</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a href="/" target="_blank" class="btn-live-site">
+            <span>View Public Site</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+          </a>
+          <button id="btnResetDefaults" class="btn-secondary text-xs">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            <span>Reset Demo Data</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- Top Action Bar -->
+        <header class="topbar">
+          <div class="topbar-title">
+            <h1 id="pageTitle">Dashboard Overview</h1>
+            <p id="pageSubtitle">Manage and publish real-time content for Sri Devi Arts &amp; Science College</p>
+          </div>
+          <div class="topbar-actions">
+            <button id="btnSyncMongo" class="btn-secondary">
+              <svg class="spin-on-sync" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              <span>Refresh</span>
+            </button>
+            <button id="btnSaveAll" class="btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              <span>Save Changes</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Dynamic Content Sections -->
+        <div class="tab-panels">
+
+          <!-- TAB 1: DASHBOARD -->
+          <section id="tab-dashboard" class="tab-panel active">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon purple">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                </div>
+                <div class="stat-info">
+                  <h3 id="dashTotalPhotos">0</h3>
+                  <span>Campus Photos in Gallery</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon gold">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </div>
+                <div class="stat-info">
+                  <h3 id="dashTotalNotices">0</h3>
+                  <span>Active Bulletin Notices</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon cyan">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div class="stat-info">
+                  <h3 id="dashTotalProgrammes">0</h3>
+                  <span>Academic Programmes</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon green">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                </div>
+                <div class="stat-info">
+                  <h3 id="dashDbStatus">Active</h3>
+                  <span>MongoDB Service</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action Banners -->
+            <div class="dash-quick-grid">
+              <div class="card card-action">
+                <div class="card-header">
+                  <h3>Quick Upload Campus Photo</h3>
+                  <p>Drag and drop or select an image to upload directly into MongoDB</p>
+                </div>
+                <div class="mini-upload-zone" id="dashDropzone">
+                  <input type="file" id="dashFileInput" accept="image/*" class="file-input-hidden" />
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  <span>Drag &amp; drop an image here or click to browse</span>
+                </div>
+              </div>
+
+              <div class="card card-action">
+                <div class="card-header">
+                  <h3>Post Urgent Bulletin Notice</h3>
+                  <p>Publish an immediate announcement on the college homepage</p>
+                </div>
+                <form id="dashQuickNoticeForm" class="quick-form">
+                  <div class="form-row">
+                    <input type="text" id="dashNoticeDay" placeholder="Day (e.g. 24)" style="width: 100px;" required />
+                    <input type="text" id="dashNoticeMonth" placeholder="Month (e.g. SEP)" style="width: 110px;" required />
+                  </div>
+                  <input type="text" id="dashNoticeTitle" placeholder="Notice title or announcement text..." required />
+                  <button type="submit" class="btn-primary" style="margin-top: 6px;">
+                    <span>Publish Announcement &rarr;</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Recent Highlights Preview -->
+            <div class="card">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>Campus Mosaic Gallery Highlights</h3>
+                  <p>Live snapshot of photos currently appearing on Sri Devi's campus life section</p>
+                </div>
+                <button class="btn-secondary text-xs" onclick="switchTab('gallery')">Manage All Photos &rarr;</button>
+              </div>
+              <div class="mini-gallery-strip" id="dashGalleryStrip"></div>
+            </div>
+          </section>
+
+          <!-- TAB 2: CAMPUS GALLERY -->
+          <section id="tab-gallery" class="tab-panel">
+            <!-- Upload Card -->
+            <div class="card upload-card">
+              <div class="card-header">
+                <h3>Upload Campus Image</h3>
+                <p>Upload high-resolution event, campus, or award photos. Uploaded files are served dynamically by the Flask backend.</p>
+              </div>
+              <div class="upload-dropzone" id="galleryDropzone">
+                <input type="file" id="galleryFileInput" accept="image/*" class="file-input-hidden" />
+                <div class="dropzone-content" id="dropzoneContent">
+                  <div class="drop-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  </div>
+                  <h4>Drag &amp; Drop photo here or <span class="accent-link">Browse files</span></h4>
+                  <p>PNG, JPG, JPEG, WEBP or GIF up to 25MB</p>
+                </div>
+                <!-- Preview area once selected -->
+                <div class="dropzone-preview hidden" id="uploadPreview">
+                  <img id="previewImg" src="" alt="Upload preview" />
+                  <div class="preview-details">
+                    <h5 id="previewFileName">filename.jpg</h5>
+                    <span id="previewFileSize">0 KB</span>
+                    <input type="text" id="previewCaption" placeholder="Enter photo label / caption (e.g. Auditorium Annual Day)" />
+                    <div class="preview-actions">
+                      <button type="button" id="btnConfirmUpload" class="btn-primary">
+                        <span>Upload to MongoDB</span>
+                      </button>
+                      <button type="button" id="btnCancelUpload" class="btn-secondary">
+                        <span>Cancel</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Existing Photos Manager -->
+            <div class="card">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>Campus Photos (<span id="galleryCountLabel">0</span>)</h3>
+                  <p>Click on any photo to preview full size, edit the caption, or remove it from the website.</p>
+                </div>
+                <div class="search-box">
+                  <input type="text" id="gallerySearchInput" placeholder="Filter by caption..." />
+                </div>
+              </div>
+              <div class="gallery-grid" id="galleryGrid">
+                <!-- Injected via JavaScript -->
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 3: NOTICES & BULLETIN -->
+          <section id="tab-notices" class="tab-panel">
+            <div class="grid-2col">
+              <!-- Add Notice Card -->
+              <div class="card">
+                <div class="card-header">
+                  <h3>Add New Bulletin Notice</h3>
+                  <p>Create a campus announcement with calendar date and target destination.</p>
+                </div>
+                <form id="formAddNotice" class="standard-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="noticeDay">Day (01-31)</label>
+                      <input type="text" id="noticeDay" maxlength="2" placeholder="18" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="noticeMonth">Month (e.g. JUN)</label>
+                      <input type="text" id="noticeMonth" maxlength="4" placeholder="JUN" required />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="noticeTitle">Notice Headline / Announcement</label>
+                    <textarea id="noticeTitle" rows="3" placeholder="Applications open for the 2026–27 academic year &rarr;" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="noticeLink">Link Target (Anchor or URL)</label>
+                    <input type="text" id="noticeLink" placeholder="#contact or https://..." value="#contact" />
+                  </div>
+                  <button type="submit" class="btn-primary">
+                    <span>Add Notice to Bulletin</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Notices List Card -->
+              <div class="card">
+                <div class="card-header flex-between">
+                  <div>
+                    <h3>Current Bulletins</h3>
+                    <p>Live announcements displayed in the Research &amp; Bulletin section</p>
+                  </div>
+                </div>
+                <div class="notices-list" id="noticesList">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 4: ACADEMICS / PROGRAMMES -->
+          <section id="tab-programmes" class="tab-panel">
+            <div class="grid-2col">
+              <!-- Add Programme Card -->
+              <div class="card">
+                <div class="card-header">
+                  <h3>Add Academic Programme</h3>
+                  <p>Add undergraduate or postgraduate degree offerings.</p>
+                </div>
+                <form id="formAddProg" class="standard-form">
+                  <div class="form-group">
+                    <label for="progNumber">Programme Badge / Category</label>
+                    <input type="text" id="progNumber" placeholder="01 / UNDERGRADUATE" value="01 / UNDERGRADUATE" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="progTitle">Programme Title</label>
+                    <input type="text" id="progTitle" placeholder="Computer Science &amp; Applications" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="progDesc">Description</label>
+                    <textarea id="progDesc" rows="3" placeholder="Build the skills behind the digital world with practical learning..." required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="progLink">Action Link</label>
+                    <input type="text" id="progLink" placeholder="#contact" value="#contact" />
+                  </div>
+                  <button type="submit" class="btn-primary">
+                    <span>Add Programme</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Current Programmes List -->
+              <div class="card">
+                <div class="card-header">
+                  <h3>Active Programmes</h3>
+                  <p>Displayed in the "Programmes built for what's next" section</p>
+                </div>
+                <div class="programmes-list" id="programmesList">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 5: KEY STATISTICS -->
+          <section id="tab-stats" class="tab-panel">
+            <div class="card">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>College Key Statistics</h3>
+                  <p>Highlight Sri Devi's achievements, placement rates, student body, and legacy.</p>
+                </div>
+                <button type="button" id="btnAddStatRow" class="btn-secondary text-xs">
+                  <span>+ Add New Metric</span>
+                </button>
+              </div>
+              <div class="stats-editor-grid" id="statsEditorGrid">
+                <!-- Dynamically populated stat row cards -->
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 6: HERO & GENERAL CONTENT -->
+          <section id="tab-content" class="tab-panel">
+            <div class="grid-2col">
+              <!-- Hero Section Editor -->
+              <div class="card">
+                <div class="card-header">
+                  <h3>Hero Section Copy</h3>
+                  <p>The first impression when visitors land on the college website</p>
+                </div>
+                <div class="standard-form">
+                  <div class="form-group">
+                    <label for="fieldUtilityBanner">Top Announcement Bar</label>
+                    <input type="text" id="fieldUtilityBanner" placeholder="Admissions open for 2026–27..." />
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldHeroEyebrow">Eyebrow Tagline</label>
+                    <input type="text" id="fieldHeroEyebrow" placeholder="Learn with purpose" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldHeroTitle">Main Headline</label>
+                    <input type="text" id="fieldHeroTitle" placeholder="Shape your future at Sri Devi." />
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldHeroCopy">Hero Supporting Text</label>
+                    <textarea id="fieldHeroCopy" rows="4"></textarea>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="fieldHeroBtn1Text">Button 1 Label</label>
+                      <input type="text" id="fieldHeroBtn1Text" />
+                    </div>
+                    <div class="form-group">
+                      <label for="fieldHeroBtn1Link">Button 1 Link</label>
+                      <input type="text" id="fieldHeroBtn1Link" />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="fieldHeroBtn2Text">Button 2 Label</label>
+                      <input type="text" id="fieldHeroBtn2Text" />
+                    </div>
+                    <div class="form-group">
+                      <label for="fieldHeroBtn2Link">Button 2 Link</label>
+                      <input type="text" id="fieldHeroBtn2Link" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- About & Contact Editor -->
+              <div class="card">
+                <div class="card-header">
+                  <h3>About Sri Devi &amp; Contact Info</h3>
+                  <p>Institution heritage, narrative, and campus contact details</p>
+                </div>
+                <div class="standard-form">
+                  <div class="form-group">
+                    <label for="fieldAboutTitle">About Headline</label>
+                    <input type="text" id="fieldAboutTitle" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldAboutP1">About Paragraph 1</label>
+                    <textarea id="fieldAboutP1" rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldAboutP2">About Paragraph 2</label>
+                    <textarea id="fieldAboutP2" rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldAboutBadge">Heritage Badge</label>
+                    <input type="text" id="fieldAboutBadge" placeholder="Est. 2001" />
+                  </div>
+                  <hr class="card-divider" />
+                  <h4>Contact Details</h4>
+                  <div class="form-group">
+                    <label for="fieldContactPhone">Phone Number</label>
+                    <input type="text" id="fieldContactPhone" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldContactEmail">Email Address</label>
+                    <input type="email" id="fieldContactEmail" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fieldContactAddress">Campus Address</label>
+                    <textarea id="fieldContactAddress" rows="2"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 7: LIVE PREVIEW -->
+          <section id="tab-preview" class="tab-panel">
+            <div class="preview-toolbar">
+              <div class="preview-info">
+                <span class="pulse-dot"></span>
+                <span>Live View: Sri Devi Arts &amp; Science College</span>
+              </div>
+              <div class="preview-actions">
+                <button type="button" id="btnReloadPreview" class="btn-secondary text-xs">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                  <span>Reload Preview</span>
+                </button>
+                <a href="/" target="_blank" class="btn-primary text-xs">
+                  <span>Open in Full Screen ↗</span>
+                </a>
+              </div>
+            </div>
+            <div class="preview-frame-wrap">
+              <iframe id="collegeSiteFrame" src="/" title="Sri Devi Arts &amp; Science College Live Preview"></iframe>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- Lightbox Modal for Photo Inspection -->
+    <div class="modal-overlay hidden" id="photoModal">
+      <div class="modal-card">
+        <button class="modal-close" id="btnModalClose">&times;</button>
+        <div class="modal-body">
+          <img id="modalImg" src="" alt="Full view" />
+          <div class="modal-caption-wrap">
+            <input type="text" id="modalCaptionInput" placeholder="Edit label..." />
+            <div class="modal-btns">
+              <button id="btnModalSaveCaption" class="btn-primary text-xs">Save Caption</button>
+              <button id="btnModalDeletePhoto" class="btn-danger text-xs">Delete Photo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

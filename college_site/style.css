@@ -669,3 +669,88 @@
           line-height: 2;
         }
       }
+
+      /* Nav Admin Link */
+      .nav-admin {
+        padding: 8px 14px;
+        background: rgba(117, 83, 214, 0.12);
+        color: var(--violet) !important;
+        border: 1px solid rgba(117, 83, 214, 0.3);
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        transition: all 0.2s ease;
+      }
+      .nav-admin:hover {
+        background: var(--violet);
+        color: #fff !important;
+      }
+
+      /* Lightbox Modal */
+      .site-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 11, 36, 0.88);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        padding: 20px;
+      }
+      .site-modal.hidden {
+        display: none;
+      }
+      .site-modal-card {
+        position: relative;
+        max-width: 820px;
+        width: 100%;
+        background: #17113b;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      }
+      .site-modal-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        border: 0;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        z-index: 2;
+        transition: background 0.2s ease;
+      }
+      .site-modal-close:hover {
+        background: var(--purple);
+      }
+      .site-modal-card img {
+        width: 100%;
+        max-height: 520px;
+        object-fit: contain;
+        background: #0d0924;
+        display: block;
+      }
+      .site-modal-info {
+        padding: 18px 24px;
+        background: #17113b;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .site-modal-info h4 {
+        margin: 0 0 4px;
+        color: #fff;
+        font: 600 20px "Playfair Display", Georgia, serif;
+      }
+      .site-modal-info span {
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }

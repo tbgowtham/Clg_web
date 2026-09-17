@@ -1,0 +1,120 @@
+{
+  "utility": {
+    "announcement": "Admissions open for 2026–27  |  Apply now",
+    "portalLinks": "Student portal  ·  Alumni  ·  Library"
+  },
+  "hero": {
+    "eyebrow": "Learn with purpose",
+    "title": "Shape your future at Sri Devi.",
+    "copy": "A vibrant learning community where curiosity becomes capability, and every student finds the confidence to make an impact.",
+    "btn1Text": "Explore programmes",
+    "btn1Link": "#programmes",
+    "btn2Text": "Start your journey →",
+    "btn2Link": "#contact",
+    "videoPoster": "sridevi.png",
+    "videoSrc": "sridevi.mp4"
+  },
+  "quickLinks": [
+    { "label": "Admissions", "link": "#contact" },
+    { "label": "Programmes", "link": "#programmes" },
+    { "label": "Campus life", "link": "#campus" },
+    { "label": "Enquire now", "link": "#contact" }
+  ],
+  "about": {
+    "eyebrow": "About Sri Devi",
+    "title": "Education with a wider view.",
+    "p1": "For over two decades, Sri Devi Arts and Science College has brought together rigorous academics, dedicated mentors and a culture that encourages students to think beyond the classroom.",
+    "p2": "Our students graduate ready to contribute, lead and keep learning in a changing world.",
+    "badge": "Est. 2001",
+    "linkText": "Discover our story →",
+    "image": "sridevi.png"
+  },
+  "stats": [
+    { "id": "stat-1", "value": "25+", "label": "Years of excellence" },
+    { "id": "stat-2", "value": "3,200", "label": "Students on campus" },
+    { "id": "stat-3", "value": "42", "label": "Academic programmes" },
+    { "id": "stat-4", "value": "92%", "label": "Placement record" }
+  ],
+  "programmes": [
+    {
+      "id": "prog-1",
+      "number": "01 / UNDERGRADUATE",
+      "title": "Computer Science & Applications",
+      "desc": "Build the skills behind the digital world with practical learning and industry exposure.",
+      "link": "#contact"
+    },
+    {
+      "id": "prog-2",
+      "number": "02 / UNDERGRADUATE",
+      "title": "Commerce & Management",
+      "desc": "Turn ideas into enterprise through a grounded, future-facing business education.",
+      "link": "#contact"
+    },
+    {
+      "id": "prog-3",
+      "number": "03 / POSTGRADUATE",
+      "title": "Arts, Media & Humanities",
+      "desc": "Think critically, communicate clearly and understand the world from new perspectives.",
+      "link": "#contact"
+    }
+  ],
+  "features": [
+    {
+      "icon": "✦",
+      "title": "Industry-connected learning",
+      "desc": "Internships, live projects and conversations with working professionals turn theory into confidence."
+    },
+    {
+      "icon": "⌁",
+      "title": "Research with purpose",
+      "desc": "Our faculty and students investigate real challenges through collaborative, community-focused research."
+    },
+    {
+      "icon": "↗",
+      "title": "Career-ready pathways",
+      "desc": "Personal mentoring and placement support help every student make a strong first step."
+    }
+  ],
+  "notices": [
+    {
+      "id": "not-1",
+      "day": "18",
+      "month": "JUN",
+      "title": "Applications open for the 2026–27 academic year →",
+      "link": "#contact"
+    },
+    {
+      "id": "not-2",
+      "day": "04",
+      "month": "JUL",
+      "title": "Annual cultural festival: registrations now live →",
+      "link": "#campus"
+    },
+    {
+      "id": "not-3",
+      "day": "12",
+      "month": "JUL",
+      "title": "Faculty research showcase and open lecture →",
+      "link": "#research"
+    }
+  ],
+  "photos": [
+    { "id": "photo-1", "src": "photo/IMG20260228131225.jpg", "label": "Awards and achievement" },
+    { "id": "photo-2", "src": "photo/IMG_20260227_142615_304.jpg", "label": "A proud campus moment" },
+    { "id": "photo-3", "src": "photo/IMG_20260701_104825_496.jpg", "label": "Campus life" },
+    { "id": "photo-4", "src": "photo/IMG_20260701_104949.jpg", "label": "Student recognition" },
+    { "id": "photo-5", "src": "photo/IMG_20260701_110148.jpg", "label": "Performance and spirit" },
+    { "id": "photo-6", "src": "photo/IMG_20260701_132844.jpg", "label": "Sri Devi auditorium" },
+    { "id": "photo-7", "src": "photo/IMG_20260701_133523_953.jpg", "label": "Together on campus" },
+    { "id": "photo-8", "src": "photo/IMG_20260723_150208_229.jpg", "label": "Learning beyond class" }
+  ],
+  "contact": {
+    "collegeName": "Sri Devi Arts & Science College",
+    "tagline": "Learn with purpose. Lead with confidence.",
+    "address": "23 College Road\nCoimbatore, Tamil Nadu\n641 018, India",
+    "phone": "+91 422 267 0000",
+    "email": "hello@sridevicollege.edu.in",
+    "hours": "Mon–Fri, 9:00–17:00",
+    "copyright": "© 2026 Sri Devi Arts and Science College"
+  }
+}
