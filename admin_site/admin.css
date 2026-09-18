@@ -1154,3 +1154,77 @@ body {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* Table Styles for Applications and Enquiries */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  text-align: left;
+}
+
+.admin-table th {
+  background: var(--paper-alt);
+  color: var(--ink);
+  padding: 12px 14px;
+  font-weight: 700;
+  border-bottom: 2px solid var(--line);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  vertical-align: middle;
+}
+
+.admin-table tr:hover td {
+  background: rgba(117, 83, 214, 0.04);
+}
+
+.badge-pill {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.badge-pill.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-pill.warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-pill.purple {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.btn-action-icon {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 11px;
+  transition: all 0.2s;
+}
+
+.btn-action-icon:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+}

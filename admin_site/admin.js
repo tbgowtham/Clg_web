@@ -25,6 +25,8 @@
     setupModals();
     await checkDbHealth();
     await loadContent();
+    await loadApplications();
+    await loadEnquiries();
   }
 
   // ================= TAB NAVIGATION =================
@@ -66,12 +68,14 @@
     tabPanels.forEach((p) => p.classList.toggle("active", p.id === `tab-${tabName}`));
 
     const titles = {
-      dashboard: ["Dashboard Overview", "Manage and publish real-time content for Sri Devi Arts & Science College"],
+      dashboard: ["Dashboard Overview", "Manage and publish real-time content for Sridevi Arts & Science College, Ponneri"],
       gallery: ["Campus Gallery & Photos", "Upload and organize high-resolution event and campus images"],
-      notices: ["Campus Bulletin & Notices", "Post timely academic and cultural updates on the homepage"],
-      programmes: ["Academic Programmes", "Manage undergraduate and postgraduate course offerings"],
-      stats: ["Key Statistics", "Highlight Sri Devi's institutional achievements and metrics"],
-      content: ["Hero & General Content", "Customize top announcement bar, headlines, about copy, and contacts"],
+      notices: ["Campus Bulletin & Notices", "Post timely academic, fest, and cultural updates on the homepage"],
+      programmes: ["Academic Programmes", "Manage 12 undergraduate and postgraduate course offerings"],
+      stats: ["Key Statistics", "Highlight institutional achievements and metrics"],
+      content: ["Hero & General Content", "Customize top announcement bar, Ponneri address, and contacts"],
+      applications: ["Online Admission Applications (2026–27)", "Review student candidate registrations submitted via the website"],
+      enquiries: ["Public Enquiries & Messages", "Manage questions and feedback from parents, students, and recruiters"],
       preview: ["Live Site Preview", "Real-time preview of the public college website"],
     };
 
@@ -79,6 +83,9 @@
       pageTitle.textContent = titles[tabName][0];
       pageSubtitle.textContent = titles[tabName][1];
     }
+
+    if (tabName === "applications") loadApplications();
+    if (tabName === "enquiries") loadEnquiries();
 
     if (tabName === "preview") {
       const frame = document.getElementById("collegeSiteFrame");
@@ -457,6 +464,9 @@
     document.getElementById("btnAddStatRow")?.addEventListener("click", async () => {
       await addStatApi({ value: "100%", label: "New Metric" });
     });
+
+    // Applications Search Input
+    document.getElementById("appSearchInput")?.addEventListener("input", renderApplicationsTable);
   }
 
   async function addNoticeApi(noticeData) {
@@ -518,6 +528,155 @@
       }
     } catch (err) {
       showToast("Could not delete programme: " + err.message, "error");
+    }
+  };
+
+  // ================= ONLINE ADMISSION APPLICATIONS =================
+  let applicationsList = [];
+  let enquiriesList = [];
+
+  async function loadApplications() {
+    try {
+      const res = await fetch("/api/applications");
+      if (!res.ok) throw new Error("Could not fetch applications");
+      applicationsList = await res.json();
+      renderApplicationsTable();
+    } catch (err) {
+      console.warn("Error loading applications:", err);
+    }
+  }
+
+  function renderApplicationsTable() {
+    const tbody = document.getElementById("applicationsTableBody");
+    const countLabel = document.getElementById("appsCountLabel");
+    const badge = document.getElementById("badgeAppCount");
+    const dashCount = document.getElementById("dashTotalApps");
+
+    if (countLabel) countLabel.textContent = applicationsList.length;
+    if (badge) badge.textContent = applicationsList.length;
+    if (dashCount) dashCount.textContent = applicationsList.length;
+    if (!tbody) return;
+
+    const searchInput = document.getElementById("appSearchInput");
+    const searchTerm = (searchInput?.value || "").toLowerCase();
+    const filtered = applicationsList.filter((a) => {
+      return (
+        (a.name || "").toLowerCase().includes(searchTerm) ||
+        (a.course || "").toLowerCase().includes(searchTerm) ||
+        (a.mobile || "").toLowerCase().includes(searchTerm)
+      );
+    });
+
+    if (!filtered.length) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 30px;">No admission applications found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered
+      .map((a) => `
+        <tr>
+          <td><small style="color: var(--muted);">${escapeHtml(a.submittedAt || "Recent")}</small></td>
+          <td>
+            <strong>${escapeHtml(a.name)}</strong><br />
+            <small style="color: var(--muted);">${escapeHtml(a.gender || "")} · DOB: ${escapeHtml(a.dob || "N/A")}</small>
+          </td>
+          <td>
+            <span class="badge-pill purple">${escapeHtml(a.courseType || "UG")}</span><br />
+            <strong>${escapeHtml(a.course)}</strong>
+          </td>
+          <td>
+            <a href="tel:${escapeHtml(a.mobile)}" style="font-weight: 600; color: var(--purple);">📞 ${escapeHtml(a.mobile)}</a><br />
+            <a href="https://wa.me/91${escapeHtml(a.mobile.replace(/\D/g, ''))}" target="_blank" style="font-size: 11px; color: #10b981;">💬 WhatsApp</a>
+          </td>
+          <td><small>${escapeHtml(a.email || "—")}</small></td>
+          <td>
+            <span>${escapeHtml(a.schoolOrCollege || "—")}</span><br />
+            <small><strong>${escapeHtml(a.percentage || "")}</strong> (${escapeHtml(a.marksTotal || "Marks")})</small>
+          </td>
+          <td>
+            <span class="badge-pill warning">${escapeHtml(a.community || "General")}</span><br />
+            <small style="color: ${a.needsScholarship ? '#059669' : '#64748b'}; font-weight: 600;">
+              ${a.needsScholarship ? "✓ Wants SC/ST Scholarship" : "No Scholarship"}
+            </small>
+          </td>
+          <td>
+            <button class="btn-action-icon" onclick="deleteApplication('${a.id}')" title="Delete application">🗑</button>
+          </td>
+        </tr>
+      `)
+      .join("");
+  }
+
+  window.deleteApplication = async function (id) {
+    if (!confirm("Are you sure you want to remove this student application?")) return;
+    try {
+      const res = await fetch(`/api/applications/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast("Application record deleted", "info");
+        await loadApplications();
+      }
+    } catch (err) {
+      showToast("Delete failed: " + err.message, "error");
+    }
+  };
+
+  // ================= PUBLIC ENQUIRIES =================
+  async function loadEnquiries() {
+    try {
+      const res = await fetch("/api/enquiries");
+      if (!res.ok) throw new Error("Could not fetch enquiries");
+      enquiriesList = await res.json();
+      renderEnquiriesTable();
+    } catch (err) {
+      console.warn("Error loading enquiries:", err);
+    }
+  }
+
+  function renderEnquiriesTable() {
+    const tbody = document.getElementById("enquiriesTableBody");
+    const countLabel = document.getElementById("enqCountLabel");
+    const badge = document.getElementById("badgeEnqCount");
+    const dashCount = document.getElementById("dashTotalEnquiries");
+
+    if (countLabel) countLabel.textContent = enquiriesList.length;
+    if (badge) badge.textContent = enquiriesList.length;
+    if (dashCount) dashCount.textContent = enquiriesList.length;
+    if (!tbody) return;
+
+    if (!enquiriesList.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 30px;">No public enquiries received yet.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = enquiriesList
+      .map((e) => `
+        <tr>
+          <td><small style="color: var(--muted);">${escapeHtml(e.submittedAt || "Recent")}</small></td>
+          <td><strong>${escapeHtml(e.name)}</strong></td>
+          <td>
+            <a href="tel:${escapeHtml(e.phone)}">📞 ${escapeHtml(e.phone)}</a><br />
+            <small>${escapeHtml(e.email || "")}</small>
+          </td>
+          <td><span class="badge-pill purple">${escapeHtml(e.subject || "General")}</span></td>
+          <td style="max-width: 320px;"><small>${escapeHtml(e.message)}</small></td>
+          <td>
+            <button class="btn-action-icon" onclick="deleteEnquiry('${e.id}')" title="Delete enquiry">🗑</button>
+          </td>
+        </tr>
+      `)
+      .join("");
+  }
+
+  window.deleteEnquiry = async function (id) {
+    if (!confirm("Are you sure you want to delete this enquiry message?")) return;
+    try {
+      const res = await fetch(`/api/enquiries/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast("Enquiry message removed", "info");
+        await loadEnquiries();
+      }
+    } catch (err) {
+      showToast("Delete failed: " + err.message, "error");
     }
   };
 

@@ -14,8 +14,11 @@ ADMIN_SITE_DIR = os.path.join(BASE_DIR, "admin_site")
 PHOTO_DIR = os.path.join(BASE_DIR, "photo")
 UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 SEED_FILE = os.path.join(os.path.dirname(__file__), "data", "content.json")
+APPLICATIONS_FILE = os.path.join(os.path.dirname(__file__), "data", "applications.json")
+ENQUIRIES_FILE = os.path.join(os.path.dirname(__file__), "data", "enquiries.json")
 
 os.makedirs(UPLOADS_DIR, exist_ok=True)
+os.makedirs(os.path.join(os.path.dirname(__file__), "data"), exist_ok=True)
 
 app = Flask(__name__)
 CORS(app)
@@ -51,12 +54,32 @@ def seed_database_if_empty():
         return
     try:
         content_doc = db.content.find_one({"_id": "site_content"})
+        seed = load_seed_data()
         if not content_doc:
-            seed = load_seed_data()
             if seed:
-                seed["_id"] = "site_content"
-                db.content.insert_one(seed)
-                print("[PyMongo] Database successfully seeded with default Sri Devi College content.")
+                seed_copy = dict(seed)
+                seed_copy["_id"] = "site_content"
+                db.content.insert_one(seed_copy)
+                print("[PyMongo] Database successfully seeded with Sridevi College Ponneri content.")
+        else:
+            # Upgrade database if missing new Ponneri courses or address
+            progs = content_doc.get("programmes", [])
+            contact = content_doc.get("contact", {})
+            if len(progs) < 12 or "Coimbatore" in contact.get("address", ""):
+                seed_copy = dict(seed)
+                seed_copy["_id"] = "site_content"
+                db.content.replace_one({"_id": "site_content"}, seed_copy)
+                print("[PyMongo] Upgraded database to full 12 Ponneri academic programmes & Ponneri address.")
+            else:
+                # Merge any missing top-level keys (like management, usps)
+                updated = False
+                for k, v in seed.items():
+                    if k not in content_doc:
+                        content_doc[k] = v
+                        updated = True
+                if updated:
+                    db.content.replace_one({"_id": "site_content"}, content_doc)
+                    print("[PyMongo] Database updated with new schema fields from content.json.")
     except Exception as e:
         print(f"[PyMongo] Error during seeding: {e}")
 
@@ -64,16 +87,19 @@ def seed_database_if_empty():
 seed_database_if_empty()
 
 def get_current_content():
+    seed = load_seed_data()
     if mongo_available:
         try:
             doc = db.content.find_one({"_id": "site_content"})
             if doc:
                 doc.pop("_id", None)
+                for k, v in seed.items():
+                    if k not in doc:
+                        doc[k] = v
                 return doc
         except Exception as e:
             print(f"[PyMongo Error] Failed to read content: {e}")
-    # Fallback to seed file
-    return load_seed_data()
+    return seed
 
 def save_current_content(content):
     if mongo_available:
@@ -84,7 +110,6 @@ def save_current_content(content):
             return True
         except Exception as e:
             print(f"[PyMongo Error] Failed to save content: {e}")
-    # Fallback: save to seed file
     try:
         with open(SEED_FILE, "w", encoding="utf-8") as f:
             json.dump(content, f, indent=2, ensure_ascii=False)
@@ -93,22 +118,104 @@ def save_current_content(content):
         print(f"[Fallback Error] Failed to write seed file: {e}")
         return False
 
-# ==================== STATIC ROUTES ====================
+# Application Data Helpers
+def load_applications():
+    if mongo_available:
+        try:
+            return list(db.applications.find({}, {"_id": 0}))
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to load applications: {e}")
+    if os.path.exists(APPLICATIONS_FILE):
+        try:
+            with open(APPLICATIONS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return []
+    return []
+
+def save_application(app_data):
+    if mongo_available:
+        try:
+            db.applications.insert_one(dict(app_data))
+            return True
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to save application: {e}")
+    apps = load_applications()
+    apps.insert(0, app_data)
+    try:
+        with open(APPLICATIONS_FILE, "w", encoding="utf-8") as f:
+            json.dump(apps, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"[File Error] Failed to write applications: {e}")
+        return False
+
+def remove_application(app_id):
+    if mongo_available:
+        try:
+            db.applications.delete_one({"id": app_id})
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to delete application: {e}")
+    apps = load_applications()
+    new_apps = [a for a in apps if a.get("id") != app_id]
+    try:
+        with open(APPLICATIONS_FILE, "w", encoding="utf-8") as f:
+            json.dump(new_apps, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+# Enquiries Helpers
+def load_enquiries():
+    if mongo_available:
+        try:
+            return list(db.enquiries.find({}, {"_id": 0}))
+        except Exception:
+            pass
+    if os.path.exists(ENQUIRIES_FILE):
+        try:
+            with open(ENQUIRIES_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return []
+    return []
+
+def save_enquiry(enquiry_data):
+    if mongo_available:
+        try:
+            db.enquiries.insert_one(dict(enquiry_data))
+            return True
+        except Exception:
+            pass
+    enqs = load_enquiries()
+    enqs.insert(0, enquiry_data)
+    try:
+        with open(ENQUIRIES_FILE, "w", encoding="utf-8") as f:
+            json.dump(enqs, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+def remove_enquiry(enq_id):
+    if mongo_available:
+        try:
+            db.enquiries.delete_one({"id": enq_id})
+        except Exception:
+            pass
+    enqs = load_enquiries()
+    new_enqs = [e for e in enqs if e.get("id") != enq_id]
+    try:
+        with open(ENQUIRIES_FILE, "w", encoding="utf-8") as f:
+            json.dump(new_enqs, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception:
+        return False
+
+
+# ==================== EXPLICIT STATIC ROUTES ====================
 
 @app.route("/")
 def serve_college_site_index():
-    return send_from_directory(COLLEGE_SITE_DIR, "index.html")
-
-@app.route("/<path:path>")
-def serve_college_site_files(path):
-    # Check if file exists in college_site
-    full_path = os.path.join(COLLEGE_SITE_DIR, path)
-    if os.path.isfile(full_path):
-        return send_from_directory(COLLEGE_SITE_DIR, path)
-    # Check if requested under photo
-    if path.startswith("photo/"):
-        rel_photo = path[6:]
-        return send_from_directory(PHOTO_DIR, rel_photo)
     return send_from_directory(COLLEGE_SITE_DIR, "index.html")
 
 @app.route("/admin")
@@ -131,7 +238,15 @@ def serve_photos(filename):
 def serve_uploads(filename):
     return send_from_directory(UPLOADS_DIR, filename)
 
-# ==================== API ENDPOINTS ====================
+@app.route("/assets/<path:path>")
+def serve_assets(path):
+    full_path = os.path.join(COLLEGE_SITE_DIR, "assets", path)
+    if os.path.isfile(full_path):
+        return send_from_directory(os.path.join(COLLEGE_SITE_DIR, "assets"), path)
+    return send_from_directory(COLLEGE_SITE_DIR, "index.html")
+
+
+# ==================== API ENDPOINTS (PRECEDENCE OVER CATCH-ALL) ====================
 
 @app.route("/api/health", methods=["GET"])
 def api_health():
@@ -144,6 +259,7 @@ def api_health():
             is_connected = False
     return jsonify({
         "status": "online",
+        "college": "Sridevi Arts & Science College Ponneri",
         "mongodb_connected": is_connected,
         "database": DB_NAME,
         "timestamp": datetime.now().isoformat()
@@ -161,14 +277,13 @@ def api_update_content():
         return jsonify({"error": "Invalid or missing JSON payload"}), 400
     
     current = get_current_content()
-    # Merge updates
     for key, value in data.items():
         if key != "_id":
             current[key] = value
             
     success = save_current_content(current)
     if success:
-        return jsonify({"success": True, "message": "Content successfully updated in MongoDB", "content": current})
+        return jsonify({"success": True, "message": "Content successfully updated", "content": current})
     return jsonify({"error": "Failed to save content"}), 500
 
 @app.route("/api/upload", methods=["POST"])
@@ -188,7 +303,7 @@ def api_upload_image():
     file.save(save_path)
 
     label = request.form.get("label", "").strip() or "Campus image"
-    section = request.form.get("section", "photos") # 'photos', 'hero', 'about'
+    section = request.form.get("section", "photos")
 
     photo_entry = {
         "id": f"photo-{uuid.uuid4().hex[:8]}",
@@ -228,7 +343,6 @@ def api_delete_photo(photo_id):
     if not target:
         return jsonify({"error": "Photo not found"}), 404
 
-    # Remove file if from uploads
     src = target.get("src", "")
     if src.startswith("uploads/"):
         filename = src.replace("uploads/", "")
@@ -250,7 +364,7 @@ def api_add_notice():
     title = data.get("title", "").strip()
     day = data.get("day", "").strip() or str(datetime.now().day).zfill(2)
     month = data.get("month", "").strip().upper() or datetime.now().strftime("%b").upper()
-    link = data.get("link", "#contact").strip()
+    link = data.get("link", "#apply-modal").strip()
 
     if not title:
         return jsonify({"error": "Notice title is required"}), 400
@@ -286,9 +400,15 @@ def api_delete_notice(notice_id):
 def api_add_programme():
     data = request.get_json(force=True, silent=True) or {}
     title = data.get("title", "").strip()
-    number = data.get("number", "").strip() or "01 / UNDERGRADUATE"
+    category = data.get("category", "Undergraduate").strip()
+    number = data.get("number", "").strip() or f"{len(get_current_content().get('programmes', [])) + 1:02d} / COURSE"
+    department = data.get("department", title).strip()
+    seats = data.get("seats", "70 Seats").strip()
+    fee = data.get("fee", "₹15,000 / Year").strip()
+    duration = data.get("duration", "3 Years (UG)").strip()
     desc = data.get("desc", "").strip()
-    link = data.get("link", "#contact").strip()
+    image = data.get("image", "assets/sdasc/departments/112226_1625242329.jpeg").strip()
+    link = data.get("link", "#apply-modal").strip()
 
     if not title:
         return jsonify({"error": "Programme title is required"}), 400
@@ -296,8 +416,14 @@ def api_add_programme():
     prog_entry = {
         "id": f"prog-{uuid.uuid4().hex[:8]}",
         "number": number,
+        "category": category,
         "title": title,
+        "department": department,
+        "seats": seats,
+        "fee": fee,
+        "duration": duration,
         "desc": desc,
+        "image": image,
         "link": link
     }
 
@@ -318,6 +444,96 @@ def api_delete_programme(prog_id):
     current["programmes"] = new_progs
     save_current_content(current)
     return jsonify({"success": True, "message": "Programme deleted successfully"})
+
+# CRUD for Online Admission Applications
+@app.route("/api/applications", methods=["GET"])
+def api_get_applications():
+    apps = load_applications()
+    return jsonify(apps)
+
+@app.route("/api/applications", methods=["POST"])
+def api_submit_application():
+    data = request.get_json(force=True, silent=True) or {}
+    name = data.get("name", "").strip()
+    mobile = data.get("mobile", "").strip()
+    course = data.get("course", "").strip()
+
+    if not name or not mobile or not course:
+        return jsonify({"error": "Student Name, Mobile Number, and Desired Course are required."}), 400
+
+    application_entry = {
+        "id": f"APP-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:4].upper()}",
+        "name": name,
+        "dob": data.get("dob", ""),
+        "gender": data.get("gender", "Not Specified"),
+        "mobile": mobile,
+        "email": data.get("email", "").strip(),
+        "fatherName": data.get("fatherName", "").strip(),
+        "motherName": data.get("motherName", "").strip(),
+        "courseType": data.get("courseType", "UG"),
+        "course": course,
+        "schoolOrCollege": data.get("schoolOrCollege", "").strip(),
+        "marksTotal": data.get("marksTotal", "").strip(),
+        "percentage": data.get("percentage", "").strip(),
+        "community": data.get("community", "General"),
+        "needsScholarship": bool(data.get("needsScholarship", False)),
+        "status": "Pending Review",
+        "submittedAt": datetime.now().strftime("%d %b %Y, %I:%M %p")
+    }
+
+    save_application(application_entry)
+    return jsonify({
+        "success": True,
+        "message": "Your application has been received successfully! Our admission desk at Ponneri will contact you shortly.",
+        "application": application_entry
+    }), 201
+
+@app.route("/api/applications/<app_id>", methods=["DELETE"])
+def api_delete_application(app_id):
+    success = remove_application(app_id)
+    if success:
+        return jsonify({"success": True, "message": "Application deleted successfully"})
+    return jsonify({"error": "Application not found"}), 404
+
+# Enquiries / Contact Submissions
+@app.route("/api/enquiries", methods=["GET"])
+def api_get_enquiries():
+    enquiries = load_enquiries()
+    return jsonify(enquiries)
+
+@app.route("/api/enquiries", methods=["POST"])
+def api_submit_enquiry():
+    data = request.get_json(force=True, silent=True) or {}
+    name = data.get("name", "").strip()
+    phone = data.get("phone", "").strip()
+    message = data.get("message", "").strip()
+
+    if not name or not (phone or data.get("email")):
+        return jsonify({"error": "Name and contact info are required."}), 400
+
+    enquiry_entry = {
+        "id": f"ENQ-{int(datetime.now().timestamp())}-{uuid.uuid4().hex[:4].upper()}",
+        "name": name,
+        "phone": phone,
+        "email": data.get("email", "").strip(),
+        "subject": data.get("subject", "General Enquiry").strip(),
+        "message": message,
+        "submittedAt": datetime.now().strftime("%d %b %Y, %I:%M %p")
+    }
+
+    save_enquiry(enquiry_entry)
+    return jsonify({
+        "success": True,
+        "message": "Thank you for contacting Sridevi Arts and Science College. We will reach out to you promptly.",
+        "enquiry": enquiry_entry
+    }), 201
+
+@app.route("/api/enquiries/<enq_id>", methods=["DELETE"])
+def api_delete_enquiry(enq_id):
+    success = remove_enquiry(enq_id)
+    if success:
+        return jsonify({"success": True, "message": "Enquiry removed successfully"})
+    return jsonify({"error": "Enquiry not found"}), 404
 
 # CRUD for Stats
 @app.route("/api/stats", methods=["POST"])
@@ -359,12 +575,24 @@ def api_reset_content():
     if not seed:
         return jsonify({"error": "Seed data not found"}), 500
     save_current_content(seed)
-    return jsonify({"success": True, "message": "Database reset to original Sri Devi College content", "content": seed})
+    return jsonify({"success": True, "message": "Database reset to authentic Sri Devi College Ponneri content", "content": seed})
+
+# ==================== CATCH-ALL STATIC ROUTE (MUST BE AT END) ====================
+@app.route("/<path:path>", methods=["GET"])
+def serve_college_site_files(path):
+    full_path = os.path.join(COLLEGE_SITE_DIR, path)
+    if os.path.isfile(full_path):
+        return send_from_directory(COLLEGE_SITE_DIR, path)
+    if path.startswith("photo/"):
+        return send_from_directory(PHOTO_DIR, path[6:])
+    if path.startswith("assets/"):
+        return send_from_directory(os.path.join(COLLEGE_SITE_DIR, "assets"), path[7:])
+    return send_from_directory(COLLEGE_SITE_DIR, "index.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"==================================================")
-    print(f" Sri Devi Arts & Science College CMS Server")
+    print(f" Sridevi Arts & Science College Ponneri — CMS Server")
     print(f" Backend: Flask + PyMongo (MongoDB: {MONGO_URI})")
     print(f" College Site: http://localhost:{port}/")
     print(f" Admin Portal: http://localhost:{port}/admin/")

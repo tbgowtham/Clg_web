@@ -1,120 +1,321 @@
 {
   "utility": {
-    "announcement": "Admissions open for 2026–27  |  Apply now",
-    "portalLinks": "Student portal  ·  Alumni  ·  Library"
+    "announcement": "Admissions Open for 2026–2027  |  SRISPARX-2k25 Inter-Collegiate Fest Registrations Live  |  Affiliated to University of Madras",
+    "portalLinks": "ssp.tn.gov.in (SC/ST Scholarship)  ·  Student Portal  ·  Alumni  ·  Webmail",
+    "phone": "+91 9443689578 / 8610952867",
+    "email": "sridevicollegeponneri@gmail.com",
+    "address": "Krishnapuram, Ponneri - 601204, Tiruvallur Dist."
   },
   "hero": {
-    "eyebrow": "Learn with purpose",
-    "title": "Shape your future at Sri Devi.",
-    "copy": "A vibrant learning community where curiosity becomes capability, and every student finds the confidence to make an impact.",
-    "btn1Text": "Explore programmes",
+    "eyebrow": "25 Glorious Years of Educational Excellence · Estd. 2001",
+    "title": "Empowering Minds. Shaping Tomorrow at Ponneri.",
+    "copy": "Sridevi Arts and Science College is a premier co-educational institution affiliated to the University of Madras, dedicated to imparting purposeful, affordable, and quality higher education to students from rural and semi-urban communities.",
+    "btn1Text": "Explore 12 Programmes",
     "btn1Link": "#programmes",
-    "btn2Text": "Start your journey →",
-    "btn2Link": "#contact",
+    "btn2Text": "Apply for Admission 2026–27 →",
+    "btn2Link": "#apply-modal",
     "videoPoster": "sridevi.png",
     "videoSrc": "sridevi.mp4"
   },
   "quickLinks": [
-    { "label": "Admissions", "link": "#contact" },
-    { "label": "Programmes", "link": "#programmes" },
-    { "label": "Campus life", "link": "#campus" },
-    { "label": "Enquire now", "link": "#contact" }
+    { "label": "Online Application", "link": "#apply-modal" },
+    { "label": "Academic Courses", "link": "#programmes" },
+    { "label": "Management & Vision", "link": "#management" },
+    { "label": "Placement Cell", "link": "#placement" },
+    { "label": "SC/ST Scholarship", "link": "https://ssp.tn.gov.in" },
+    { "label": "Campus Gallery", "link": "#campus" }
   ],
   "about": {
-    "eyebrow": "About Sri Devi",
-    "title": "Education with a wider view.",
-    "p1": "For over two decades, Sri Devi Arts and Science College has brought together rigorous academics, dedicated mentors and a culture that encourages students to think beyond the classroom.",
-    "p2": "Our students graduate ready to contribute, lead and keep learning in a changing world.",
-    "badge": "Est. 2001",
-    "linkText": "Discover our story →",
+    "eyebrow": "About Sridevi Arts & Science College",
+    "title": "A Legacy of Purposeful Rural & Urban Education.",
+    "p1": "Sridevi Arts and Science College is a leading co-educational institution in Ponneri, established in the year 2001 with a visionary commitment to impart purposeful and accessible higher education to aspiring students, particularly those hailing from rural backgrounds.",
+    "p2": "Affiliated to the prestigious University of Madras, the college has grown into a distinguished center of learning offering 8 Undergraduate and 2 Postgraduate departments, alongside robust Physical Education and Career Placement cells. With dedicated faculty, high-tech laboratories, and strong merit scholarship support, we empower over 1,500 students each year.",
+    "badge": "Estd. 2001 · Madras Univ.",
+    "linkText": "Learn About Our Founder & Trustees →",
     "image": "sridevi.png"
   },
   "stats": [
-    { "id": "stat-1", "value": "25+", "label": "Years of excellence" },
-    { "id": "stat-2", "value": "3,200", "label": "Students on campus" },
-    { "id": "stat-3", "value": "42", "label": "Academic programmes" },
-    { "id": "stat-4", "value": "92%", "label": "Placement record" }
+    { "id": "stat-1", "value": "25+", "label": "Years of Academic Excellence" },
+    { "id": "stat-2", "value": "1,500+", "label": "Students on Campus" },
+    { "id": "stat-3", "value": "12", "label": "Departments & Programmes" },
+    { "id": "stat-4", "value": "92%", "label": "Placement & Career Success" }
+  ],
+  "management": [
+    {
+      "id": "mgmt-1",
+      "name": "Thiru. K. Pachaiyappan",
+      "designation": "Father of our Institution",
+      "photo": "assets/sdasc/584947_1625327889.jpeg",
+      "bio": "The visionary founder whose lifelong dedication to rural empowerment and accessible higher education laid the foundation of Sridevi Arts and Science College."
+    },
+    {
+      "id": "mgmt-2",
+      "name": "Mrs. P. Sridevi",
+      "designation": "Trustee",
+      "photo": "assets/sdasc/23880_1625328141.jpeg",
+      "bio": "Guiding the institution with a commitment to values-based education, student welfare, and social responsibility across all programs."
+    },
+    {
+      "id": "mgmt-3",
+      "name": "Mr. P. Ramesh",
+      "designation": "Managing Trustee & Secretary",
+      "photo": "assets/sdasc/174025_1625328420.jpeg",
+      "bio": "Leading academic governance, modern campus infrastructure expansion, and corporate-academic linkages with a forward-looking perspective."
+    },
+    {
+      "id": "mgmt-4",
+      "name": "Mrs. P. Sujatha",
+      "designation": "Trustee",
+      "photo": "assets/sdasc/983485_1625328483.jpeg",
+      "bio": "Championing holistic student enrichment, cultural vibrancy, and supportive provisions for female students."
+    },
+    {
+      "id": "mgmt-5",
+      "name": "Mrs. R. Rama",
+      "designation": "Correspondent & College Advisor",
+      "photo": "assets/sdasc/261789_1625364770.jpeg",
+      "bio": "Correspondent of Sridevi College of Nursing and esteemed Advisor, ensuring stringent academic benchmarks and career orientation."
+    }
   ],
   "programmes": [
     {
       "id": "prog-1",
-      "number": "01 / UNDERGRADUATE",
-      "title": "Computer Science & Applications",
-      "desc": "Build the skills behind the digital world with practical learning and industry exposure.",
-      "link": "#contact"
+      "number": "01 / COMMERCE",
+      "category": "Commerce",
+      "title": "B.Com (General)",
+      "department": "Department of Commerce",
+      "seats": "100 Seats",
+      "fee": "₹17,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "One of our premier founding departments with high-caliber faculty, advanced accounting labs, and comprehensive training in financial markets and corporate taxation.",
+      "image": "assets/sdasc/departments/112226_1625242329.jpeg",
+      "link": "#apply-modal"
     },
     {
       "id": "prog-2",
-      "number": "02 / UNDERGRADUATE",
-      "title": "Commerce & Management",
-      "desc": "Turn ideas into enterprise through a grounded, future-facing business education.",
-      "link": "#contact"
+      "number": "02 / COMPUTING",
+      "category": "Computer Science",
+      "title": "B.C.A (Computer Applications)",
+      "department": "Department of Computer Applications",
+      "seats": "100 Seats",
+      "fee": "₹17,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Began in 2001, providing industry-aligned training in software development, web engineering, database architecture, and mobile applications.",
+      "image": "assets/sdasc/departments/907227_1625278192.jpeg",
+      "link": "#apply-modal"
     },
     {
       "id": "prog-3",
-      "number": "03 / POSTGRADUATE",
-      "title": "Arts, Media & Humanities",
-      "desc": "Think critically, communicate clearly and understand the world from new perspectives.",
-      "link": "#contact"
+      "number": "03 / SCIENCE",
+      "category": "Computer Science",
+      "title": "B.Sc (Computer Science)",
+      "department": "Department of Computer Science",
+      "seats": "100 Seats",
+      "fee": "₹17,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Celebrating 25 years of excellence, this department builds strong foundations in algorithms, system programming, cloud computing, and cybersecurity.",
+      "image": "assets/sdasc/departments/734395_1625242361.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-4",
+      "number": "04 / SCIENCE",
+      "category": "Science",
+      "title": "B.Sc (Mathematics)",
+      "department": "Department of Mathematics",
+      "seats": "70 Seats",
+      "fee": "₹12,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Renowned for producing University of Madras rank holders (including 90th and 31st university ranks) with deep analytical and quantitative rigor.",
+      "image": "assets/sdasc/departments/224730_1625130953.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-5",
+      "number": "05 / COMMERCE",
+      "category": "Commerce",
+      "title": "B.Com (Corporate Secretaryship)",
+      "department": "Department of Corporate Secretaryship",
+      "seats": "70 Seats",
+      "fee": "₹16,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Specialized curriculum focusing on company secretarial practices, corporate law, auditing, governance, and business communication.",
+      "image": "assets/sdasc/departments/433611_1625217308.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-6",
+      "number": "06 / MANAGEMENT",
+      "category": "Management",
+      "title": "BBA (Business Administration)",
+      "department": "Department of Business Administration",
+      "seats": "70 Seats",
+      "fee": "₹16,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Empowering future managers and entrepreneurs through practical case studies, Bizmind Club forums, business simulations, and executive mentoring.",
+      "image": "assets/sdasc/departments/270117_1625239793.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-7",
+      "number": "07 / HUMANITIES",
+      "category": "Arts",
+      "title": "B.A (English Literature)",
+      "department": "Department of English",
+      "seats": "70 Seats",
+      "fee": "₹12,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Home to the English Literary Association, cultivating mastery in critical reading, communication, journalism, and public discourse.",
+      "image": "assets/sdasc/departments/586820_1625240572.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-8",
+      "number": "08 / HUMANITIES",
+      "category": "Arts",
+      "title": "B.A (Tamil)",
+      "department": "Department of Tamil",
+      "seats": "70 Seats",
+      "fee": "₹12,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Fosters profound scholarship in classical and modern Tamil literature, linguistics, grammar, media studies, and cultural heritage.",
+      "image": "assets/sdasc/departments/76783_1625277585.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-9",
+      "number": "09 / EMERGING TECH",
+      "category": "Computer Science",
+      "title": "B.Sc (Computer Science with AI)",
+      "department": "Department of CS & Artificial Intelligence",
+      "seats": "60 Seats",
+      "fee": "₹17,500 / Year",
+      "duration": "3 Years (UG)",
+      "desc": "Next-generation degree integrating deep learning, neural networks, machine intelligence, natural language processing, and automated systems.",
+      "image": "assets/sdasc/departments/50152_1709103994.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-10",
+      "number": "10 / POSTGRADUATE",
+      "category": "Postgraduate",
+      "title": "M.A (Tamil)",
+      "department": "Department of Postgraduate Tamil",
+      "seats": "40 Seats",
+      "fee": "₹13,000 / Year",
+      "duration": "2 Years (PG)",
+      "desc": "Advanced master's research degree concentrating on ancient epigraphy, Sangam literature, comparative literary theory, and higher pedagogy.",
+      "image": "assets/sdasc/departments/781424_1709104179.jpeg",
+      "link": "#apply-modal"
+    },
+    {
+      "id": "prog-11",
+      "number": "11 / ATHLETICS",
+      "category": "Co-Curricular",
+      "title": "Physical Education & Sports",
+      "department": "Department of Physical Education",
+      "seats": "All Students",
+      "fee": "Included in Campus Amenities",
+      "duration": "Annual Coaching",
+      "desc": "Expansive athletic facilities, multi-sport training grounds, inter-collegiate tournaments, martial arts, and annual athletic meets.",
+      "image": "assets/sdasc/departments/482769_1655287421.jpeg",
+      "link": "#campus"
+    },
+    {
+      "id": "prog-12",
+      "number": "12 / CAREER HUB",
+      "category": "Placement",
+      "title": "Employability & Placement Cell",
+      "department": "Campus Placement Cell",
+      "seats": "100% Eligible Students",
+      "fee": "Complimentary Career Training",
+      "duration": "3-Year Continuous Support",
+      "desc": "Dedicated corporate platform providing aptitude coaching, mock interviews, foreign university counselling, and campus recruitment drives.",
+      "image": "assets/sdasc/departments/211040_1696842795.jpeg",
+      "link": "#placement"
     }
   ],
-  "features": [
+  "usps": [
     {
-      "icon": "✦",
-      "title": "Industry-connected learning",
-      "desc": "Internships, live projects and conversations with working professionals turn theory into confidence."
+      "icon": "🌱",
+      "title": "High-Tech Green Campus",
+      "desc": "Eco-friendly academic grounds in Krishnapuram, Ponneri, equipped with solar illumination, modern computer centers, and spacious auditoriums."
     },
     {
-      "icon": "⌁",
-      "title": "Research with purpose",
-      "desc": "Our faculty and students investigate real challenges through collaborative, community-focused research."
+      "icon": "💼",
+      "title": "Dedicated Placement Cell",
+      "desc": "Year-round employability training, campus recruitment drives, industry workshops, and dedicated support for alumni."
     },
     {
-      "icon": "↗",
-      "title": "Career-ready pathways",
-      "desc": "Personal mentoring and placement support help every student make a strong first step."
+      "icon": "🎓",
+      "title": "Scholarships for Rural & Weaker Sections",
+      "desc": "Active facilitator of Tamil Nadu Postmatric SC/ST scholarships (ssp.tn.gov.in) alongside institutional merit waivers."
+    },
+    {
+      "icon": "👩‍🎓",
+      "title": "Special Provisions for Women Students",
+      "desc": "Safe, supportive environment with specialized counseling, secure transit, and leadership platforms for girl students."
+    },
+    {
+      "icon": "🚌",
+      "title": "Comprehensive College Bus Fleet",
+      "desc": "Safe transportation connecting Ponneri, Gummidipoondi, Minjur, Red Hills, and northern Chennai suburbs."
+    },
+    {
+      "icon": "🏆",
+      "title": "Affiliated to University of Madras",
+      "desc": "Rigorous curriculum, recognized university degrees, seasoned professors, and consistent university rank holders."
     }
   ],
   "notices": [
     {
       "id": "not-1",
-      "day": "18",
-      "month": "JUN",
-      "title": "Applications open for the 2026–27 academic year →",
-      "link": "#contact"
+      "day": "28",
+      "month": "FEB",
+      "title": "SRISPARX-2k25 Inter-Collegiate Cultural Fest — Online Registrations Now Open →",
+      "link": "#apply-modal"
     },
     {
       "id": "not-2",
-      "day": "04",
-      "month": "JUL",
-      "title": "Annual cultural festival: registrations now live →",
-      "link": "#campus"
+      "day": "15",
+      "month": "MAR",
+      "title": "Admissions for 2026–2027 Academic Year Live: Apply Online for 12 Programs →",
+      "link": "#apply-modal"
     },
     {
       "id": "not-3",
-      "day": "12",
-      "month": "JUL",
-      "title": "Faculty research showcase and open lecture →",
-      "link": "#research"
+      "day": "10",
+      "month": "APR",
+      "title": "Postmatric Scholarship for SC/ST Students: Apply on TN State Portal (ssp.tn.gov.in) →",
+      "link": "https://ssp.tn.gov.in"
+    },
+    {
+      "id": "not-4",
+      "day": "02",
+      "month": "MAY",
+      "title": "SDC'z Campus Monthly Magazine New Edition Released for Students & Faculty →",
+      "link": "#campus"
     }
   ],
   "photos": [
-    { "id": "photo-1", "src": "photo/IMG20260228131225.jpg", "label": "Awards and achievement" },
-    { "id": "photo-2", "src": "photo/IMG_20260227_142615_304.jpg", "label": "A proud campus moment" },
-    { "id": "photo-3", "src": "photo/IMG_20260701_104825_496.jpg", "label": "Campus life" },
-    { "id": "photo-4", "src": "photo/IMG_20260701_104949.jpg", "label": "Student recognition" },
-    { "id": "photo-5", "src": "photo/IMG_20260701_110148.jpg", "label": "Performance and spirit" },
-    { "id": "photo-6", "src": "photo/IMG_20260701_132844.jpg", "label": "Sri Devi auditorium" },
-    { "id": "photo-7", "src": "photo/IMG_20260701_133523_953.jpg", "label": "Together on campus" },
-    { "id": "photo-8", "src": "photo/IMG_20260723_150208_229.jpg", "label": "Learning beyond class" }
+    { "id": "photo-1", "src": "photo/IMG20260228131225.jpg", "label": "Awards and Academic Honors Ceremony" },
+    { "id": "photo-2", "src": "photo/IMG_20260227_142615_304.jpg", "label": "Proud Convocation & Graduation Moment" },
+    { "id": "photo-3", "src": "photo/IMG_20260701_104825_496.jpg", "label": "Vibrant Campus Life at Sridevi College" },
+    { "id": "photo-4", "src": "photo/IMG_20260701_104949.jpg", "label": "Student Recognition & Merit Felicitations" },
+    { "id": "photo-5", "src": "photo/IMG_20260701_110148.jpg", "label": "Cultural Spirit & Stage Performances" },
+    { "id": "photo-6", "src": "photo/IMG_20260701_132844.jpg", "label": "Sridevi College Central Auditorium" },
+    { "id": "photo-7", "src": "photo/IMG_20260701_133523_953.jpg", "label": "Together on Campus: Student Community" },
+    { "id": "photo-8", "src": "photo/IMG_20260723_150208_229.jpg", "label": "Interactive Classroom & Lab Learning" }
   ],
   "contact": {
-    "collegeName": "Sri Devi Arts & Science College",
-    "tagline": "Learn with purpose. Lead with confidence.",
-    "address": "23 College Road\nCoimbatore, Tamil Nadu\n641 018, India",
-    "phone": "+91 422 267 0000",
-    "email": "hello@sridevicollege.edu.in",
-    "hours": "Mon–Fri, 9:00–17:00",
-    "copyright": "© 2026 Sri Devi Arts and Science College"
+    "collegeName": "Sridevi Arts & Science College",
+    "affiliation": "Affiliated to University of Madras · Co-Educational · Estd. 2001",
+    "tagline": "Learn with purpose. Lead with confidence. Empowering rural minds since 2001.",
+    "address": "Krishnapuram, Ponneri - 601204\nTiruvallur District, Tamil Nadu, India",
+    "phone": "+91 9443689578 / +91 8610952867",
+    "email": "sridevicollegeponneri@gmail.com",
+    "hours": "Monday – Friday: 9:00 AM – 5:00 PM\nSaturday: 9:00 AM – 1:30 PM",
+    "busRoutes": "Bus connectivity across Ponneri, Gummidipoondi, Minjur, Kavaraipettai, & Red Hills",
+    "copyright": "© 2026 Sridevi Arts & Science College, Ponneri. All Rights Reserved."
   }
 }
