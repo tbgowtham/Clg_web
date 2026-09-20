@@ -1,20 +1,25 @@
 :root {
-  --primary-dark: #120b29;
-  --primary-navy: #1a113a;
-  --primary-purple: #3f2284;
-  --accent-violet: #6b46c1;
-  --accent-gold: #f5a623;
-  --accent-gold-light: #fcd580;
-  --accent-teal: #0d9488;
-  --text-main: #1f2438;
-  --text-muted: #5e647e;
+  --primary-dark: #071326;           /* Deep midnight dark blue */
+  --primary-navy: #0a1f3d;           /* Deep collegiate dark blue */
+  --primary-blue: #0f2e5a;           /* Main authoritative dark blue */
+  --primary-blue-dark: #071326;      /* Deepest dark blue for hover */
+  --primary-blue-royal: #1e3a8a;     /* Royal dark blue */
+  --primary-purple: #0f2e5a;         /* Main brand color: Rich authoritative dark blue */
+  --accent-violet: #1e3a8a;          /* Rich royal dark blue */
+  --accent-light-blue: #60a5fa;      /* Clean soft blue accent */
+  --accent-ice: #eff6ff;             /* Soft light blue tint for pills and tags */
+  --accent-gold: #f59e0b;            /* Warm golden amber for contrast */
+  --accent-gold-light: #fef08a;      /* Soft gold */
+  --accent-teal: #1e3a8a;            /* Coordinated accent */
+  --text-main: #0f172a;
+  --text-muted: #475569;
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
   --border-light: #e2e8f0;
-  --border-focus: #7c3aed;
-  --shadow-sm: 0 2px 8px rgba(26, 17, 58, 0.06);
-  --shadow-md: 0 8px 24px rgba(26, 17, 58, 0.08);
-  --shadow-lg: 0 16px 36px rgba(26, 17, 58, 0.12);
+  --border-focus: #0f2e5a;
+  --shadow-sm: 0 2px 8px rgba(15, 46, 90, 0.08);
+  --shadow-md: 0 8px 24px rgba(15, 46, 90, 0.12);
+  --shadow-lg: 0 16px 36px rgba(15, 46, 90, 0.18);
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -65,19 +70,19 @@ button, input, select, textarea {
 .marquee-bar {
   display: flex;
   align-items: center;
-  background: linear-gradient(90deg, #d97706, #f59e0b, #d97706);
+  background: linear-gradient(90deg, #071326, #0a1f3d, #0f2e5a, #1e3a8a);
   color: #ffffff;
   font-size: 12.5px;
   font-weight: 600;
   height: 38px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(10, 31, 61, 0.35);
   position: relative;
   z-index: 40;
 }
 
 .marquee-label {
-  background: #92400e;
+  background: #050e1c;
   padding: 0 16px;
   height: 100%;
   display: flex;
@@ -87,8 +92,9 @@ button, input, select, textarea {
   text-transform: uppercase;
   font-size: 11px;
   font-weight: 800;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.25);
   z-index: 2;
+  color: #f5c96a;
 }
 
 .marquee-track {
@@ -136,7 +142,7 @@ button, input, select, textarea {
   gap: 16px;
   padding: 8px 24px;
   background: var(--primary-dark);
-  color: #c9c3e4;
+  color: #bae6fd;
   font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -151,18 +157,18 @@ button, input, select, textarea {
 }
 
 .util-contact a:hover, .util-link:hover {
-  color: var(--accent-gold);
+  color: #ffffff;
 }
 
 .highlight-link {
-  color: var(--accent-gold) !important;
+  color: var(--accent-light-blue) !important;
   font-weight: 700;
 }
 
 .util-admin-badge {
-  background: rgba(245, 166, 35, 0.15);
-  color: var(--accent-gold);
-  border: 1px solid rgba(245, 166, 35, 0.35);
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-light-blue);
+  border: 1px solid rgba(56, 189, 248, 0.4);
   padding: 3px 9px;
   border-radius: 4px;
   font-size: 10.5px;
@@ -173,7 +179,7 @@ button, input, select, textarea {
 }
 
 .util-admin-badge:hover {
-  background: var(--accent-gold);
+  background: var(--accent-light-blue);
   color: var(--primary-dark);
 }
 
@@ -185,7 +191,7 @@ button, input, select, textarea {
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-light);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(2, 132, 199, 0.05);
 }
 
 .nav {
@@ -232,7 +238,7 @@ button, input, select, textarea {
 }
 
 .brand-sub {
-  color: var(--primary-dark);
+  color: var(--primary-navy);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -257,11 +263,11 @@ button, input, select, textarea {
 }
 
 .nav-links a:hover {
-  color: var(--accent-violet);
+  color: var(--primary-purple);
 }
 
 .nav-cta, .button.primary {
-  background: linear-gradient(135deg, var(--primary-purple), var(--accent-violet));
+  background: linear-gradient(135deg, #0f2e5a, #1e3a8a);
   color: #ffffff !important;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
@@ -269,7 +275,7 @@ button, input, select, textarea {
   font-weight: 700;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(107, 70, 193, 0.3);
+  box-shadow: 0 4px 14px rgba(15, 46, 90, 0.35);
   transition: var(--transition);
   display: inline-flex;
   align-items: center;
@@ -278,14 +284,14 @@ button, input, select, textarea {
 
 .nav-cta:hover, .button.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(107, 70, 193, 0.45);
-  background: linear-gradient(135deg, #2d1863, #5a34af);
+  box-shadow: 0 6px 18px rgba(15, 46, 90, 0.5);
+  background: linear-gradient(135deg, #071326, #0f2e5a);
 }
 
 .button.outline {
   background: transparent;
   color: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
   padding: 10px 20px;
   border-radius: var(--radius-sm);
   font-size: 12.5px;
@@ -295,16 +301,16 @@ button, input, select, textarea {
 }
 
 .button.outline:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   border-color: #ffffff;
 }
 
 .button.ghost {
-  background: #f1f5f9;
-  color: var(--text-main);
+  background: #f0f9ff;
+  color: var(--primary-navy);
   padding: 10px 20px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
+  border: 1px solid #bae6fd;
   font-size: 12.5px;
   font-weight: 700;
   cursor: pointer;
@@ -312,7 +318,7 @@ button, input, select, textarea {
 }
 
 .button.ghost:hover {
-  background: #e2e8f0;
+  background: #e0f2fe;
 }
 
 .button.small {
@@ -372,9 +378,9 @@ button, input, select, textarea {
   height: 100%;
   background: linear-gradient(
     135deg,
-    rgba(18, 11, 41, 0.94) 0%,
-    rgba(26, 17, 58, 0.88) 55%,
-    rgba(63, 34, 132, 0.72) 100%
+    rgba(7, 19, 38, 0.95) 0%,
+    rgba(15, 46, 90, 0.90) 55%,
+    rgba(30, 58, 138, 0.82) 100%
   );
 }
 
@@ -391,24 +397,24 @@ button, input, select, textarea {
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(8px);
   border-radius: 30px;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--accent-gold-light);
+  color: #bae6fd;
   margin-bottom: 22px;
 }
 
 .badge-dot {
   width: 7px;
   height: 7px;
-  background: #10b981;
+  background: #38bdf8;
   border-radius: 50%;
-  box-shadow: 0 0 8px #10b981;
+  box-shadow: 0 0 8px #38bdf8;
 }
 
 .hero h1 {
@@ -418,13 +424,13 @@ button, input, select, textarea {
   font-weight: 700;
   margin-bottom: 20px;
   letter-spacing: -0.02em;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
 .hero-copy {
   font-size: clamp(15px, 1.4vw, 17.5px);
   line-height: 1.7;
-  color: #e2e8f0;
+  color: #e0f2fe;
   max-width: 720px;
   margin: 0 auto 34px;
 }
@@ -442,8 +448,8 @@ button, input, select, textarea {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(12px);
   padding: 16px 20px;
   border-radius: var(--radius-md);
@@ -471,7 +477,7 @@ button, input, select, textarea {
 
 .hi-text span {
   font-size: 10.5px;
-  color: #cbd5e1;
+  color: #bae6fd;
 }
 
 /* ==================== QUICK ACTION STRIP ==================== */
@@ -505,7 +511,7 @@ button, input, select, textarea {
 .quick-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--accent-violet);
+  border-color: var(--primary-purple);
 }
 
 .qc-icon {
@@ -526,7 +532,7 @@ button, input, select, textarea {
 
 .qc-arrow {
   margin-left: auto;
-  color: var(--accent-violet);
+  color: var(--primary-purple);
   font-size: 16px;
   font-weight: 700;
   transition: transform 0.2s ease;
@@ -561,7 +567,7 @@ button, input, select, textarea {
 
 .eyebrow {
   display: inline-block;
-  color: var(--accent-violet);
+  color: var(--primary-purple);
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -570,7 +576,7 @@ button, input, select, textarea {
 }
 
 .eyebrow.light {
-  color: var(--accent-gold-light);
+  color: var(--accent-light-blue);
 }
 
 .section-heading h2, .about-copy h2 {
@@ -627,11 +633,11 @@ button, input, select, textarea {
   position: absolute;
   top: 24px;
   right: 24px;
-  background: rgba(26, 17, 58, 0.92);
+  background: rgba(10, 25, 47, 0.92);
   color: #ffffff;
   padding: 14px 20px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
   box-shadow: var(--shadow-md);
   text-align: center;
 }
@@ -639,7 +645,7 @@ button, input, select, textarea {
 .about-exp-badge strong {
   display: block;
   font-size: 28px;
-  color: var(--accent-gold);
+  color: var(--accent-light-blue);
   line-height: 1;
 }
 
@@ -683,7 +689,7 @@ button, input, select, textarea {
 
 .lead-text {
   font-size: 16px;
-  color: #334155;
+  color: #1e293b;
   font-weight: 500;
   margin-bottom: 14px;
 }
@@ -712,8 +718,8 @@ button, input, select, textarea {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(13, 148, 136, 0.12);
-  color: var(--accent-teal);
+  background: rgba(14, 165, 233, 0.12);
+  color: var(--primary-purple);
   font-size: 12px;
   font-weight: 800;
   flex-shrink: 0;
@@ -746,8 +752,8 @@ button, input, select, textarea {
 }
 
 .stat-card {
-  background: #f8fafc;
-  border: 1px solid var(--border-light);
+  background: #f0f9ff;
+  border: 1px solid #e0f2fe;
   border-radius: var(--radius-md);
   padding: 26px 20px;
   text-align: center;
@@ -758,7 +764,7 @@ button, input, select, textarea {
   transform: translateY(-4px);
   background: #ffffff;
   box-shadow: var(--shadow-md);
-  border-color: var(--accent-violet);
+  border-color: var(--primary-purple);
 }
 
 .stat-value {
@@ -778,7 +784,7 @@ button, input, select, textarea {
 
 /* ==================== MANAGEMENT & TRUSTEES SECTION ==================== */
 .management-section {
-  background: #f1f5f9;
+  background: #f8fafc;
 }
 
 .management-grid {
@@ -801,7 +807,7 @@ button, input, select, textarea {
 .mgmt-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--accent-violet);
+  border-color: var(--primary-purple);
 }
 
 .mgmt-photo-frame {
@@ -827,8 +833,8 @@ button, input, select, textarea {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: rgba(18, 11, 41, 0.85);
-  color: var(--accent-gold);
+  background: rgba(10, 25, 47, 0.88);
+  color: var(--accent-light-blue);
   font-size: 9.5px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -856,7 +862,7 @@ button, input, select, textarea {
 .mgmt-role {
   font-size: 11px;
   font-weight: 700;
-  color: var(--accent-violet);
+  color: var(--primary-purple);
   margin-bottom: 8px;
   display: block;
 }
@@ -869,11 +875,11 @@ button, input, select, textarea {
 }
 
 .founder-card {
-  border-top: 3px solid var(--accent-gold);
+  border-top: 3px solid var(--primary-purple);
 }
 
 .highlight-trustee {
-  border-top: 3px solid var(--accent-violet);
+  border-top: 3px solid var(--accent-light-blue);
 }
 
 /* ==================== ACADEMIC PROGRAMMES SECTION ==================== */
@@ -889,27 +895,27 @@ button, input, select, textarea {
 }
 
 .filter-btn {
-  background: #f1f5f9;
-  border: 1px solid var(--border-light);
+  background: #f0f7ff;
+  border: 1px solid #cbd5e1;
   padding: 8px 18px;
   border-radius: 30px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #475569;
+  color: #0f2e5a;
   cursor: pointer;
   transition: var(--transition);
 }
 
 .filter-btn:hover {
-  background: #e2e8f0;
-  color: var(--primary-navy);
+  background: #e0f2fe;
+  color: #071326;
 }
 
 .filter-btn.active {
-  background: var(--primary-purple);
+  background: linear-gradient(135deg, #0f2e5a, #1e3a8a);
   color: #ffffff;
-  border-color: var(--primary-purple);
-  box-shadow: 0 2px 10px rgba(63, 34, 132, 0.25);
+  border-color: #0f2e5a;
+  box-shadow: 0 4px 12px rgba(15, 46, 90, 0.35);
 }
 
 .programme-grid {
@@ -932,14 +938,14 @@ button, input, select, textarea {
 .programme-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--accent-violet);
+  border-color: var(--primary-purple);
 }
 
 .prog-thumb {
   position: relative;
   height: 180px;
   overflow: hidden;
-  background: #1e1b4b;
+  background: #0f172a;
 }
 
 .prog-img {
@@ -964,7 +970,7 @@ button, input, select, textarea {
 }
 
 .prog-badge {
-  background: rgba(18, 11, 41, 0.88);
+  background: rgba(10, 25, 47, 0.88);
   color: #ffffff;
   font-size: 10px;
   font-weight: 800;
@@ -976,8 +982,8 @@ button, input, select, textarea {
 }
 
 .prog-duration-pill {
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--primary-dark);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--primary-navy);
   font-size: 10.5px;
   font-weight: 700;
   padding: 3px 9px;
@@ -994,7 +1000,7 @@ button, input, select, textarea {
 .prog-dept-title {
   font-size: 11px;
   font-weight: 700;
-  color: var(--accent-violet);
+  color: var(--primary-purple);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 4px;
@@ -1016,16 +1022,16 @@ button, input, select, textarea {
 }
 
 .prog-seats {
-  background: rgba(13, 148, 136, 0.1);
-  color: var(--accent-teal);
+  background: #eff6ff;
+  color: #1e3a8a;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 4px;
 }
 
 .prog-fee {
-  background: rgba(245, 166, 35, 0.12);
-  color: #b45309;
+  background: #f0fdf4;
+  color: #15803d;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 4px;
@@ -1047,7 +1053,7 @@ button, input, select, textarea {
 
 .prog-btn-apply {
   flex: 1;
-  background: var(--primary-purple);
+  background: linear-gradient(135deg, #0f2e5a, #1e3a8a);
   color: #ffffff;
   border: none;
   padding: 9px 12px;
@@ -1059,13 +1065,13 @@ button, input, select, textarea {
 }
 
 .prog-btn-apply:hover {
-  background: var(--accent-violet);
+  background: linear-gradient(135deg, #071326, #0f2e5a);
 }
 
 .prog-btn-info {
-  background: #f1f5f9;
-  color: #334155;
-  border: 1px solid var(--border-light);
+  background: #f0f7ff;
+  color: #0f2e5a;
+  border: 1px solid #cbd5e1;
   padding: 9px 12px;
   border-radius: var(--radius-sm);
   font-size: 12px;
@@ -1075,7 +1081,9 @@ button, input, select, textarea {
 }
 
 .prog-btn-info:hover {
-  background: #e2e8f0;
+  background: #e0f2fe;
+  color: #071326;
+}
 }
 
 /* ==================== USPS / WHY SRIDEVI ==================== */
@@ -1100,7 +1108,7 @@ button, input, select, textarea {
 
 .usp-card:hover {
   transform: translateY(-4px);
-  border-color: var(--accent-violet);
+  border-color: var(--primary-purple);
   box-shadow: var(--shadow-md);
 }
 
@@ -1129,7 +1137,7 @@ button, input, select, textarea {
 }
 
 .placement-banner {
-  background: linear-gradient(135deg, #180f38 0%, #2f1863 100%);
+  background: linear-gradient(135deg, #071326 0%, #0a1f3d 50%, #1e3a8a 100%);
   color: #ffffff;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -1150,7 +1158,7 @@ button, input, select, textarea {
 }
 
 .placement-content p {
-  color: #cbd5e1;
+  color: #e0f2fe;
   font-size: 14px;
   line-height: 1.65;
   margin-bottom: 28px;
@@ -1164,8 +1172,8 @@ button, input, select, textarea {
 }
 
 .pm-box {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 14px;
   border-radius: var(--radius-sm);
 }
@@ -1173,14 +1181,14 @@ button, input, select, textarea {
 .pm-box strong {
   display: block;
   font-size: 26px;
-  color: var(--accent-gold);
+  color: var(--accent-light-blue);
   line-height: 1.1;
   margin-bottom: 4px;
 }
 
 .pm-box span {
   font-size: 10.5px;
-  color: #cbd5e1;
+  color: #e0f2fe;
   line-height: 1.3;
   display: block;
 }
@@ -1199,7 +1207,7 @@ button, input, select, textarea {
 
 /* ==================== CAMPUS BULLETIN & NEWS ==================== */
 .news-section {
-  background: #f1f5f9;
+  background: #f0f9ff;
 }
 
 .news-layout {
@@ -1212,7 +1220,7 @@ button, input, select, textarea {
 .fest-spotlight {
   background: #ffffff;
   border: 1px solid var(--border-light);
-  border-left: 4px solid var(--accent-gold);
+  border-left: 4px solid var(--primary-purple);
   border-radius: var(--radius-md);
   padding: 24px;
   margin-top: 24px;
@@ -1220,8 +1228,8 @@ button, input, select, textarea {
 }
 
 .fest-badge {
-  background: rgba(245, 166, 35, 0.15);
-  color: #b45309;
+  background: #eff6ff;
+  color: #1e3a8a;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -1261,7 +1269,7 @@ button, input, select, textarea {
 
 .notice-item:hover {
   transform: translateX(4px);
-  border-color: var(--accent-violet);
+  border-color: var(--primary-purple);
   box-shadow: var(--shadow-md);
 }
 
@@ -1272,9 +1280,9 @@ button, input, select, textarea {
   justify-content: center;
   width: 54px;
   height: 54px;
-  background: rgba(63, 34, 132, 0.08);
+  background: #eff6ff;
   border-radius: var(--radius-sm);
-  color: var(--primary-purple);
+  color: #1e3a8a;
   flex-shrink: 0;
 }
 
@@ -1302,7 +1310,7 @@ button, input, select, textarea {
 }
 
 .notice-item:hover .notice-title {
-  color: var(--accent-violet);
+  color: var(--primary-purple);
 }
 
 /* ==================== CAMPUS PHOTO MOSAIC ==================== */
@@ -1330,7 +1338,7 @@ button, input, select, textarea {
   border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  background: #1e1b4b;
+  background: #0f172a;
   padding: 0;
   transition: flex 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1352,7 +1360,7 @@ button, input, select, textarea {
   left: 0;
   right: 0;
   padding: 12px 14px;
-  background: linear-gradient(0deg, rgba(18, 11, 41, 0.88), transparent);
+  background: linear-gradient(0deg, rgba(10, 25, 47, 0.88), transparent);
   color: #ffffff;
   font-size: 12px;
   font-weight: 600;
@@ -1439,8 +1447,8 @@ button, input, select, textarea {
 }
 
 .contact-cta-box {
-  background: #f1f5f9;
-  border: 1px dashed var(--accent-violet);
+  background: #f0f9ff;
+  border: 1px dashed var(--primary-purple);
   border-radius: var(--radius-sm);
   padding: 20px;
   text-align: center;
@@ -1515,7 +1523,7 @@ button, input, select, textarea {
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
 }
 
 .form-row {
@@ -1602,7 +1610,7 @@ button, input, select, textarea {
 }
 
 .footer-social-links a:hover {
-  background: var(--accent-violet);
+  background: var(--primary-purple);
 }
 
 .footer-col h3 {
@@ -1627,7 +1635,7 @@ button, input, select, textarea {
 }
 
 .footer-col ul li a:hover {
-  color: var(--accent-gold);
+  color: var(--accent-light-blue);
 }
 
 .footer-bottom {
@@ -1658,7 +1666,7 @@ button, input, select, textarea {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(18, 11, 41, 0.78);
+  background: rgba(10, 25, 47, 0.8);
   backdrop-filter: blur(8px);
   z-index: 100;
   display: flex;
@@ -1725,7 +1733,7 @@ button, input, select, textarea {
 /* Lightbox Preview */
 #siteLightboxModal .site-modal-card {
   max-width: 800px;
-  background: #0f0a20;
+  background: #0a192f;
   color: #ffffff;
 }
 
@@ -1756,8 +1764,8 @@ button, input, select, textarea {
 }
 
 .course-modal-badge {
-  background: rgba(63, 34, 132, 0.12);
-  color: var(--primary-purple);
+  background: #eff6ff;
+  color: #1e3a8a;
   font-size: 10px;
   font-weight: 800;
   padding: 4px 8px;
@@ -1772,7 +1780,7 @@ button, input, select, textarea {
 }
 
 .course-modal-header p {
-  color: var(--accent-violet);
+  color: var(--primary-purple);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 18px;
@@ -1786,13 +1794,13 @@ button, input, select, textarea {
 }
 
 .meta-pill {
-  background: #f1f5f9;
-  border: 1px solid var(--border-light);
+  background: #f0f7ff;
+  border: 1px solid #cbd5e1;
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  color: #334155;
+  color: #0f2e5a;
 }
 
 .course-modal-body h4 {
@@ -1808,8 +1816,8 @@ button, input, select, textarea {
 }
 
 .course-highlights-box {
-  background: #f8fafc;
-  border: 1px solid var(--border-light);
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
   border-radius: var(--radius-sm);
   padding: 16px 20px;
   margin-top: 18px;
@@ -1865,7 +1873,7 @@ button, input, select, textarea {
 
 .header-logo-badge p {
   font-size: 12px;
-  color: var(--accent-violet);
+  color: var(--primary-purple);
   font-weight: 600;
 }
 
@@ -1877,7 +1885,7 @@ button, input, select, textarea {
   letter-spacing: 0.06em;
   margin: 18px 0 10px;
   padding-bottom: 4px;
-  border-bottom: 2px solid rgba(63, 34, 132, 0.1);
+  border-bottom: 2px solid #e0f2fe;
 }
 
 .admission-form {
@@ -1893,15 +1901,15 @@ button, input, select, textarea {
   margin-top: 10px;
   font-size: 12px;
   color: #334155;
-  background: #f8fafc;
-  border: 1px solid var(--border-light);
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
   padding: 10px 14px;
   border-radius: var(--radius-sm);
 }
 
 .form-checkbox-group input {
   margin-top: 2px;
-  accent-color: var(--accent-violet);
+  accent-color: var(--primary-purple);
 }
 
 .app-submit-area {

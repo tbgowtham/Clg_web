@@ -1,19 +1,23 @@
 :root {
-  --navy: #17113b;
-  --purple: #432786;
-  --purple-hover: #573699;
-  --violet: #7553d6;
-  --cyan: #c9f2f0;
-  --gold: #f5c96a;
-  --gold-hover: #ffd988;
-  --paper: #f7f8fc;
+  --navy: #071326;
+  --purple: #0f2e5a;
+  --purple-hover: #071326;
+  --blue: #0f2e5a;
+  --blue-hover: #071326;
+  --dark-blue: #0f2e5a;
+  --royal-blue: #1e3a8a;
+  --violet: #1e3a8a;
+  --cyan: #eff6ff;
+  --gold: #f59e0b;
+  --gold-hover: #fbbf24;
+  --paper: #f8fafc;
   --paper-card: #ffffff;
-  --paper-alt: #eeeff8;
-  --ink: #22213a;
-  --muted: #68677c;
-  --line: #e5e5ef;
-  --shadow-card: 0 7px 22px rgba(33, 25, 81, 0.05);
-  --shadow-hover: 0 14px 34px rgba(33, 25, 81, 0.1);
+  --paper-alt: #f0f7ff;
+  --ink: #0f172a;
+  --muted: #475569;
+  --line: #e2e8f0;
+  --shadow-card: 0 7px 22px rgba(15, 46, 90, 0.08);
+  --shadow-hover: 0 14px 34px rgba(15, 46, 90, 0.16);
   --green: #10b981;
   --red: #e11d48;
 }
@@ -40,7 +44,7 @@ body {
   align-items: center;
   gap: 20px;
   padding: 9px 24px;
-  color: #d6cff3;
+  color: #bfdbfe;
   background: var(--navy);
   font-size: 11px;
   letter-spacing: 0.05em;
@@ -186,7 +190,7 @@ body {
   background: var(--purple);
   color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(67, 39, 134, 0.2);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 
 .nav-tab .badge {
@@ -296,13 +300,13 @@ body {
 .btn-primary {
   background: var(--purple);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(67, 39, 134, 0.25);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
 }
 
 .btn-primary:hover {
   background: var(--purple-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(67, 39, 134, 0.35);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
 }
 
 .btn-secondary {
@@ -475,7 +479,7 @@ body {
 }
 
 .mini-upload-zone {
-  border: 2px dashed rgba(67, 39, 134, 0.3);
+  border: 2px dashed rgba(2, 132, 199, 0.3);
   border-radius: 4px;
   padding: 28px 16px;
   text-align: center;
@@ -495,7 +499,7 @@ body {
 
 .mini-upload-zone:hover, .mini-upload-zone.dragover {
   border-color: var(--purple);
-  background: #e6e5f5;
+  background: #e0f2fe;
   color: var(--purple);
 }
 
@@ -513,7 +517,7 @@ body {
 .quick-form input:focus {
   outline: none;
   border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(67, 39, 134, 0.1);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 /* Gallery Strip */
@@ -529,7 +533,7 @@ body {
   border-radius: 4px;
   overflow: hidden;
   position: relative;
-  background: #25203e;
+  background: #0f2e5a;
   cursor: pointer;
   border: 1px solid var(--line);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -537,7 +541,7 @@ body {
 
 .mini-thumb:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(23, 17, 59, 0.16);
+  box-shadow: 0 8px 18px rgba(15, 46, 90, 0.16);
 }
 
 .mini-thumb img {
@@ -551,7 +555,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgba(15, 11, 36, 0.85));
+  background: linear-gradient(transparent, rgba(10, 25, 47, 0.85));
   font-size: 10px;
   padding: 4px 6px;
   color: #fff;
@@ -568,7 +572,7 @@ body {
 }
 
 .upload-dropzone {
-  border: 2px dashed rgba(67, 39, 134, 0.35);
+  border: 2px dashed rgba(2, 132, 199, 0.35);
   border-radius: 4px;
   padding: 38px 24px;
   text-align: center;
@@ -580,7 +584,7 @@ body {
 
 .upload-dropzone:hover, .upload-dropzone.dragover {
   border-color: var(--purple);
-  background: #e7e6f6;
+  background: #e0f2fe;
 }
 
 .file-input-hidden {
@@ -660,7 +664,7 @@ body {
 .preview-details input:focus {
   outline: none;
   border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(67, 39, 134, 0.1);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 .preview-actions {
@@ -692,8 +696,8 @@ body {
 
 .photo-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(23, 17, 59, 0.1);
-  border-color: #d1d0e5;
+  box-shadow: 0 10px 24px rgba(15, 46, 90, 0.1);
+  border-color: #bae6fd;
 }
 
 .photo-card-img-wrap {
@@ -701,7 +705,7 @@ body {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  background: #25203e;
+  background: #0f2e5a;
 }
 
 .photo-card-img-wrap img {
@@ -788,7 +792,7 @@ body {
   width: 100%;
   padding: 10px 14px;
   background: #ffffff;
-  border: 1px solid #d4d4e4;
+  border: 1px solid #cbd5e1;
   border-radius: 4px;
   color: var(--ink);
   font-family: inherit;
@@ -801,7 +805,7 @@ body {
 .standard-form select:focus {
   outline: none;
   border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(67, 39, 134, 0.12);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 .form-row {
@@ -844,7 +848,7 @@ body {
 }
 
 .notice-item:hover {
-  box-shadow: 0 4px 14px rgba(33, 25, 81, 0.06);
+  box-shadow: 0 4px 14px rgba(15, 46, 90, 0.06);
 }
 
 .notice-date-badge {
@@ -902,7 +906,7 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 14px;
-  box-shadow: 0 4px 14px rgba(33, 25, 81, 0.04);
+  box-shadow: 0 4px 14px rgba(15, 46, 90, 0.04);
 }
 
 .prog-info h4 {
@@ -979,7 +983,7 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #d6cff3;
+  color: #bfdbfe;
 }
 
 .preview-info .pulse-dot {
@@ -1010,7 +1014,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(23, 17, 59, 0.85);
+  background: rgba(10, 25, 47, 0.85);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -1027,14 +1031,14 @@ body {
   width: 100%;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 20px 60px rgba(23, 17, 59, 0.3);
+  box-shadow: 0 20px 60px rgba(10, 25, 47, 0.3);
 }
 
 .modal-close {
   position: absolute;
   top: 14px;
   right: 16px;
-  background: rgba(23, 17, 59, 0.7);
+  background: rgba(10, 25, 47, 0.7);
   color: #fff;
   border: 0;
   width: 32px;
@@ -1099,7 +1103,7 @@ body {
   border-radius: 4px;
   color: #fff;
   font-size: 13px;
-  box-shadow: 0 10px 25px rgba(23, 17, 59, 0.25);
+  box-shadow: 0 10px 25px rgba(10, 25, 47, 0.25);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1186,7 +1190,7 @@ body {
 }
 
 .admin-table tr:hover td {
-  background: rgba(117, 83, 214, 0.04);
+  background: rgba(2, 132, 199, 0.05);
 }
 
 .badge-pill {
@@ -1207,9 +1211,9 @@ body {
   color: #92400e;
 }
 
-.badge-pill.purple {
-  background: #ede9fe;
-  color: #5b21b6;
+.badge-pill.purple, .badge-pill.blue {
+  background: #eff6ff;
+  color: #1e3a8a;
 }
 
 .btn-action-icon {
