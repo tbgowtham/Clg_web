@@ -151,25 +151,27 @@
             <p id="pageSubtitle">Manage and publish real-time content for Sri Devi Arts &amp; Science College</p>
           </div>
           <div class="topbar-actions">
-            <!-- Dynamic Role Scope Switcher (Visible to primary administrator doomsday for testing) -->
-            <div class="scope-switcher-wrap" id="scopeSwitcherWrap" style="display: none;">
-              <span class="scope-switcher-label">View As:</span>
-              <select id="selectRoleScope" class="select-role-scope" title="Simulate role views">
-                <option value="Admin">Admin (Users Only)</option>
-                <option value="Sub-Admin">Sub-Admin (Admissions Only)</option>
-                <option value="Content Editor">Content Editor (Content Only)</option>
-                <option value="Super Admin">Super Admin (All Access)</option>
-              </select>
-            </div>
-
-            <div class="user-session-chip" id="userSessionChip">
-              <div class="user-avatar" id="userAvatarInitial">D</div>
-              <div class="user-meta">
-                <div class="user-name-line">
-                  <strong id="sessionUserName">doomsday</strong>
-                  <span class="user-scope-chip" id="sessionScopeChip">User Management Only</span>
+            <div class="user-session-group">
+              <div class="user-session-chip" id="userSessionChip">
+                <div class="user-avatar" id="userAvatarInitial">D</div>
+                <div class="user-meta">
+                  <div class="user-name-line">
+                    <strong id="sessionUserName">doomsday</strong>
+                    <span class="user-scope-chip" id="sessionScopeChip">User Management Only</span>
+                  </div>
+                  <span id="sessionUserRole">Admin</span>
                 </div>
-                <span id="sessionUserRole">Admin</span>
+              </div>
+
+              <!-- Dynamic Role Scope Switcher (Visible to primary administrator doomsday for testing) -->
+              <div class="scope-switcher-wrap" id="scopeSwitcherWrap" style="display: none;">
+                <span class="scope-switcher-label">View As:</span>
+                <select id="selectRoleScope" class="select-role-scope" title="Simulate role views">
+                  <option value="Admin">Admin (Users Only)</option>
+                  <option value="Sub-Admin">Sub-Admin (Admissions Only)</option>
+                  <option value="Content Editor">Content Editor (Content Only)</option>
+                  <option value="Super Admin">Super Admin (All Access)</option>
+                </select>
               </div>
             </div>
             <button id="btnSyncMongo" class="btn-secondary" title="Refresh data">
@@ -617,10 +619,16 @@
                   <h3>Admin &amp; Sub-Admin Accounts (<span id="userCountLabel">1</span>)</h3>
                   <p>Create and control portal login access for faculty, admission officers, and sub-administrators.</p>
                 </div>
-                <button type="button" id="btnOpenCreateUserModal" class="btn-primary text-xs">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  <span>+ Create Sub-Admin</span>
-                </button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" id="btnOpenSmsSettings" class="btn-secondary text-xs" style="display: none;" title="Configure Fast2SMS Gateway for live mobile OTP">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    <span>SMS Gateway</span>
+                  </button>
+                  <button type="button" id="btnOpenCreateUserModal" class="btn-primary text-xs">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>+ Create Sub-Admin</span>
+                  </button>
+                </div>
               </div>
               <div class="table-responsive">
                 <table class="admin-table">
@@ -730,6 +738,147 @@
           <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
             <button type="button" class="btn-secondary text-xs" id="btnCancelCreateUser">Cancel</button>
             <button type="submit" class="btn-primary text-xs" id="btnSubmitCreateUser">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Edit User Account / Rename ID / Reset Password -->
+    <div class="modal-overlay hidden" id="modalEditUser">
+      <div class="modal-card" style="max-width: 480px; padding: 28px;">
+        <button class="modal-close" id="btnCloseEditUserModal">&times;</button>
+        <div class="modal-header-custom" style="margin-bottom: 20px;">
+          <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--navy);">Edit User Credentials &amp; ID</h3>
+          <p style="font-size: 13px; color: var(--muted); margin: 0;">Rename User ID or change password for any account (Super Admin privilege).</p>
+        </div>
+        <form id="formEditUser" class="modal-form-custom">
+          <input type="hidden" id="editOrigUsername" />
+          <div id="editUserError" class="login-error-alert" style="display: none; margin-bottom: 14px;"></div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="editUsername" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">User ID / Username <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="editUsername" class="form-control" placeholder="Enter new user ID" required pattern="[a-zA-Z0-9_.-]{3,30}" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+            <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Alphanumeric, 3–30 characters. Renaming changes the account login ID immediately.</small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="editFullName" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Full Name / Designation <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="editFullName" class="form-control" placeholder="e.g. Staff Full Name" required style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="editRole" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Assigned Department &amp; Role</label>
+            <select id="editRole" class="form-control" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+              <option value="Sub-Admin">Sub-Admin — Admissions &amp; Enquiries Only</option>
+              <option value="Content Editor">Content Editor — Website Content, Gallery &amp; Notices Only</option>
+              <option value="Admin">Administrator — User Accounts &amp; Access Management Only</option>
+              <option value="Super Admin">Super Administrator — Full System Access (All Modules)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="editPassword" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">
+              New Password 
+              <span style="color: var(--muted); font-weight: 400;">(Leave empty to keep existing password)</span>
+            </label>
+            <input type="password" id="editPassword" class="form-control" placeholder="Enter new password to change..." minlength="4" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+            <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Only the Super Admin can recreate passwords using Mobile OTP verification.</small>
+          </div>
+
+          <!-- Mobile OTP Verification Section (Revealed when New Password is entered) -->
+          <div id="editOtpSection" class="otp-verification-panel" style="display: none; margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <strong style="font-size: 12.5px; color: #0f2e5a;">Super Admin Mobile OTP Authorization</strong>
+            </div>
+            <p style="font-size: 11.5px; color: #64748b; margin: 0 0 10px 0; line-height: 1.4;">
+              To change or recreate this password, dispatch a 6-digit OTP to your registered mobile phone number.
+            </p>
+
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label for="editPhone" style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155;">Mobile Number</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="tel" id="editPhone" class="form-control" placeholder="10-digit mobile number (e.g. 9876543210)" pattern="[0-9]{10}" style="flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;" />
+                <button type="button" id="btnSendEditOtp" class="btn-primary text-xs" style="white-space: nowrap; padding: 8px 14px;">
+                  <span>Send OTP</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" id="otpCodeWrap" style="margin-bottom: 6px; display: none;">
+              <label for="editOtpCode" style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155;">Enter 6-Digit OTP Code <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="editOtpCode" class="form-control" placeholder="• • • • • •" maxlength="6" pattern="[0-9]{6}" style="width: 160px; padding: 8px 12px; border: 1.5px solid #0284c7; border-radius: 6px; font-size: 16px; font-weight: 700; letter-spacing: 4px; text-align: center;" />
+              <div id="otpStatusNotice" style="font-size: 11px; color: #0284c7; margin-top: 5px;"></div>
+            </div>
+          </div>
+
+          <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn-secondary text-xs" id="btnCancelEditUser">Cancel</button>
+            <button type="submit" class="btn-primary text-xs" id="btnSubmitEditUser">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Fast2SMS Gateway Configuration (Super Admin Only) -->
+    <div class="modal-overlay hidden" id="modalSmsSettings">
+      <div class="modal-card" style="max-width: 500px; padding: 28px;">
+        <button class="modal-close" id="btnCloseSmsSettingsModal">&times;</button>
+        <div class="modal-header-custom" style="margin-bottom: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="background: #e0f2fe; padding: 6px 8px; border-radius: 8px; color: #0284c7; display: flex; align-items: center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
+            <div>
+              <h3 style="font-size: 18px; margin: 0; color: var(--navy);">Fast2SMS Gateway Settings</h3>
+              <p style="font-size: 12.5px; color: var(--muted); margin: 2px 0 0 0;">Deliver real OTP messages directly to physical mobile phones.</p>
+            </div>
+          </div>
+        </div>
+
+        <form id="formSmsSettings" class="modal-form-custom">
+          <div id="smsSettingsAlert" class="login-error-alert" style="display: none; margin-bottom: 14px;"></div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #475569;">Selected Provider</label>
+            <div style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-weight: 600; color: #0f172a; display: flex; align-items: center; justify-content: space-between;">
+              <span>Fast2SMS &bull; Quick OTP Route (India)</span>
+              <span style="font-size: 11px; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 700;">● Active</span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="inputSmsApiKey" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">
+              Fast2SMS API Key <span style="color: #ef4444;">*</span>
+            </label>
+            <div style="position: relative;">
+              <input type="password" id="inputSmsApiKey" class="form-control" placeholder="Paste your Fast2SMS API key here..." style="width: 100%; padding: 9px 40px 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: monospace;" />
+              <button type="button" id="btnToggleApiKeyVisibility" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;" title="Show/Hide Key">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+            <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 4px;">
+              Get your API key at <a href="https://www.fast2sms.com" target="_blank" style="color: #0284c7; text-decoration: underline; font-weight: 600;">fast2sms.com</a> (Free signup includes trial credits for live SMS).
+            </small>
+          </div>
+
+          <!-- Test Real SMS Section -->
+          <div style="margin-bottom: 20px; padding: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #166534; margin-bottom: 6px;">
+              Test Live SMS Delivery to Your Mobile
+            </label>
+            <div style="display: flex; gap: 8px;">
+              <input type="tel" id="inputTestSmsPhone" placeholder="Enter 10-digit mobile" maxlength="10" style="flex: 1; padding: 7px 10px; border: 1px solid #86efac; border-radius: 6px; font-size: 12.5px;" />
+              <button type="button" id="btnSendTestSms" class="btn-secondary text-xs" style="background: #15803d; color: #ffffff; border: none; white-space: nowrap; padding: 7px 14px; font-weight: 700;">
+                Send Test SMS
+              </button>
+            </div>
+            <div id="testSmsStatus" style="font-size: 11.5px; margin-top: 6px; display: none;"></div>
+          </div>
+
+          <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn-secondary text-xs" id="btnCancelSmsSettings">Cancel</button>
+            <button type="submit" class="btn-primary text-xs" id="btnSaveSmsSettings">Save Configuration</button>
           </div>
         </form>
       </div>

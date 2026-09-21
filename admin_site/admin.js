@@ -7,6 +7,9 @@
   // Authentication State
   let authToken = sessionStorage.getItem("sdasc_admin_token") || localStorage.getItem("sdasc_admin_token") || "";
   let currentUser = null;
+  let applicationsList = [];
+  let enquiriesList = [];
+  let usersList = [];
 
   const API_BASE = ""; // Relative to origin
 
@@ -49,21 +52,35 @@
 
     const isAuthenticated = await checkAuthStatus();
     if (isAuthenticated) {
-      await checkDbHealth();
-      const tabs = currentUser?.allowed_tabs || [];
-      if (tabs.includes("content") || tabs.includes("gallery") || tabs.includes("notices") || tabs.includes("programmes") || tabs.includes("stats") || tabs.includes("dashboard")) {
-        await loadContent();
-      }
-      if (tabs.includes("applications")) {
-        await loadApplications();
-      }
-      if (tabs.includes("enquiries")) {
-        await loadEnquiries();
-      }
-      if (tabs.includes("users")) {
-        await loadUsers();
-      }
+      await loadInitialData();
     }
+  }
+
+  async function loadInitialData() {
+    try {
+      await checkDbHealth();
+    } catch (e) {
+      console.warn("DB health check error:", e);
+    }
+
+    const tabs = currentUser?.allowed_tabs || [];
+    const promises = [];
+
+    if (tabs.includes("content") || tabs.includes("gallery") || tabs.includes("notices") || tabs.includes("programmes") || tabs.includes("stats") || tabs.includes("dashboard")) {
+      promises.push(loadContent().catch(err => console.warn("Content load error:", err)));
+    }
+    if (tabs.includes("applications") || tabs.includes("dashboard")) {
+      promises.push(loadApplications().catch(err => console.warn("Applications load error:", err)));
+    }
+    if (tabs.includes("enquiries") || tabs.includes("dashboard")) {
+      promises.push(loadEnquiries().catch(err => console.warn("Enquiries load error:", err)));
+    }
+    if (tabs.includes("users")) {
+      promises.push(loadUsers().catch(err => console.warn("Users load error:", err)));
+    }
+
+    await Promise.allSettled(promises);
+    renderDashboard();
   }
 
   // ================= ROLE-BASED ACCESS CONTROL (RBAC) =================
@@ -92,6 +109,12 @@
     const btnReset = document.getElementById("btnResetDefaults");
     if (btnReset) {
       btnReset.style.display = (user.is_primary_admin || user.role === "Super Admin") ? "inline-flex" : "none";
+    }
+
+    // SMS Gateway settings button (Super Admin only)
+    const btnSmsSettings = document.getElementById("btnOpenSmsSettings");
+    if (btnSmsSettings) {
+      btnSmsSettings.style.display = (user.is_primary_admin || user.role === "Super Admin") ? "inline-flex" : "none";
     }
 
     // Role scope switcher (only for primary admin doomsday)
@@ -221,6 +244,10 @@
       btnSave.style.display = (tabName === "content") ? "inline-flex" : "none";
     }
 
+    if (tabName === "dashboard") {
+      if (siteContent) renderDashboard();
+      else loadContent();
+    }
     if (tabName === "applications") loadApplications();
     if (tabName === "enquiries") loadEnquiries();
     if (tabName === "users") loadUsers();
@@ -233,23 +260,24 @@
 
   // ================= HEALTH & CONTENT API =================
   async function checkDbHealth() {
+    const dashDb = document.getElementById("dashDbStatus");
     try {
       const res = await fetch("/api/health");
       if (!res.ok) throw new Error("Health check failed");
       const data = await res.json();
       if (data.mongodb_connected) {
-        dbStatusBadge.className = "db-status-chip";
-        dbStatusText.textContent = "MongoDB Connected";
-        document.getElementById("dashDbStatus").textContent = "Active";
+        if (dbStatusBadge) dbStatusBadge.className = "db-status-chip";
+        if (dbStatusText) dbStatusText.textContent = "MongoDB Connected";
+        if (dashDb) dashDb.textContent = "Active";
       } else {
-        dbStatusBadge.className = "db-status-chip offline";
-        dbStatusText.textContent = "MongoDB Offline (JSON Mode)";
-        document.getElementById("dashDbStatus").textContent = "JSON Fallback";
+        if (dbStatusBadge) dbStatusBadge.className = "db-status-chip offline";
+        if (dbStatusText) dbStatusText.textContent = "MongoDB Offline (JSON Mode)";
+        if (dashDb) dashDb.textContent = "JSON Fallback";
       }
     } catch (err) {
-      dbStatusBadge.className = "db-status-chip offline";
-      dbStatusText.textContent = "Server Offline (Local)";
-      document.getElementById("dashDbStatus").textContent = "Offline";
+      if (dbStatusBadge) dbStatusBadge.className = "db-status-chip offline";
+      if (dbStatusText) dbStatusText.textContent = "Server Offline (Local)";
+      if (dashDb) dashDb.textContent = "Offline";
     }
   }
 
@@ -279,30 +307,51 @@
 
   // ================= RENDER METHODS =================
   function renderDashboard() {
+    if (!siteContent) return;
     const photos = siteContent.photos || [];
     const notices = siteContent.notices || [];
     const progs = siteContent.programmes || [];
 
-    document.getElementById("dashTotalPhotos").textContent = photos.length;
-    document.getElementById("dashTotalNotices").textContent = notices.length;
-    document.getElementById("dashTotalProgrammes").textContent = progs.length;
+    const elPhotos = document.getElementById("dashTotalPhotos");
+    const elNotices = document.getElementById("dashTotalNotices");
+    const elProgs = document.getElementById("dashTotalProgrammes");
+    const elApps = document.getElementById("dashTotalApps");
+    const elEnqs = document.getElementById("dashTotalEnquiries");
 
-    document.getElementById("badgePhotoCount").textContent = photos.length;
-    document.getElementById("badgeNoticeCount").textContent = notices.length;
-    document.getElementById("badgeProgCount").textContent = progs.length;
+    if (elPhotos) elPhotos.textContent = photos.length;
+    if (elNotices) elNotices.textContent = notices.length;
+    if (elProgs) elProgs.textContent = progs.length;
+    if (elApps) elApps.textContent = applicationsList ? applicationsList.length : 0;
+    if (elEnqs) elEnqs.textContent = enquiriesList ? enquiriesList.length : 0;
+
+    const bPhotos = document.getElementById("badgePhotoCount");
+    const bNotices = document.getElementById("badgeNoticeCount");
+    const bProgs = document.getElementById("badgeProgCount");
+    const bApps = document.getElementById("badgeAppCount");
+    const bEnqs = document.getElementById("badgeEnqCount");
+    const bUsers = document.getElementById("badgeUserCount");
+
+    if (bPhotos) bPhotos.textContent = photos.length;
+    if (bNotices) bNotices.textContent = notices.length;
+    if (bProgs) bProgs.textContent = progs.length;
+    if (bApps && applicationsList) bApps.textContent = applicationsList.length;
+    if (bEnqs && enquiriesList) bEnqs.textContent = enquiriesList.length;
+    if (bUsers && usersList) bUsers.textContent = usersList.length;
 
     // Mini Gallery Strip
     const strip = document.getElementById("dashGalleryStrip");
-    strip.innerHTML = photos
-      .slice(0, 6)
-      .map(
-        (p) => `
-        <div class="mini-thumb" onclick="openPhotoModal('${p.id}')">
-          <img src="/${p.src.replace(/^\//, '')}" alt="${escapeHtml(p.label)}" loading="lazy" />
-          <span>${escapeHtml(p.label)}</span>
-        </div>`,
-      )
-      .join("");
+    if (strip) {
+      strip.innerHTML = photos
+        .slice(0, 6)
+        .map(
+          (p) => `
+          <div class="mini-thumb" onclick="openPhotoModal('${p.id}')">
+            <img src="/${p.src.replace(/^\//, '')}" alt="${escapeHtml(p.label)}" loading="lazy" />
+            <span>${escapeHtml(p.label)}</span>
+          </div>`,
+        )
+        .join("");
+    }
   }
 
   function renderGallery() {
@@ -672,8 +721,7 @@
   };
 
   // ================= ONLINE ADMISSION APPLICATIONS =================
-  let applicationsList = [];
-  let enquiriesList = [];
+
 
   async function loadApplications() {
     const tbody = document.getElementById("applicationsTableBody");
@@ -1148,21 +1196,7 @@
             hideLoginScreen();
             showToast(`Welcome back, ${currentUser.name}!`, "success");
 
-            // Initialize/refresh CMS data based on role permissions
-            await checkDbHealth();
-            const tabs = currentUser.allowed_tabs || [];
-            if (tabs.includes("content") || tabs.includes("gallery") || tabs.includes("notices") || tabs.includes("programmes") || tabs.includes("stats") || tabs.includes("dashboard")) {
-              await loadContent();
-            }
-            if (tabs.includes("applications")) {
-              await loadApplications();
-            }
-            if (tabs.includes("enquiries")) {
-              await loadEnquiries();
-            }
-            if (tabs.includes("users")) {
-              await loadUsers();
-            }
+            await loadInitialData();
           } else {
             if (loginError) {
               loginError.textContent = data.error || "Invalid username or password.";
@@ -1202,7 +1236,7 @@
   }
 
   // ================= USER & SUB-ADMIN MANAGEMENT =================
-  let usersList = [];
+
 
   async function loadUsers() {
     if (!authToken) return;
@@ -1231,18 +1265,35 @@
       return;
     }
 
+    const isSuperAdmin = Boolean(currentUser && (currentUser.is_primary_admin || currentUser.role === "Super Admin"));
+
     tbody.innerHTML = users
       .map((u) => {
         const isPrimary = u.is_primary_admin || u.username === "doomsday";
+        const isSelf = Boolean(currentUser && currentUser.username && (currentUser.username.toLowerCase() === u.username.toLowerCase()));
         const roleClass = u.role === "Admin" ? "admin" : (u.role === "Content Editor" ? "editor" : (u.role === "Super Admin" ? "super-admin" : "sub-admin"));
         const jobDesc = u.assigned_job || (u.role === "Admin" ? "User Accounts & Security Only" : (u.role === "Content Editor" ? "Website Content & Media Only" : "Admissions & Enquiries Only"));
         const dateStr = u.created_at ? new Date(u.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "Active";
         
+        let actionsHtml = "";
+        if (isSuperAdmin) {
+          const editBtn = `<button type="button" class="btn-edit-user" data-username="${escapeHtml(u.username)}" title="Rename User ID or change password">✏ Edit</button>`;
+          const delBtn = (!isPrimary && !isSelf)
+            ? `<button type="button" class="btn-del-user" data-username="${escapeHtml(u.username)}" title="Delete user">Delete</button>`
+            : "";
+          actionsHtml = `<div class="user-actions-cell">${editBtn}${delBtn}</div>`;
+        } else {
+          actionsHtml = isPrimary
+            ? `<span style="color: var(--muted); font-size: 11.5px; font-style: italic;">Protected</span>`
+            : `<button type="button" class="btn-del-user" data-username="${escapeHtml(u.username)}" title="Delete user">Delete</button>`;
+        }
+
         return `
           <tr>
             <td>
               <strong style="color: var(--navy); font-size: 13.5px;">${escapeHtml(u.username)}</strong>
               ${isPrimary ? `<span style="font-size: 10px; color: #b45309; margin-left: 6px; font-weight: 700;">★ Super Admin</span>` : ""}
+              ${isSelf ? `<span style="font-size: 10px; color: #0284c7; margin-left: 4px; font-weight: 600;">(You)</span>` : ""}
             </td>
             <td style="color: #334155; font-weight: 500;">${escapeHtml(u.name || u.username)}</td>
             <td>
@@ -1256,16 +1307,19 @@
               </span>
             </td>
             <td>
-              ${
-                isPrimary
-                  ? `<span style="color: var(--muted); font-size: 11.5px; font-style: italic;">Protected</span>`
-                  : `<button type="button" class="btn-del-user" data-username="${escapeHtml(u.username)}" title="Delete user">Delete</button>`
-              }
+              ${actionsHtml}
             </td>
           </tr>
         `;
       })
       .join("");
+
+    tbody.querySelectorAll(".btn-edit-user").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const uname = btn.getAttribute("data-username");
+        if (uname) openEditUserModal(uname);
+      });
+    });
 
     tbody.querySelectorAll(".btn-del-user").forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -1276,6 +1330,47 @@
         }
       });
     });
+  }
+
+  let otpCooldownTimer = null;
+
+  function openEditUserModal(username) {
+    const modal = document.getElementById("modalEditUser");
+    const origInput = document.getElementById("editOrigUsername");
+    const uInput = document.getElementById("editUsername");
+    const nameInput = document.getElementById("editFullName");
+    const roleSelect = document.getElementById("editRole");
+    const pwInput = document.getElementById("editPassword");
+    const errBox = document.getElementById("editUserError");
+    const otpSection = document.getElementById("editOtpSection");
+    const otpCodeWrap = document.getElementById("otpCodeWrap");
+    const phoneInput = document.getElementById("editPhone");
+    const otpInput = document.getElementById("editOtpCode");
+    const otpStatusNotice = document.getElementById("otpStatusNotice");
+    const btnSendOtp = document.getElementById("btnSendEditOtp");
+
+    if (!modal) return;
+    if (errBox) errBox.style.display = "none";
+    if (otpSection) otpSection.style.display = "none";
+    if (otpCodeWrap) otpCodeWrap.style.display = "none";
+    if (otpStatusNotice) otpStatusNotice.textContent = "";
+    if (otpInput) otpInput.value = "";
+    clearInterval(otpCooldownTimer);
+    if (btnSendOtp) {
+      btnSendOtp.disabled = false;
+      btnSendOtp.textContent = "Send OTP";
+    }
+
+    const user = usersList.find((u) => u.username && u.username.toLowerCase() === username.toLowerCase());
+    if (origInput) origInput.value = username;
+    if (uInput) uInput.value = user ? user.username : username;
+    if (nameInput) nameInput.value = user ? (user.name || user.username) : username;
+    if (roleSelect) roleSelect.value = user ? (user.role || "Sub-Admin") : "Sub-Admin";
+    if (pwInput) pwInput.value = "";
+    if (phoneInput) phoneInput.value = user?.phone || "9876543210";
+
+    modal.classList.remove("hidden");
+    if (uInput) setTimeout(() => uInput.focus(), 150);
   }
 
   async function deleteUser(username) {
@@ -1374,6 +1469,402 @@
         }
       });
     }
+
+    // Modal & Form: Edit User / Rename ID / Reset Password with Mobile OTP
+    const editModal = document.getElementById("modalEditUser");
+    const closeEditBtn = document.getElementById("btnCloseEditUserModal");
+    const cancelEditBtn = document.getElementById("btnCancelEditUser");
+    const editForm = document.getElementById("formEditUser");
+    const editErrBox = document.getElementById("editUserError");
+    const pwInput = document.getElementById("editPassword");
+    const otpSection = document.getElementById("editOtpSection");
+    const otpCodeWrap = document.getElementById("otpCodeWrap");
+    const btnSendOtp = document.getElementById("btnSendEditOtp");
+    const phoneInput = document.getElementById("editPhone");
+    const otpInput = document.getElementById("editOtpCode");
+    const otpStatusNotice = document.getElementById("otpStatusNotice");
+
+    function closeEditModal() {
+      if (editModal) editModal.classList.add("hidden");
+      if (editForm) editForm.reset();
+      if (editErrBox) editErrBox.style.display = "none";
+      if (otpSection) otpSection.style.display = "none";
+      if (otpCodeWrap) otpCodeWrap.style.display = "none";
+      clearInterval(otpCooldownTimer);
+    }
+
+    if (closeEditBtn) closeEditBtn.addEventListener("click", closeEditModal);
+    if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEditModal);
+    if (editModal) {
+      editModal.addEventListener("click", (e) => {
+        if (e.target === editModal) closeEditModal();
+      });
+    }
+
+    // Reveal OTP section dynamically when typing in New Password
+    if (pwInput && otpSection) {
+      pwInput.addEventListener("input", () => {
+        const hasPw = Boolean(pwInput.value.trim());
+        otpSection.style.display = hasPw ? "block" : "none";
+        if (!hasPw) {
+          if (otpCodeWrap) otpCodeWrap.style.display = "none";
+          if (otpInput) otpInput.value = "";
+          if (otpStatusNotice) otpStatusNotice.textContent = "";
+        }
+      });
+    }
+
+    // Handle "Send OTP" button
+    if (btnSendOtp) {
+      btnSendOtp.addEventListener("click", async () => {
+        const targetUsername = document.getElementById("editOrigUsername")?.value.trim();
+        const phone = phoneInput ? phoneInput.value.trim() : "";
+        if (!phone || phone.length < 10) {
+          alert("Please enter a valid 10-digit mobile phone number to receive the OTP code.");
+          if (phoneInput) phoneInput.focus();
+          return;
+        }
+
+        btnSendOtp.disabled = true;
+        btnSendOtp.textContent = "Sending...";
+
+        try {
+          const res = await authFetch("/api/auth/otp/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone, target_username: targetUsername })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            const successMsg = data.is_live_sms 
+              ? `Live SMS dispatched via Fast2SMS to ${data.phone_masked || phone}!`
+              : `Security OTP sent to ${data.phone_masked || phone}!`;
+            showToast(successMsg, "success");
+            if (otpCodeWrap) otpCodeWrap.style.display = "block";
+            if (otpStatusNotice) {
+              otpStatusNotice.textContent = data.is_live_sms
+                ? `✓ Live SMS sent via Fast2SMS to ${data.phone_masked || phone}. Valid for 5 minutes.`
+                : `Security OTP sent to ${data.phone_masked || phone}. Valid for 5 minutes.`;
+              otpStatusNotice.style.color = data.is_live_sms ? "#15803d" : "#0284c7";
+            }
+            if (otpInput) {
+              setTimeout(() => otpInput.focus(), 150);
+            }
+
+            // Simulated SMS Alert banner in UI for immediate test verification
+            if (data.dev_otp) {
+              showSmsSimulationAlert(phone, data.dev_otp);
+            }
+
+            // 60-second resend cooldown timer
+            let countdown = 60;
+            btnSendOtp.textContent = `Resend (${countdown}s)`;
+            clearInterval(otpCooldownTimer);
+            otpCooldownTimer = setInterval(() => {
+              countdown--;
+              if (countdown <= 0) {
+                clearInterval(otpCooldownTimer);
+                btnSendOtp.disabled = false;
+                btnSendOtp.textContent = "Resend OTP";
+              } else {
+                btnSendOtp.textContent = `Resend (${countdown}s)`;
+              }
+            }, 1000);
+          } else {
+            btnSendOtp.disabled = false;
+            btnSendOtp.textContent = "Send OTP";
+            showToast(data.error || "Failed to dispatch OTP", "error");
+            if (otpStatusNotice) {
+              otpStatusNotice.textContent = data.error || "Failed to send OTP.";
+              otpStatusNotice.style.color = "#dc2626";
+            }
+          }
+        } catch (e) {
+          btnSendOtp.disabled = false;
+          btnSendOtp.textContent = "Send OTP";
+          showToast("Server connection error while requesting OTP", "error");
+        }
+      });
+    }
+
+    if (editForm) {
+      editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const origUsername = document.getElementById("editOrigUsername")?.value.trim();
+        const newUsername = document.getElementById("editUsername")?.value.trim().toLowerCase();
+        const name = document.getElementById("editFullName")?.value.trim();
+        const role = document.getElementById("editRole")?.value;
+        const password = document.getElementById("editPassword")?.value.trim();
+        const submitBtn = document.getElementById("btnSubmitEditUser");
+
+        if (!origUsername || !newUsername) return;
+
+        if (editErrBox) editErrBox.style.display = "none";
+
+        const payload = { new_username: newUsername, name, role };
+        if (password) {
+          const otpVal = otpInput ? otpInput.value.trim() : "";
+          if (!otpVal) {
+            if (editErrBox) {
+              editErrBox.textContent = "Mobile OTP verification required: Please enter the 6-digit OTP code sent to your phone.";
+              editErrBox.style.display = "block";
+            }
+            if (otpInput) {
+              if (otpCodeWrap) otpCodeWrap.style.display = "block";
+              otpInput.focus();
+            }
+            return;
+          }
+          payload.password = password;
+          payload.otp = otpVal;
+          if (phoneInput && phoneInput.value.trim()) {
+            payload.phone = phoneInput.value.trim();
+          }
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Verifying & Saving...";
+        }
+
+        try {
+          const res = await authFetch(`/api/users/${encodeURIComponent(origUsername)}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            closeEditModal();
+            showToast(data.message || `User account '${newUsername}' updated successfully!`, "success");
+
+            // If the super admin updated their own account, sync session & UI immediately
+            if (currentUser && currentUser.username.toLowerCase() === origUsername.toLowerCase()) {
+              currentUser.username = newUsername;
+              if (name) currentUser.name = name;
+              if (role && data.user) {
+                currentUser.role = role;
+                currentUser.role_label = data.user.role_label;
+                currentUser.assigned_job = data.user.assigned_job;
+              }
+              updateUserSessionUI();
+            }
+
+            await loadUsers();
+          } else {
+            if (editErrBox) {
+              editErrBox.textContent = data.error || "Failed to update user account.";
+              editErrBox.style.display = "block";
+            }
+          }
+        } catch (err) {
+          if (editErrBox) {
+            editErrBox.textContent = "Server error while updating user account.";
+            editErrBox.style.display = "block";
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Save Changes";
+          }
+        }
+      });
+    }
+
+    // Fast2SMS Gateway Configuration Modal Handlers
+    const smsModal = document.getElementById("modalSmsSettings");
+    const openSmsBtn = document.getElementById("btnOpenSmsSettings");
+    const closeSmsBtn = document.getElementById("btnCloseSmsSettingsModal");
+    const cancelSmsBtn = document.getElementById("btnCancelSmsSettings");
+    const formSms = document.getElementById("formSmsSettings");
+    const apiKeyInput = document.getElementById("inputSmsApiKey");
+    const toggleKeyBtn = document.getElementById("btnToggleApiKeyVisibility");
+    const testPhoneInput = document.getElementById("inputTestSmsPhone");
+    const btnSendTest = document.getElementById("btnSendTestSms");
+    const testSmsStatus = document.getElementById("testSmsStatus");
+    const smsAlertBox = document.getElementById("smsSettingsAlert");
+
+    function closeSmsModal() {
+      if (smsModal) smsModal.classList.add("hidden");
+      if (smsAlertBox) smsAlertBox.style.display = "none";
+      if (testSmsStatus) testSmsStatus.style.display = "none";
+    }
+
+    if (openSmsBtn && smsModal) {
+      openSmsBtn.addEventListener("click", async () => {
+        if (smsAlertBox) smsAlertBox.style.display = "none";
+        if (testSmsStatus) testSmsStatus.style.display = "none";
+        smsModal.classList.remove("hidden");
+
+        try {
+          const res = await authFetch("/api/admin/sms-config");
+          if (res.ok) {
+            const data = await res.json();
+            if (apiKeyInput) {
+              apiKeyInput.value = "";
+              if (data.has_api_key) {
+                apiKeyInput.placeholder = `Active Key: ${data.masked_api_key} (Enter new key to change)`;
+              } else {
+                apiKeyInput.placeholder = "Paste your Fast2SMS API Key here...";
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to load SMS config:", e);
+        }
+      });
+    }
+
+    if (closeSmsBtn) closeSmsBtn.addEventListener("click", closeSmsModal);
+    if (cancelSmsBtn) cancelSmsBtn.addEventListener("click", closeSmsModal);
+    if (smsModal) {
+      smsModal.addEventListener("click", (e) => {
+        if (e.target === smsModal) closeSmsModal();
+      });
+    }
+
+    if (toggleKeyBtn && apiKeyInput) {
+      toggleKeyBtn.addEventListener("click", () => {
+        const isPw = apiKeyInput.type === "password";
+        apiKeyInput.type = isPw ? "text" : "password";
+        toggleKeyBtn.style.color = isPw ? "#0284c7" : "#94a3b8";
+      });
+    }
+
+    if (formSms) {
+      formSms.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const key = apiKeyInput ? apiKeyInput.value.trim() : "";
+        const saveBtn = document.getElementById("btnSaveSmsSettings");
+
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+        }
+
+        try {
+          const res = await authFetch("/api/admin/sms-config", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fast2sms_api_key: key, enabled: true })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            showToast("Fast2SMS API configuration saved!", "success");
+            closeSmsModal();
+          } else {
+            if (smsAlertBox) {
+              smsAlertBox.textContent = data.error || "Failed to save configuration.";
+              smsAlertBox.style.display = "block";
+            }
+          }
+        } catch (err) {
+          if (smsAlertBox) {
+            smsAlertBox.textContent = "Server error while saving SMS configuration.";
+            smsAlertBox.style.display = "block";
+          }
+        } finally {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save Configuration";
+          }
+        }
+      });
+    }
+
+    if (btnSendTest) {
+      btnSendTest.addEventListener("click", async () => {
+        const phone = testPhoneInput ? testPhoneInput.value.trim() : "";
+        if (!phone || phone.length < 10) {
+          alert("Please enter a valid 10-digit mobile number to send the test SMS.");
+          if (testPhoneInput) testPhoneInput.focus();
+          return;
+        }
+
+        btnSendTest.disabled = true;
+        btnSendTest.textContent = "Sending...";
+        if (testSmsStatus) {
+          testSmsStatus.style.display = "block";
+          testSmsStatus.style.color = "#0284c7";
+          testSmsStatus.textContent = `Dispatching test SMS to +91 ${phone}...`;
+        }
+
+        try {
+          const res = await authFetch("/api/admin/sms-config/test", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            if (testSmsStatus) {
+              testSmsStatus.style.color = "#15803d";
+              testSmsStatus.textContent = `✓ ${data.message}`;
+            }
+            showToast(`Test SMS delivered to +91 ${phone}!`, "success");
+          } else {
+            if (testSmsStatus) {
+              testSmsStatus.style.color = "#dc2626";
+              testSmsStatus.textContent = `✗ ${data.error || "Failed to dispatch test SMS."}`;
+            }
+          }
+        } catch (e) {
+          if (testSmsStatus) {
+            testSmsStatus.style.color = "#dc2626";
+            testSmsStatus.textContent = "✗ Network error connecting to server.";
+          }
+        } finally {
+          btnSendTest.disabled = false;
+          btnSendTest.textContent = "Send Test SMS";
+        }
+      });
+    }
+  }
+
+  function showSmsSimulationAlert(phone, code) {
+    const existing = document.getElementById("smsSimAlert");
+    if (existing) existing.remove();
+
+    const banner = document.createElement("div");
+    banner.id = "smsSimAlert";
+    banner.className = "sms-sim-alert";
+    banner.innerHTML = `
+      <div class="sms-sim-header">
+        <div class="sms-sim-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          <span>Incoming SMS Gateway &bull; ${escapeHtml(phone)}</span>
+        </div>
+        <button type="button" class="sms-sim-close" onclick="this.closest('#smsSimAlert').remove()">&times;</button>
+      </div>
+      <div class="sms-sim-body">
+        <p><strong>[Sri Devi Arts & Science College CMS]</strong> Your Super Admin password authorization OTP is <strong style="color: #0284c7; font-size: 14px; letter-spacing: 1px;">${escapeHtml(code)}</strong>. Valid for 5 minutes.</p>
+        <button type="button" class="sms-sim-autofill" id="btnAutofillOtp">Auto-Fill OTP (${escapeHtml(code)})</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+
+    const autofillBtn = banner.querySelector("#btnAutofillOtp");
+    if (autofillBtn) {
+      autofillBtn.addEventListener("click", () => {
+        const otpInput = document.getElementById("editOtpCode");
+        if (otpInput) {
+          otpInput.value = code;
+          otpInput.focus();
+        }
+        banner.remove();
+      });
+    }
+
+    setTimeout(() => {
+      if (banner && banner.parentNode) {
+        banner.style.opacity = "0";
+        setTimeout(() => banner.remove(), 300);
+      }
+    }, 20000);
   }
 
   // ================= UTILITIES =================

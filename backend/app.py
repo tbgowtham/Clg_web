@@ -1,6 +1,11 @@
 import os
 import json
+import re
+import time
+import secrets
 import uuid
+import urllib.request
+import urllib.parse
 from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -18,10 +23,12 @@ SEED_FILE = os.path.join(os.path.dirname(__file__), "data", "content.json")
 APPLICATIONS_FILE = os.path.join(os.path.dirname(__file__), "data", "applications.json")
 ENQUIRIES_FILE = os.path.join(os.path.dirname(__file__), "data", "enquiries.json")
 USERS_FILE = os.path.join(os.path.dirname(__file__), "data", "users.json")
+SMS_CONFIG_FILE = os.path.join(os.path.dirname(__file__), "data", "sms_config.json")
 
 DEFAULT_ADMIN_USERNAME = "doomsday"
 DEFAULT_ADMIN_PASSWORD = "ironman"
 active_sessions = {}  # token -> user_dict
+active_otps = {}      # target_username -> { "otp": "...", "expires_at": float, "attempts": int, "phone": "..." }
 
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(os.path.join(os.path.dirname(__file__), "data"), exist_ok=True)
@@ -140,6 +147,11 @@ def get_user_by_username(username):
     return None
 
 def seed_default_admin():
+    users = load_users()
+    # Check if a primary administrator already exists in storage
+    if any(u.get("is_primary_admin") for u in users):
+        return
+
     admin = get_user_by_username(DEFAULT_ADMIN_USERNAME)
     if not admin:
         admin_user = {
@@ -147,6 +159,7 @@ def seed_default_admin():
             "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
             "name": "Super Administrator",
             "role": "Admin",
+            "is_primary_admin": True,
             "created_at": datetime.now().isoformat()
         }
         if mongo_available:
@@ -165,6 +178,7 @@ def seed_default_admin():
         pw_hash = admin.get("password_hash", "")
         if not pw_hash or not check_password_hash(pw_hash, DEFAULT_ADMIN_PASSWORD):
             admin["password_hash"] = generate_password_hash(DEFAULT_ADMIN_PASSWORD)
+            admin["is_primary_admin"] = True
             if mongo_available:
                 try:
                     db.users.replace_one({"username": DEFAULT_ADMIN_USERNAME}, dict(admin), upsert=True)
@@ -489,9 +503,9 @@ def api_auth_login():
         return jsonify({"success": False, "error": "Invalid username or password"}), 401
 
     token = uuid.uuid4().hex
-    raw_role = user.get("role", "Admin" if user.get("username") == DEFAULT_ADMIN_USERNAME else "Sub-Admin")
+    is_primary = bool(user.get("is_primary_admin") or user.get("username") == DEFAULT_ADMIN_USERNAME or user.get("role") == "Super Admin")
+    raw_role = user.get("role", "Admin" if is_primary else "Sub-Admin")
     role_info = get_role_info(raw_role)
-    is_primary = (user.get("username") == DEFAULT_ADMIN_USERNAME)
 
     user_info = {
         "username": user.get("username"),
@@ -565,6 +579,224 @@ def api_auth_logout():
     resp.set_cookie("admin_token", "", expires=0)
     return resp
 
+# ==================== FAST2SMS LIVE SMS GATEWAY INTEGRATION ====================
+
+def load_sms_config():
+    cfg = {
+        "provider": "fast2sms",
+        "fast2sms_api_key": os.environ.get("FAST2SMS_API_KEY", ""),
+        "enabled": True
+    }
+    if os.path.exists(SMS_CONFIG_FILE):
+        try:
+            with open(SMS_CONFIG_FILE, "r", encoding="utf-8") as f:
+                stored = json.load(f)
+                if isinstance(stored, dict):
+                    cfg.update(stored)
+        except Exception as e:
+            print(f"[SMS Config Error] Failed to read sms_config.json: {e}")
+    return cfg
+
+def save_sms_config(cfg):
+    try:
+        with open(SMS_CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, indent=2)
+        return True
+    except Exception as e:
+        print(f"[SMS Config Error] Failed to write sms_config.json: {e}")
+        return False
+
+def send_fast2sms_otp(api_key, phone_number, otp_code):
+    """
+    Sends real SMS text message via Fast2SMS Quick OTP API (https://www.fast2sms.com)
+    """
+    clean_phone = re.sub(r"\D", "", phone_number)
+    if len(clean_phone) > 10:
+        clean_phone = clean_phone[-10:]
+
+    url = "https://www.fast2sms.com/dev/bulkV2"
+    headers = {
+        "authorization": api_key.strip(),
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    data = urllib.parse.urlencode({
+        "variables_values": otp_code,
+        "route": "otp",
+        "numbers": clean_phone
+    }).encode("utf-8")
+
+    try:
+        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            body = resp.read().decode("utf-8")
+            res_json = json.loads(body) if body else {}
+            if res_json.get("return") is True:
+                return True, "SMS delivered successfully via Fast2SMS.", res_json
+            else:
+                raw_msg = res_json.get("message", "Delivery failed")
+                msg = " ".join(raw_msg) if isinstance(raw_msg, list) else str(raw_msg)
+                return False, msg, res_json
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode("utf-8")
+        try:
+            err_json = json.loads(err_body)
+            msg = err_json.get("message", f"HTTP {e.code}")
+        except Exception:
+            msg = f"HTTP {e.code}"
+        return False, f"Fast2SMS API error: {msg}", {}
+    except Exception as e:
+        return False, f"Fast2SMS connection error: {e}", {}
+
+@app.route("/api/auth/otp/send", methods=["POST"])
+def api_send_otp():
+    """
+    Dispatches a 6-digit OTP to a mobile phone number via Fast2SMS or simulation.
+    Strictly restricted to Super Administrator for password creation / recreation.
+    """
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"error": "Authentication required. Please sign in to the Admin Console."}), 401
+
+    is_super_admin = bool(curr.get("is_primary_admin") or curr.get("role") == "Super Admin")
+    if not is_super_admin:
+        return jsonify({"error": "Access Denied: Only Super Administrator can request password reset OTPs."}), 403
+
+    data = request.get_json(force=True, silent=True) or {}
+    phone = (data.get("phone") or "").strip()
+    target_username = (data.get("target_username") or "").strip().lower()
+
+    if not target_username:
+        return jsonify({"error": "Target username is required to request OTP."}), 400
+
+    target = get_user_by_username(target_username)
+    if not target:
+        return jsonify({"error": f"Target user '{target_username}' not found."}), 404
+
+    # Clean phone number (remove spaces, hyphens, parentheses)
+    clean_phone = re.sub(r"[\s\-\(\)\+]", "", phone)
+    if not clean_phone or len(clean_phone) < 10 or not clean_phone.isdigit():
+        return jsonify({"error": "Please enter a valid 10-digit mobile phone number for OTP verification."}), 400
+
+    # Generate cryptographically secure 6-digit code
+    otp_code = f"{secrets.randbelow(900000) + 100000}"
+    expires_at = time.time() + 300  # 5 minutes validity
+
+    active_otps[target_username] = {
+        "otp": otp_code,
+        "phone": phone,
+        "clean_phone": clean_phone,
+        "expires_at": expires_at,
+        "attempts": 0,
+        "requested_by": curr.get("username")
+    }
+
+    masked_phone = f"{phone[:2]}******{phone[-4:]}" if len(phone) >= 10 else "******"
+
+    # Attempt Live SMS Dispatch via Fast2SMS if configured
+    cfg = load_sms_config()
+    api_key = cfg.get("fast2sms_api_key", "").strip()
+    is_live_sms = False
+    sms_status_msg = ""
+
+    if cfg.get("enabled") and api_key:
+        ok, msg, res_json = send_fast2sms_otp(api_key, clean_phone, otp_code)
+        if ok:
+            is_live_sms = True
+            sms_status_msg = f"Live SMS dispatched to +91 {clean_phone[-10:]} via Fast2SMS."
+            print(f"[Fast2SMS Gateway] REAL SMS SENT to {clean_phone} with OTP '{otp_code}'")
+        else:
+            sms_status_msg = f"Fast2SMS API notice: {msg}. (In-app simulation code provided for testing)."
+            print(f"[Fast2SMS Warning] {msg}. Generated OTP: {otp_code}")
+    else:
+        sms_status_msg = f"6-digit security OTP dispatched to mobile {masked_phone}."
+        print(f"[SMS Simulator] Dispatched OTP '{otp_code}' to mobile {phone} for account '{target_username}' (Super Admin: {curr.get('username')})")
+
+    return jsonify({
+        "success": True,
+        "message": sms_status_msg,
+        "is_live_sms": is_live_sms,
+        "phone_masked": masked_phone,
+        "dev_otp": otp_code,
+        "expires_in": 300
+    })
+
+@app.route("/api/admin/sms-config", methods=["GET"])
+def api_get_sms_config():
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"error": "Authentication required"}), 401
+    if not (curr.get("is_primary_admin") or curr.get("role") == "Super Admin"):
+        return jsonify({"error": "Access Denied: Only Super Administrator can view SMS gateway configuration."}), 403
+
+    cfg = load_sms_config()
+    raw_key = cfg.get("fast2sms_api_key", "").strip()
+    masked_key = f"{raw_key[:4]}...{raw_key[-4:]}" if len(raw_key) > 8 else ("••••••••" if raw_key else "")
+
+    return jsonify({
+        "provider": "fast2sms",
+        "has_api_key": bool(raw_key),
+        "masked_api_key": masked_key,
+        "enabled": bool(cfg.get("enabled", True))
+    })
+
+@app.route("/api/admin/sms-config", methods=["POST"])
+def api_save_sms_config():
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"error": "Authentication required"}), 401
+    if not (curr.get("is_primary_admin") or curr.get("role") == "Super Admin"):
+        return jsonify({"error": "Access Denied: Only Super Administrator can update SMS gateway configuration."}), 403
+
+    data = request.get_json(force=True, silent=True) or {}
+    cfg = load_sms_config()
+
+    new_key = data.get("fast2sms_api_key")
+    if new_key is not None:
+        cfg["fast2sms_api_key"] = new_key.strip()
+    if "enabled" in data:
+        cfg["enabled"] = bool(data.get("enabled"))
+    cfg["provider"] = "fast2sms"
+
+    saved = save_sms_config(cfg)
+    if saved:
+        return jsonify({"success": True, "message": "Fast2SMS gateway configuration saved successfully."})
+    return jsonify({"error": "Failed to save SMS configuration file."}), 500
+
+@app.route("/api/admin/sms-config/test", methods=["POST"])
+def api_test_sms_config():
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"error": "Authentication required"}), 401
+    if not (curr.get("is_primary_admin") or curr.get("role") == "Super Admin"):
+        return jsonify({"error": "Access Denied: Only Super Administrator can test SMS gateway."}), 403
+
+    data = request.get_json(force=True, silent=True) or {}
+    phone = (data.get("phone") or "").strip()
+    clean_phone = re.sub(r"\D", "", phone)
+    if len(clean_phone) < 10:
+        return jsonify({"error": "Please provide a valid 10-digit mobile number for test delivery."}), 400
+
+    cfg = load_sms_config()
+    api_key = cfg.get("fast2sms_api_key", "").strip()
+    if not api_key:
+        return jsonify({"error": "Fast2SMS API Key is not configured yet. Please enter and save your API key first."}), 400
+
+    test_otp = f"{secrets.randbelow(900000) + 100000}"
+    ok, msg, res_json = send_fast2sms_otp(api_key, clean_phone, test_otp)
+    if ok:
+        return jsonify({
+            "success": True,
+            "message": f"Real test SMS sent successfully to +91 {clean_phone[-10:]} via Fast2SMS!",
+            "test_otp": test_otp,
+            "gateway_response": res_json
+        })
+    else:
+        return jsonify({
+            "success": False,
+            "error": f"Fast2SMS delivery error: {msg}",
+            "gateway_response": res_json
+        }), 400
+
 @app.route("/api/users", methods=["GET"])
 def api_get_users():
     is_ok, err_resp, status = check_permission("users")
@@ -584,7 +816,8 @@ def api_get_users():
             "assigned_job": r_info["job"],
             "allowed_tabs": r_info["tabs"],
             "created_at": u.get("created_at", datetime.now().isoformat()),
-            "is_primary_admin": u.get("username") == DEFAULT_ADMIN_USERNAME
+            "phone": u.get("phone", ""),
+            "is_primary_admin": bool(u.get("is_primary_admin") or u.get("username") == DEFAULT_ADMIN_USERNAME)
         })
     return jsonify({"users": sanitized})
 
@@ -658,9 +891,13 @@ def api_delete_user(username):
 
     curr = get_current_user_from_request()
     uname = (username or "").strip().lower()
-    if uname == DEFAULT_ADMIN_USERNAME:
-        return jsonify({"error": "Cannot delete primary administrator account ('doomsday')"}), 400
-    if uname == curr.get("username"):
+    target = get_user_by_username(uname)
+    if not target:
+        return jsonify({"error": f"User '{uname}' not found"}), 404
+
+    if target.get("is_primary_admin") or uname == DEFAULT_ADMIN_USERNAME:
+        return jsonify({"error": "Cannot delete primary administrator account"}), 400
+    if uname == curr.get("username", "").lower():
         return jsonify({"error": "Cannot delete your own active account while logged in"}), 400
 
     deleted = False
@@ -682,6 +919,141 @@ def api_delete_user(username):
     if deleted:
         return jsonify({"success": True, "message": f"User '{uname}' deleted successfully."})
     return jsonify({"error": f"User '{uname}' not found"}), 404
+
+@app.route("/api/users/<username>", methods=["PUT"])
+def api_update_user(username):
+    """
+    Update user credentials and User ID (username).
+    Strict authorization: ONLY Super Admin can rename user IDs and change passwords for every user (including himself).
+    """
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"error": "Authentication required. Please sign in to the Admin Console."}), 401
+
+    is_super_admin = bool(curr.get("is_primary_admin") or curr.get("role") == "Super Admin")
+    if not is_super_admin:
+        return jsonify({"error": "Access Denied: Only Super Administrator can rename user IDs or change user credentials."}), 403
+
+    orig_uname = (username or "").strip().lower()
+    target = get_user_by_username(orig_uname)
+    if not target:
+        return jsonify({"error": f"User '{orig_uname}' not found."}), 404
+
+    data = request.get_json(force=True, silent=True) or {}
+    new_uname = (data.get("new_username") or orig_uname).strip().lower()
+    password = (data.get("password") or "").strip()
+    name = (data.get("name") or "").strip()
+    role = (data.get("role") or "").strip()
+
+    # Validate new username format
+    if not re.match(r"^[a-zA-Z0-9_.-]{3,30}$", new_uname):
+        return jsonify({"error": "User ID must be 3 to 30 characters and contain only letters, numbers, underscores, dashes, or dots."}), 400
+
+    # If username changed, ensure uniqueness
+    if new_uname != orig_uname:
+        existing = get_user_by_username(new_uname)
+        if existing and existing.get("username", "").lower() != orig_uname:
+            return jsonify({"error": f"User ID '{new_uname}' is already taken. Please choose a different User ID."}), 409
+
+    # If password is provided, validate length, enforce mobile OTP verification and hash
+    if password:
+        otp = (data.get("otp") or "").strip()
+        if not otp:
+            return jsonify({"error": "Mobile OTP verification required. Please enter the 6-digit OTP code sent to your phone."}), 400
+
+        otp_record = active_otps.get(orig_uname)
+        if not otp_record or time.time() > otp_record.get("expires_at", 0):
+            return jsonify({"error": "OTP has expired or was not requested. Please click 'Send OTP' to receive a new code."}), 400
+
+        otp_record["attempts"] = otp_record.get("attempts", 0) + 1
+        if otp_record["attempts"] > 3:
+            active_otps.pop(orig_uname, None)
+            return jsonify({"error": "Too many invalid OTP attempts. Please request a new OTP code."}), 400
+
+        if otp_record["otp"] != otp:
+            remaining = 3 - otp_record["attempts"]
+            return jsonify({"error": f"Invalid OTP code ({remaining} attempt{'s' if remaining != 1 else ''} remaining). Please enter the correct code."}), 400
+
+        # OTP verified! Invalidate immediately so it cannot be reused
+        active_otps.pop(orig_uname, None)
+
+        if len(password) < 4:
+            return jsonify({"error": "Password must be at least 4 characters long."}), 400
+        target["password_hash"] = generate_password_hash(password)
+        target.pop("password", None)
+
+    # If phone number provided
+    phone = (data.get("phone") or "").strip()
+    if phone:
+        target["phone"] = phone
+
+    # If full name provided
+    if name:
+        target["name"] = name
+
+    # If role provided and valid
+    if role and role in ROLE_PERMISSIONS:
+        target["role"] = role
+        r_info = get_role_info(role)
+        target["role_label"] = r_info["label"]
+        target["assigned_job"] = r_info["job"]
+
+    # Retain primary admin privilege if the target is the primary admin
+    is_target_primary = bool(orig_uname == DEFAULT_ADMIN_USERNAME or target.get("is_primary_admin"))
+    if is_target_primary:
+        target["is_primary_admin"] = True
+
+    # Persist in MongoDB
+    if mongo_available:
+        try:
+            if new_uname != orig_uname:
+                db.users.delete_one({"username": orig_uname})
+            db.users.replace_one({"username": new_uname}, dict(target), upsert=True)
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to update user: {e}")
+
+    # Persist in JSON file
+    users = load_users()
+    updated_users = []
+    found = False
+    for u in users:
+        if u.get("username", "").lower() == orig_uname:
+            found = True
+            target["username"] = new_uname
+            updated_users.append(target)
+        else:
+            updated_users.append(u)
+    if not found:
+        target["username"] = new_uname
+        updated_users.append(target)
+    save_all_users(updated_users)
+
+    # Sync active sessions (including if Super Admin renamed himself)
+    for tok, sess in list(active_sessions.items()):
+        if sess.get("username", "").lower() == orig_uname:
+            sess["username"] = new_uname
+            if target.get("name"):
+                sess["name"] = target["name"]
+            if target.get("role"):
+                sess["role"] = target["role"]
+                sess["role_label"] = target.get("role_label", target["role"])
+                sess["assigned_job"] = target.get("assigned_job", "")
+                sess["allowed_tabs"] = get_role_info(target["role"]).get("tabs", [])
+
+    role_info = get_role_info(target.get("role", "Sub-Admin"))
+    return jsonify({
+        "success": True,
+        "message": f"User account '{new_uname}' updated successfully.",
+        "user": {
+            "username": new_uname,
+            "name": target.get("name", new_uname.title()),
+            "role": target.get("role", "Sub-Admin"),
+            "role_label": role_info["label"],
+            "assigned_job": role_info["job"],
+            "created_at": target.get("created_at", datetime.now().isoformat()),
+            "is_primary_admin": is_target_primary
+        }
+    })
 
 @app.route("/api/content", methods=["GET"])
 def api_get_content():

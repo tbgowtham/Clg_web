@@ -5,44 +5,69 @@
     "role": "Admin",
     "created_at": "2026-09-21T09:20:00.000000",
     "is_primary_admin": true,
-    "password_hash": "scrypt:32768:8:1$JeT8ZuYTrYlAscol$1650826513660564cf70ac7f4db94e3c86430c1db18c5e7bb17429b7697a6f42e32c87e00ab6c2bcdc6aeda780c7ee4ebf0354d8ca779c53bf3d391f9b8ca0aa"
+    "password_hash": "scrypt:32768:8:1$JeT8ZuYTrYlAscol$1650826513660564cf70ac7f4db94e3c86430c1db18c5e7bb17429b7697a6f42e32c87e00ab6c2bcdc6aeda780c7ee4ebf0354d8ca779c53bf3d391f9b8ca0aa",
+    "role_label": "Administrator",
+    "assigned_job": "Administration & User Management"
+  },
+  {
+    "username": "temp_user_test",
+    "password_hash": "scrypt:32768:8:1$EPeMdbLvkUiLfHtN$6ba020c18f8f5b72691d69ee6e19c8cccf5c40925ffa940e343e34ace2fa84311b1007d107fc34ca37451360089d0780c96be13097447be2cd8f6b36087d8b9f",
+    "name": "Renamed Test User",
+    "role": "Content Editor",
+    "role_label": "Content Editor",
+    "assigned_job": "Website Content, Gallery & Notices Only",
+    "created_at": "2026-09-21T14:08:18.739410",
+    "created_by": "doomsday"
   },
   {
     "username": "gopinath",
-    "password_hash": "scrypt:32768:8:1$EVk6KRnZdmnowBUe$88934efa173a29247c5d6655af02b4576776371c565f6446ef8395b169c42b0ab12ed44884930658c50d4722d5ebe2b0eb685b85ab897cbcc6992febef057333",
-    "name": "gopinath",
-    "role": "Admissions Officer",
+    "password_hash": "scrypt:32768:8:1$SZQcZaiiRAr5yiGY$aa8b6186b959d3aca98aa197277b0d97185cfcf4d34f54ce93c7fe3de4f59ae6a97608c2fa174dd113616d1e05acf03f4ad53fcf417010cdc626dac17d320256",
+    "name": "lakshmipathi",
+    "role": "Sub-Admin",
     "created_at": "2026-09-21T09:31:10.274879",
-    "created_by": "doomsday"
+    "created_by": "doomsday",
+    "role_label": "Sub-Admin",
+    "assigned_job": "Admissions & Public Enquiries Only"
   },
   {
-    "username": "test_subadmin",
-    "password_hash": "scrypt:32768:8:1$rayGrmVuCS5BOOnP$11ab77260413e93b6ceb1dd4f6351dce07f75f50d5e606dcc10be49d79ff424e3e6f975ac820b4fac4f1ad46028ae2faef19a4be7a774b6d59bf71360e576391",
-    "name": "Admissions Manager",
+    "username": "lakshu",
+    "password_hash": "scrypt:32768:8:1$SZQcZaiiRAr5yiGY$aa8b6186b959d3aca98aa197277b0d97185cfcf4d34f54ce93c7fe3de4f59ae6a97608c2fa174dd113616d1e05acf03f4ad53fcf417010cdc626dac17d320256",
+    "name": "lakshmipathi",
+    "role": "Sub-Admin",
+    "created_at": "2026-09-21T09:31:10.274879",
+    "created_by": "doomsday",
+    "role_label": "Sub-Admin",
+    "assigned_job": "Admissions & Public Enquiries Only"
+  },
+  {
+    "username": "otp_test_staff",
+    "password_hash": "scrypt:32768:8:1$SvalXs3d5MCjfInO$b9c6e86ef368000ee38154e47068b019f67351dd2ecbdb71595feeb7b59bad50176a0f9dd68edb5755112bfa9779807bfe2fe78354df70f141fabbe218843742",
+    "name": "Renamed Staff Member",
     "role": "Sub-Admin",
     "role_label": "Sub-Admin",
     "assigned_job": "Admissions & Public Enquiries Only",
-    "created_at": "2026-09-21T09:39:55.199318",
+    "created_at": "2026-09-21T14:17:55.922048",
+    "created_by": "doomsday",
+    "phone": "9876543210"
+  },
+  {
+    "username": "sub_tester",
+    "password_hash": "scrypt:32768:8:1$kGjmXyu91KCUVCr1$010e84210708562dcaabc77e4aac626d8b8b9e52b03c5bae05dd871baa6df295a1e40e529016332d44c569f6bac37dedbe6d1ecb2fd6e31c3659cc15f249363e",
+    "name": "Sub Tester",
+    "role": "Sub-Admin",
+    "role_label": "Sub-Admin",
+    "assigned_job": "Admissions & Public Enquiries Only",
+    "created_at": "2026-09-21T14:31:26.891885",
     "created_by": "doomsday"
   },
   {
-    "username": "test_editor",
-    "password_hash": "scrypt:32768:8:1$S23y3acbSM26wlj9$bdef5db52d9e6baa06bc49055d4a56dcef8f4bbbcb1f9792035837dbac20cb0ff6b0a048ff9dd515fdbbb9d4c6d91e31d4107c5faf4f2ced489857ea55ccd6cf",
-    "name": "Web Content Editor",
-    "role": "Content Editor",
-    "role_label": "Content Editor",
-    "assigned_job": "Website Content, Gallery & Notices Only",
-    "created_at": "2026-09-21T09:39:57.611603",
-    "created_by": "doomsday"
-  },
-  {
-    "username": "test_editor",
-    "password_hash": "scrypt:32768:8:1$S23y3acbSM26wlj9$bdef5db52d9e6baa06bc49055d4a56dcef8f4bbbcb1f9792035837dbac20cb0ff6b0a048ff9dd515fdbbb9d4c6d91e31d4107c5faf4f2ced489857ea55ccd6cf",
-    "name": "Web Content Editor",
-    "role": "Content Editor",
-    "role_label": "Content Editor",
-    "assigned_job": "Website Content, Gallery & Notices Only",
-    "created_at": "2026-09-21T09:39:57.611603",
+    "username": "sub_tester",
+    "password_hash": "scrypt:32768:8:1$kGjmXyu91KCUVCr1$010e84210708562dcaabc77e4aac626d8b8b9e52b03c5bae05dd871baa6df295a1e40e529016332d44c569f6bac37dedbe6d1ecb2fd6e31c3659cc15f249363e",
+    "name": "Sub Tester",
+    "role": "Sub-Admin",
+    "role_label": "Sub-Admin",
+    "assigned_job": "Admissions & Public Enquiries Only",
+    "created_at": "2026-09-21T14:31:26.891885",
     "created_by": "doomsday"
   }
 ]
