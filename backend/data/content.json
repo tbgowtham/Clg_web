@@ -19,26 +19,26 @@
   },
   "quickLinks": [
     { "label": "Online Application", "link": "#apply-modal" },
+    { "label": "Campus Gallery", "link": "#campus" },
     { "label": "Academic Courses", "link": "#programmes" },
     { "label": "Management & Vision", "link": "#management" },
     { "label": "Placement Cell", "link": "#placement" },
-    { "label": "SC/ST Scholarship", "link": "https://ssp.tn.gov.in" },
-    { "label": "Campus Gallery", "link": "#campus" }
+    { "label": "SC/ST Scholarship", "link": "https://ssp.tn.gov.in" }
   ],
   "about": {
-    "eyebrow": "About Sridevi Arts & Science College",
-    "title": "A Legacy of Purposeful Rural & Urban Education.",
-    "p1": "Sridevi Arts and Science College is a leading co-educational institution in Ponneri, established in the year 2001 with a visionary commitment to impart purposeful and accessible higher education to aspiring students, particularly those hailing from rural backgrounds.",
-    "p2": "Affiliated to the prestigious University of Madras, the college has grown into a distinguished center of learning offering 8 Undergraduate and 2 Postgraduate departments, alongside robust Physical Education and Career Placement cells. With dedicated faculty, high-tech laboratories, and strong merit scholarship support, we empower over 1,500 students each year.",
-    "badge": "Estd. 2001 · Madras Univ.",
-    "linkText": "Learn About Our Founder & Trustees →",
-    "image": "sridevi.png"
+    "eyebrow": "Academic Heritage · Established 2001",
+    "title": "A Quarter-Century of Igniting Rural Minds & Cultivating Leaders.",
+    "p1": "Rooted in the noble vision of our founder, Thiru. K. Pachaiyappan, Sridevi Arts and Science College was founded in 2001 with a profound calling: to ensure that high-caliber, purposeful higher education reaches the promising youth of Ponneri and rural Tiruvallur district.",
+    "p2": "Affiliated to the historic University of Madras, our institution provides an empowering academic haven across 10 Undergraduate and Postgraduate departments. With dedicated faculty mentors, modern scientific laboratories, and robust scholarship assistance, we have nurtured over 15,000 graduates who now lead with integrity across corporate, public, and entrepreneurial spheres.",
+    "badge": "Estd. 2001 · Madras Univ. · Silver Jubilee",
+    "linkText": "Meet Our Founder & Board of Trustees →",
+    "image": "photo/IMG_20260227_142615_304.jpg"
   },
   "stats": [
-    { "id": "stat-1", "value": "25+", "label": "Years of Academic Excellence" },
-    { "id": "stat-2", "value": "1,500+", "label": "Students on Campus" },
-    { "id": "stat-3", "value": "12", "label": "Departments & Programmes" },
-    { "id": "stat-4", "value": "92%", "label": "Placement & Career Success" }
+    { "id": "stat-1", "value": "25+", "label": "Years of Academic Dedication" },
+    { "id": "stat-2", "value": "1,500+", "label": "Students Empowered Annually" },
+    { "id": "stat-3", "value": "12", "label": "Academic Programmes Offered" },
+    { "id": "stat-4", "value": "92%", "label": "Placement & Higher Studies Track" }
   ],
   "management": [
     {
@@ -237,32 +237,32 @@
   ],
   "usps": [
     {
-      "icon": "🌱",
+      "icon": "",
       "title": "High-Tech Green Campus",
       "desc": "Eco-friendly academic grounds in Krishnapuram, Ponneri, equipped with solar illumination, modern computer centers, and spacious auditoriums."
     },
     {
-      "icon": "💼",
+      "icon": "",
       "title": "Dedicated Placement Cell",
       "desc": "Year-round employability training, campus recruitment drives, industry workshops, and dedicated support for alumni."
     },
     {
-      "icon": "🎓",
+      "icon": "",
       "title": "Scholarships for Rural & Weaker Sections",
       "desc": "Active facilitator of Tamil Nadu Postmatric SC/ST scholarships (ssp.tn.gov.in) alongside institutional merit waivers."
     },
     {
-      "icon": "👩‍🎓",
+      "icon": "",
       "title": "Special Provisions for Women Students",
       "desc": "Safe, supportive environment with specialized counseling, secure transit, and leadership platforms for girl students."
     },
     {
-      "icon": "🚌",
+      "icon": "",
       "title": "Comprehensive College Bus Fleet",
       "desc": "Safe transportation connecting Ponneri, Gummidipoondi, Minjur, Red Hills, and northern Chennai suburbs."
     },
     {
-      "icon": "🏆",
+      "icon": "",
       "title": "Affiliated to University of Madras",
       "desc": "Rigorous curriculum, recognized university degrees, seasoned professors, and consistent university rank holders."
     }

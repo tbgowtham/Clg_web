@@ -1,0 +1,40 @@
+[
+  {
+    "id": "APP-260921-CF45",
+    "name": "gowthamnandha TB",
+    "dob": "2006-10-03",
+    "gender": "Male",
+    "mobile": "1918718711",
+    "email": "student@gmail.com",
+    "fatherName": "nandhu",
+    "motherName": "malika",
+    "courseType": "UG",
+    "course": "B.Sc (Computer Science)",
+    "schoolOrCollege": "sks",
+    "marksTotal": "484",
+    "percentage": "87%",
+    "community": "BC",
+    "needsScholarship": false,
+    "status": "Pending Review",
+    "submittedAt": "21 Sep 2026, 09:49 AM"
+  },
+  {
+    "id": "APP-260918-D9B7",
+    "name": "Gowtham TB",
+    "dob": "2006-10-03",
+    "gender": "Male",
+    "mobile": "8148418622",
+    "email": "mgowthamtb@gmail.com",
+    "fatherName": "Babu T",
+    "motherName": "Jayasri T",
+    "courseType": "UG",
+    "course": "Physical Education & Sports",
+    "schoolOrCollege": "MKV",
+    "marksTotal": "250",
+    "percentage": "86%",
+    "community": "BC",
+    "needsScholarship": false,
+    "status": "Pending Review",
+    "submittedAt": "18 Sep 2026, 11:22 AM"
+  }
+]

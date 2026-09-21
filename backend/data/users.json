@@ -1,0 +1,48 @@
+[
+  {
+    "username": "doomsday",
+    "name": "Super Administrator",
+    "role": "Admin",
+    "created_at": "2026-09-21T09:20:00.000000",
+    "is_primary_admin": true,
+    "password_hash": "scrypt:32768:8:1$JeT8ZuYTrYlAscol$1650826513660564cf70ac7f4db94e3c86430c1db18c5e7bb17429b7697a6f42e32c87e00ab6c2bcdc6aeda780c7ee4ebf0354d8ca779c53bf3d391f9b8ca0aa"
+  },
+  {
+    "username": "gopinath",
+    "password_hash": "scrypt:32768:8:1$EVk6KRnZdmnowBUe$88934efa173a29247c5d6655af02b4576776371c565f6446ef8395b169c42b0ab12ed44884930658c50d4722d5ebe2b0eb685b85ab897cbcc6992febef057333",
+    "name": "gopinath",
+    "role": "Admissions Officer",
+    "created_at": "2026-09-21T09:31:10.274879",
+    "created_by": "doomsday"
+  },
+  {
+    "username": "test_subadmin",
+    "password_hash": "scrypt:32768:8:1$rayGrmVuCS5BOOnP$11ab77260413e93b6ceb1dd4f6351dce07f75f50d5e606dcc10be49d79ff424e3e6f975ac820b4fac4f1ad46028ae2faef19a4be7a774b6d59bf71360e576391",
+    "name": "Admissions Manager",
+    "role": "Sub-Admin",
+    "role_label": "Sub-Admin",
+    "assigned_job": "Admissions & Public Enquiries Only",
+    "created_at": "2026-09-21T09:39:55.199318",
+    "created_by": "doomsday"
+  },
+  {
+    "username": "test_editor",
+    "password_hash": "scrypt:32768:8:1$S23y3acbSM26wlj9$bdef5db52d9e6baa06bc49055d4a56dcef8f4bbbcb1f9792035837dbac20cb0ff6b0a048ff9dd515fdbbb9d4c6d91e31d4107c5faf4f2ced489857ea55ccd6cf",
+    "name": "Web Content Editor",
+    "role": "Content Editor",
+    "role_label": "Content Editor",
+    "assigned_job": "Website Content, Gallery & Notices Only",
+    "created_at": "2026-09-21T09:39:57.611603",
+    "created_by": "doomsday"
+  },
+  {
+    "username": "test_editor",
+    "password_hash": "scrypt:32768:8:1$S23y3acbSM26wlj9$bdef5db52d9e6baa06bc49055d4a56dcef8f4bbbcb1f9792035837dbac20cb0ff6b0a048ff9dd515fdbbb9d4c6d91e31d4107c5faf4f2ced489857ea55ccd6cf",
+    "name": "Web Content Editor",
+    "role": "Content Editor",
+    "role_label": "Content Editor",
+    "assigned_job": "Website Content, Gallery & Notices Only",
+    "created_at": "2026-09-21T09:39:57.611603",
+    "created_by": "doomsday"
+  }
+]

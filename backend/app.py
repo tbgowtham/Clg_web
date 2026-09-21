@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Paths
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -16,6 +17,11 @@ UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 SEED_FILE = os.path.join(os.path.dirname(__file__), "data", "content.json")
 APPLICATIONS_FILE = os.path.join(os.path.dirname(__file__), "data", "applications.json")
 ENQUIRIES_FILE = os.path.join(os.path.dirname(__file__), "data", "enquiries.json")
+USERS_FILE = os.path.join(os.path.dirname(__file__), "data", "users.json")
+
+DEFAULT_ADMIN_USERNAME = "doomsday"
+DEFAULT_ADMIN_PASSWORD = "ironman"
+active_sessions = {}  # token -> user_dict
 
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(os.path.join(os.path.dirname(__file__), "data"), exist_ok=True)
@@ -86,6 +92,168 @@ def seed_database_if_empty():
 # Call seed on startup
 seed_database_if_empty()
 
+# ==================== USER & AUTHENTICATION HELPERS ====================
+def load_users():
+    if mongo_available:
+        try:
+            users = list(db.users.find({}, {"_id": 0}))
+            if users:
+                return users
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to load users: {e}")
+    if os.path.exists(USERS_FILE):
+        try:
+            with open(USERS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"[Fallback Error] Failed to read users.json: {e}")
+    return []
+
+def save_all_users(users_list):
+    if mongo_available:
+        try:
+            for u in users_list:
+                db.users.replace_one({"username": u["username"]}, dict(u), upsert=True)
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to save users: {e}")
+    try:
+        with open(USERS_FILE, "w", encoding="utf-8") as f:
+            json.dump(users_list, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"[Fallback Error] Failed to write users file: {e}")
+        return False
+
+def get_user_by_username(username):
+    uname = (username or "").strip().lower()
+    if mongo_available:
+        try:
+            user = db.users.find_one({"username": uname}, {"_id": 0})
+            if user:
+                return user
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to get user: {e}")
+    users = load_users()
+    for u in users:
+        if u.get("username", "").lower() == uname:
+            return u
+    return None
+
+def seed_default_admin():
+    admin = get_user_by_username(DEFAULT_ADMIN_USERNAME)
+    if not admin:
+        admin_user = {
+            "username": DEFAULT_ADMIN_USERNAME,
+            "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
+            "name": "Super Administrator",
+            "role": "Admin",
+            "created_at": datetime.now().isoformat()
+        }
+        if mongo_available:
+            try:
+                db.users.replace_one({"username": DEFAULT_ADMIN_USERNAME}, dict(admin_user), upsert=True)
+                print(f"[PyMongo] Seeded default admin account '{DEFAULT_ADMIN_USERNAME}'.")
+            except Exception as e:
+                print(f"[PyMongo Error] Could not seed admin in MongoDB: {e}")
+        users = load_users()
+        if not any(u.get("username") == DEFAULT_ADMIN_USERNAME for u in users):
+            users.append(admin_user)
+            save_all_users(users)
+            print(f"[Auth] Initialized default admin account '{DEFAULT_ADMIN_USERNAME}'.")
+    else:
+        # Ensure password hash is valid for ironman
+        pw_hash = admin.get("password_hash", "")
+        if not pw_hash or not check_password_hash(pw_hash, DEFAULT_ADMIN_PASSWORD):
+            admin["password_hash"] = generate_password_hash(DEFAULT_ADMIN_PASSWORD)
+            if mongo_available:
+                try:
+                    db.users.replace_one({"username": DEFAULT_ADMIN_USERNAME}, dict(admin), upsert=True)
+                except Exception:
+                    pass
+            users = load_users()
+            for i, u in enumerate(users):
+                if u.get("username") == DEFAULT_ADMIN_USERNAME:
+                    users[i] = admin
+            save_all_users(users)
+
+seed_default_admin()
+
+# Role Permissions Definitions for Strict RBAC Segregation
+ROLE_PERMISSIONS = {
+    "Admin": {
+        "label": "Administrator",
+        "job": "Administration & User Management",
+        "tabs": ["dashboard", "applications", "enquiries", "users", "preview"],
+        "apis": ["users", "auth", "applications", "enquiries"]
+    },
+    "Sub-Admin": {
+        "label": "Sub-Admin",
+        "job": "Admissions & Public Enquiries Only",
+        "tabs": ["applications", "enquiries", "preview"],
+        "apis": ["applications", "enquiries"]
+    },
+    "Admissions Officer": {
+        "label": "Admissions Officer",
+        "job": "Admissions & Public Enquiries Only",
+        "tabs": ["applications", "enquiries", "preview"],
+        "apis": ["applications", "enquiries"]
+    },
+    "Content Editor": {
+        "label": "Content Editor",
+        "job": "Website Content, Gallery & Notices Only",
+        "tabs": ["content", "gallery", "notices", "programmes", "stats", "preview"],
+        "apis": ["content", "gallery", "notices", "programmes", "stats"]
+    },
+    "Super Admin": {
+        "label": "Super Administrator",
+        "job": "Full System Oversight",
+        "tabs": ["dashboard", "gallery", "notices", "programmes", "stats", "content", "applications", "enquiries", "users", "preview"],
+        "apis": ["*"]
+    }
+}
+
+def get_role_info(role_name):
+    return ROLE_PERMISSIONS.get(role_name, ROLE_PERMISSIONS["Sub-Admin"])
+
+def get_current_user_from_request():
+    auth_header = request.headers.get("Authorization", "")
+    token = None
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+    elif "token" in request.args:
+        token = request.args.get("token")
+    elif request.cookies.get("admin_token"):
+        token = request.cookies.get("admin_token")
+    
+    if not token or token not in active_sessions:
+        return None
+    return active_sessions[token]
+
+def check_permission(api_group):
+    """
+    Validates that the current user has permission for `api_group`.
+    Returns (True, None, 200) if authorized, or (False, error_json_response, status_code)
+    """
+    curr = get_current_user_from_request()
+    if not curr:
+        return False, jsonify({"error": "Authentication required. Please sign in to the Admin Console."}), 401
+    
+    # Primary admin doomsday always has master access
+    if curr.get("is_primary_admin"):
+        return True, None, 200
+        
+    role = curr.get("role", "Sub-Admin")
+    perms = get_role_info(role)
+    allowed_apis = perms.get("apis", [])
+    
+    if "*" in allowed_apis or api_group in allowed_apis:
+        return True, None, 200
+        
+    job = perms.get("job", role)
+    return False, jsonify({
+        "error": f"Access Denied: Your assigned role '{role}' is restricted to '{job}'. You cannot access or modify '{api_group}'."
+    }), 403
+
 def get_current_content():
     seed = load_seed_data()
     if mongo_available:
@@ -134,36 +302,49 @@ def load_applications():
     return []
 
 def save_application(app_data):
+    saved = False
     if mongo_available:
         try:
             db.applications.insert_one(dict(app_data))
-            return True
+            saved = True
         except Exception as e:
             print(f"[PyMongo Error] Failed to save application: {e}")
-    apps = load_applications()
-    apps.insert(0, app_data)
     try:
+        apps = []
+        if os.path.exists(APPLICATIONS_FILE):
+            with open(APPLICATIONS_FILE, "r", encoding="utf-8") as f:
+                apps = json.load(f)
+        apps = [a for a in apps if a.get("id") != app_data.get("id")]
+        apps.insert(0, dict(app_data))
         with open(APPLICATIONS_FILE, "w", encoding="utf-8") as f:
             json.dump(apps, f, indent=2, ensure_ascii=False)
-        return True
+        saved = True
     except Exception as e:
         print(f"[File Error] Failed to write applications: {e}")
-        return False
+    return saved
 
 def remove_application(app_id):
+    removed = False
     if mongo_available:
         try:
-            db.applications.delete_one({"id": app_id})
+            res = db.applications.delete_one({"id": app_id})
+            if res.deleted_count > 0:
+                removed = True
         except Exception as e:
             print(f"[PyMongo Error] Failed to delete application: {e}")
-    apps = load_applications()
-    new_apps = [a for a in apps if a.get("id") != app_id]
     try:
+        apps = []
+        if os.path.exists(APPLICATIONS_FILE):
+            with open(APPLICATIONS_FILE, "r", encoding="utf-8") as f:
+                apps = json.load(f)
+        new_apps = [a for a in apps if a.get("id") != app_id]
+        if len(new_apps) < len(apps):
+            removed = True
         with open(APPLICATIONS_FILE, "w", encoding="utf-8") as f:
             json.dump(new_apps, f, indent=2, ensure_ascii=False)
-        return True
-    except Exception:
-        return False
+    except Exception as e:
+        print(f"[File Error] Failed to update applications: {e}")
+    return removed
 
 # Enquiries Helpers
 def load_enquiries():
@@ -181,35 +362,49 @@ def load_enquiries():
     return []
 
 def save_enquiry(enquiry_data):
+    saved = False
     if mongo_available:
         try:
             db.enquiries.insert_one(dict(enquiry_data))
-            return True
+            saved = True
         except Exception:
             pass
-    enqs = load_enquiries()
-    enqs.insert(0, enquiry_data)
     try:
+        enqs = []
+        if os.path.exists(ENQUIRIES_FILE):
+            with open(ENQUIRIES_FILE, "r", encoding="utf-8") as f:
+                enqs = json.load(f)
+        enqs = [e for e in enqs if e.get("id") != enquiry_data.get("id")]
+        enqs.insert(0, dict(enquiry_data))
         with open(ENQUIRIES_FILE, "w", encoding="utf-8") as f:
             json.dump(enqs, f, indent=2, ensure_ascii=False)
-        return True
-    except Exception:
-        return False
+        saved = True
+    except Exception as e:
+        print(f"[File Error] Failed to write enquiries: {e}")
+    return saved
 
 def remove_enquiry(enq_id):
+    removed = False
     if mongo_available:
         try:
-            db.enquiries.delete_one({"id": enq_id})
+            res = db.enquiries.delete_one({"id": enq_id})
+            if res.deleted_count > 0:
+                removed = True
         except Exception:
             pass
-    enqs = load_enquiries()
-    new_enqs = [e for e in enqs if e.get("id") != enq_id]
     try:
+        enqs = []
+        if os.path.exists(ENQUIRIES_FILE):
+            with open(ENQUIRIES_FILE, "r", encoding="utf-8") as f:
+                enqs = json.load(f)
+        new_enqs = [e for e in enqs if e.get("id") != enq_id]
+        if len(new_enqs) < len(enqs):
+            removed = True
         with open(ENQUIRIES_FILE, "w", encoding="utf-8") as f:
             json.dump(new_enqs, f, indent=2, ensure_ascii=False)
-        return True
     except Exception:
-        return False
+        pass
+    return removed
 
 
 # ==================== EXPLICIT STATIC ROUTES ====================
@@ -265,6 +460,229 @@ def api_health():
         "timestamp": datetime.now().isoformat()
     })
 
+# ==================== AUTHENTICATION & USER MANAGEMENT ROUTES ====================
+
+@app.route("/api/auth/login", methods=["POST"])
+def api_auth_login():
+    data = request.get_json(force=True, silent=True) or {}
+    username = (data.get("username") or "").strip().lower()
+    password = (data.get("password") or "")
+
+    if not username or not password:
+        return jsonify({"success": False, "error": "Username and password are required"}), 400
+
+    user = get_user_by_username(username)
+    if not user:
+        return jsonify({"success": False, "error": "Invalid username or password"}), 401
+
+    pw_hash = user.get("password_hash", "")
+    is_valid = False
+    if pw_hash:
+        try:
+            is_valid = check_password_hash(pw_hash, password)
+        except Exception:
+            is_valid = False
+    if not is_valid and user.get("password") == password:
+        is_valid = True
+
+    if not is_valid:
+        return jsonify({"success": False, "error": "Invalid username or password"}), 401
+
+    token = uuid.uuid4().hex
+    raw_role = user.get("role", "Admin" if user.get("username") == DEFAULT_ADMIN_USERNAME else "Sub-Admin")
+    role_info = get_role_info(raw_role)
+    is_primary = (user.get("username") == DEFAULT_ADMIN_USERNAME)
+
+    user_info = {
+        "username": user.get("username"),
+        "name": user.get("name", user.get("username").title()),
+        "role": raw_role,
+        "role_label": role_info["label"],
+        "assigned_job": role_info["job"],
+        "allowed_tabs": role_info["tabs"],
+        "is_primary_admin": is_primary,
+        "view_scope": raw_role,
+        "logged_in_at": datetime.now().isoformat()
+    }
+    active_sessions[token] = user_info
+
+    resp = jsonify({
+        "success": True,
+        "token": token,
+        "user": user_info,
+        "message": f"Welcome back, {user_info['name']}!"
+    })
+    resp.set_cookie("admin_token", token, httponly=False, samesite="Lax")
+    return resp
+
+@app.route("/api/auth/me", methods=["GET"])
+def api_auth_me():
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"authenticated": False, "error": "No active session found"}), 401
+    return jsonify({"authenticated": True, "user": curr})
+
+@app.route("/api/auth/scope", methods=["POST"])
+def api_auth_scope():
+    """Allows primary admin (doomsday) to test and toggle view scopes dynamically"""
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"error": "Authentication required"}), 401
+    if not curr.get("is_primary_admin"):
+        return jsonify({"error": "Access Denied: Only the primary administrator can switch view scopes."}), 403
+
+    data = request.get_json(force=True, silent=True) or {}
+    requested_scope = data.get("scope", "Admin")
+    if requested_scope not in ROLE_PERMISSIONS:
+        return jsonify({"error": f"Invalid role scope '{requested_scope}'"}), 400
+
+    role_info = get_role_info(requested_scope)
+    curr["view_scope"] = requested_scope
+    curr["role"] = requested_scope
+    curr["role_label"] = role_info["label"]
+    curr["assigned_job"] = role_info["job"]
+    curr["allowed_tabs"] = role_info["tabs"]
+
+    return jsonify({
+        "success": True,
+        "user": curr,
+        "message": f"Active role scope set to {role_info['label']}"
+    })
+
+@app.route("/api/auth/logout", methods=["POST"])
+def api_auth_logout():
+    auth_header = request.headers.get("Authorization", "")
+    token = None
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+    elif "token" in request.args:
+        token = request.args.get("token")
+    elif request.cookies.get("admin_token"):
+        token = request.cookies.get("admin_token")
+    if token and token in active_sessions:
+        del active_sessions[token]
+    resp = jsonify({"success": True, "message": "Logged out successfully"})
+    resp.set_cookie("admin_token", "", expires=0)
+    return resp
+
+@app.route("/api/users", methods=["GET"])
+def api_get_users():
+    is_ok, err_resp, status = check_permission("users")
+    if not is_ok:
+        return err_resp, status
+    
+    users = load_users()
+    sanitized = []
+    for u in users:
+        u_role = u.get("role", "Sub-Admin")
+        r_info = get_role_info(u_role)
+        sanitized.append({
+            "username": u.get("username"),
+            "name": u.get("name", u.get("username")),
+            "role": u_role,
+            "role_label": r_info["label"],
+            "assigned_job": r_info["job"],
+            "allowed_tabs": r_info["tabs"],
+            "created_at": u.get("created_at", datetime.now().isoformat()),
+            "is_primary_admin": u.get("username") == DEFAULT_ADMIN_USERNAME
+        })
+    return jsonify({"users": sanitized})
+
+@app.route("/api/users", methods=["POST"])
+def api_create_user():
+    is_ok, err_resp, status = check_permission("users")
+    if not is_ok:
+        return err_resp, status
+
+    curr = get_current_user_from_request()
+    data = request.get_json(force=True, silent=True) or {}
+    username = (data.get("username") or "").strip().lower()
+    password = (data.get("password") or "").strip()
+    name = (data.get("name") or "").strip()
+    role = (data.get("role") or "Sub-Admin").strip()
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+    if len(password) < 4:
+        return jsonify({"error": "Password must be at least 4 characters long"}), 400
+
+    existing = get_user_by_username(username)
+    if existing:
+        return jsonify({"error": f"Username '{username}' already exists. Please choose a different username."}), 409
+
+    if role not in ROLE_PERMISSIONS:
+        role = "Sub-Admin"
+
+    role_info = get_role_info(role)
+
+    new_user = {
+        "username": username,
+        "password_hash": generate_password_hash(password),
+        "name": name if name else username.title(),
+        "role": role,
+        "role_label": role_info["label"],
+        "assigned_job": role_info["job"],
+        "created_at": datetime.now().isoformat(),
+        "created_by": curr.get("username")
+    }
+
+    if mongo_available:
+        try:
+            db.users.replace_one({"username": username}, dict(new_user), upsert=True)
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to insert user: {e}")
+
+    users = load_users()
+    users.append(new_user)
+    save_all_users(users)
+
+    return jsonify({
+        "success": True,
+        "message": f"User '{username}' created successfully with designated role '{role_info['label']}'.",
+        "user": {
+            "username": new_user["username"],
+            "name": new_user["name"],
+            "role": new_user["role"],
+            "role_label": role_info["label"],
+            "assigned_job": role_info["job"],
+            "created_at": new_user["created_at"],
+            "is_primary_admin": False
+        }
+    }), 201
+
+@app.route("/api/users/<username>", methods=["DELETE"])
+def api_delete_user(username):
+    is_ok, err_resp, status = check_permission("users")
+    if not is_ok:
+        return err_resp, status
+
+    curr = get_current_user_from_request()
+    uname = (username or "").strip().lower()
+    if uname == DEFAULT_ADMIN_USERNAME:
+        return jsonify({"error": "Cannot delete primary administrator account ('doomsday')"}), 400
+    if uname == curr.get("username"):
+        return jsonify({"error": "Cannot delete your own active account while logged in"}), 400
+
+    deleted = False
+    if mongo_available:
+        try:
+            res = db.users.delete_one({"username": uname})
+            if res.deleted_count > 0:
+                deleted = True
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to delete user: {e}")
+
+    users = load_users()
+    initial_len = len(users)
+    users = [u for u in users if u.get("username", "").lower() != uname]
+    if len(users) < initial_len:
+        deleted = True
+        save_all_users(users)
+
+    if deleted:
+        return jsonify({"success": True, "message": f"User '{uname}' deleted successfully."})
+    return jsonify({"error": f"User '{uname}' not found"}), 404
+
 @app.route("/api/content", methods=["GET"])
 def api_get_content():
     content = get_current_content()
@@ -272,6 +690,10 @@ def api_get_content():
 
 @app.route("/api/content", methods=["PUT"])
 def api_update_content():
+    is_ok, err_resp, status = check_permission("content")
+    if not is_ok:
+        return err_resp, status
+
     data = request.get_json(force=True, silent=True)
     if not data:
         return jsonify({"error": "Invalid or missing JSON payload"}), 400
@@ -288,6 +710,10 @@ def api_update_content():
 
 @app.route("/api/upload", methods=["POST"])
 def api_upload_image():
+    is_ok, err_resp, status = check_permission("gallery")
+    if not is_ok:
+        return err_resp, status
+
     if "file" not in request.files:
         return jsonify({"error": "No file part provided in request"}), 400
     file = request.files["file"]
@@ -329,6 +755,10 @@ def api_upload_image():
 
 @app.route("/api/photos/<photo_id>", methods=["DELETE"])
 def api_delete_photo(photo_id):
+    is_ok, err_resp, status = check_permission("gallery")
+    if not is_ok:
+        return err_resp, status
+
     current = get_current_content()
     photos = current.get("photos", [])
     target = None
@@ -360,6 +790,10 @@ def api_delete_photo(photo_id):
 # CRUD for Notices
 @app.route("/api/notices", methods=["POST"])
 def api_add_notice():
+    is_ok, err_resp, status = check_permission("notices")
+    if not is_ok:
+        return err_resp, status
+
     data = request.get_json(force=True, silent=True) or {}
     title = data.get("title", "").strip()
     day = data.get("day", "").strip() or str(datetime.now().day).zfill(2)
@@ -386,6 +820,10 @@ def api_add_notice():
 
 @app.route("/api/notices/<notice_id>", methods=["DELETE"])
 def api_delete_notice(notice_id):
+    is_ok, err_resp, status = check_permission("notices")
+    if not is_ok:
+        return err_resp, status
+
     current = get_current_content()
     notices = current.get("notices", [])
     new_notices = [n for n in notices if n.get("id") != notice_id]
@@ -398,6 +836,10 @@ def api_delete_notice(notice_id):
 # CRUD for Programmes
 @app.route("/api/programmes", methods=["POST"])
 def api_add_programme():
+    is_ok, err_resp, status = check_permission("programmes")
+    if not is_ok:
+        return err_resp, status
+
     data = request.get_json(force=True, silent=True) or {}
     title = data.get("title", "").strip()
     category = data.get("category", "Undergraduate").strip()
@@ -436,6 +878,10 @@ def api_add_programme():
 
 @app.route("/api/programmes/<prog_id>", methods=["DELETE"])
 def api_delete_programme(prog_id):
+    is_ok, err_resp, status = check_permission("programmes")
+    if not is_ok:
+        return err_resp, status
+
     current = get_current_content()
     programmes = current.get("programmes", [])
     new_progs = [p for p in programmes if p.get("id") != prog_id]
@@ -448,6 +894,9 @@ def api_delete_programme(prog_id):
 # CRUD for Online Admission Applications
 @app.route("/api/applications", methods=["GET"])
 def api_get_applications():
+    is_ok, err_resp, status = check_permission("applications")
+    if not is_ok:
+        return err_resp, status
     apps = load_applications()
     return jsonify(apps)
 
@@ -490,6 +939,9 @@ def api_submit_application():
 
 @app.route("/api/applications/<app_id>", methods=["DELETE"])
 def api_delete_application(app_id):
+    is_ok, err_resp, status = check_permission("applications")
+    if not is_ok:
+        return err_resp, status
     success = remove_application(app_id)
     if success:
         return jsonify({"success": True, "message": "Application deleted successfully"})
@@ -498,6 +950,9 @@ def api_delete_application(app_id):
 # Enquiries / Contact Submissions
 @app.route("/api/enquiries", methods=["GET"])
 def api_get_enquiries():
+    is_ok, err_resp, status = check_permission("enquiries")
+    if not is_ok:
+        return err_resp, status
     enquiries = load_enquiries()
     return jsonify(enquiries)
 
@@ -530,6 +985,9 @@ def api_submit_enquiry():
 
 @app.route("/api/enquiries/<enq_id>", methods=["DELETE"])
 def api_delete_enquiry(enq_id):
+    is_ok, err_resp, status = check_permission("enquiries")
+    if not is_ok:
+        return err_resp, status
     success = remove_enquiry(enq_id)
     if success:
         return jsonify({"success": True, "message": "Enquiry removed successfully"})
@@ -538,6 +996,10 @@ def api_delete_enquiry(enq_id):
 # CRUD for Stats
 @app.route("/api/stats", methods=["POST"])
 def api_add_stat():
+    is_ok, err_resp, status = check_permission("stats")
+    if not is_ok:
+        return err_resp, status
+
     data = request.get_json(force=True, silent=True) or {}
     value = data.get("value", "").strip()
     label = data.get("label", "").strip()
@@ -560,6 +1022,10 @@ def api_add_stat():
 
 @app.route("/api/stats/<stat_id>", methods=["DELETE"])
 def api_delete_stat(stat_id):
+    is_ok, err_resp, status = check_permission("stats")
+    if not is_ok:
+        return err_resp, status
+
     current = get_current_content()
     stats = current.get("stats", [])
     new_stats = [s for s in stats if s.get("id") != stat_id]
@@ -571,6 +1037,12 @@ def api_delete_stat(stat_id):
 
 @app.route("/api/reset", methods=["POST"])
 def api_reset_content():
+    curr = get_current_user_from_request()
+    if not curr:
+        return jsonify({"error": "Authentication required"}), 401
+    if not (curr.get("is_primary_admin") or curr.get("role") == "Super Admin"):
+        return jsonify({"error": "Access Denied: Only Super Administrator can reset database defaults."}), 403
+
     seed = load_seed_data()
     if not seed:
         return jsonify({"error": "Seed data not found"}), 500

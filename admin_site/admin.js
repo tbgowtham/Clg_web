@@ -4,6 +4,10 @@
   let selectedUploadFile = null;
   let activeModalPhotoId = null;
 
+  // Authentication State
+  let authToken = sessionStorage.getItem("sdasc_admin_token") || localStorage.getItem("sdasc_admin_token") || "";
+  let currentUser = null;
+
   const API_BASE = ""; // Relative to origin
 
   // Elements
@@ -17,16 +21,102 @@
   const navTabs = document.querySelectorAll(".nav-tab");
   const tabPanels = document.querySelectorAll(".tab-panel");
 
+  // Helper for authenticated fetch
+  function authFetch(url, options = {}) {
+    options.headers = options.headers || {};
+    if (!authToken) {
+      authToken = sessionStorage.getItem("sdasc_admin_token") || localStorage.getItem("sdasc_admin_token") || "";
+    }
+    if (authToken) {
+      if (options.headers instanceof Headers) {
+        options.headers.set("Authorization", `Bearer ${authToken}`);
+      } else {
+        options.headers["Authorization"] = `Bearer ${authToken}`;
+      }
+    }
+    options.credentials = options.credentials || "same-origin";
+    return fetch(url, options);
+  }
+
   // Init
   async function init() {
+    setupAuthHandlers();
+    setupUserManagement();
     setupTabNavigation();
     setupGalleryUploader();
     setupForms();
     setupModals();
-    await checkDbHealth();
-    await loadContent();
-    await loadApplications();
-    await loadEnquiries();
+
+    const isAuthenticated = await checkAuthStatus();
+    if (isAuthenticated) {
+      await checkDbHealth();
+      const tabs = currentUser?.allowed_tabs || [];
+      if (tabs.includes("content") || tabs.includes("gallery") || tabs.includes("notices") || tabs.includes("programmes") || tabs.includes("stats") || tabs.includes("dashboard")) {
+        await loadContent();
+      }
+      if (tabs.includes("applications")) {
+        await loadApplications();
+      }
+      if (tabs.includes("enquiries")) {
+        await loadEnquiries();
+      }
+      if (tabs.includes("users")) {
+        await loadUsers();
+      }
+    }
+  }
+
+  // ================= ROLE-BASED ACCESS CONTROL (RBAC) =================
+  function applyRolePermissions(user) {
+    if (!user) return;
+    
+    // Determine allowed tabs
+    let allowedTabs = user.allowed_tabs;
+    if (!allowedTabs || !allowedTabs.length) {
+      if (user.role === "Admin") allowedTabs = ["dashboard", "applications", "enquiries", "users", "preview"];
+      else if (user.role === "Content Editor") allowedTabs = ["content", "gallery", "notices", "programmes", "stats", "preview"];
+      else if (user.role === "Super Admin") allowedTabs = ["dashboard", "gallery", "notices", "programmes", "stats", "content", "applications", "enquiries", "users", "preview"];
+      else allowedTabs = ["applications", "enquiries", "preview"]; // Sub-Admin default
+    }
+
+    user.allowed_tabs = allowedTabs;
+
+    // Filter sidebar navigation buttons
+    navTabs.forEach((tab) => {
+      const tabName = tab.getAttribute("data-tab");
+      const isAllowed = allowedTabs.includes(tabName);
+      tab.classList.toggle("role-hidden", !isAllowed);
+    });
+
+    // Control visibility of Super Admin actions like Reset Demo Data
+    const btnReset = document.getElementById("btnResetDefaults");
+    if (btnReset) {
+      btnReset.style.display = (user.is_primary_admin || user.role === "Super Admin") ? "inline-flex" : "none";
+    }
+
+    // Role scope switcher (only for primary admin doomsday)
+    const scopeWrap = document.getElementById("scopeSwitcherWrap");
+    const scopeSelect = document.getElementById("selectRoleScope");
+    if (scopeWrap && scopeSelect) {
+      if (user.is_primary_admin) {
+        scopeWrap.style.display = "flex";
+        scopeSelect.value = user.view_scope || user.role || "Admin";
+      } else {
+        scopeWrap.style.display = "none";
+      }
+    }
+
+    // If current active tab is not allowed, switch to user's designated primary tab
+    const activeTabElem = document.querySelector(".nav-tab.active:not(.role-hidden)");
+    if (!activeTabElem) {
+      let defaultTab = "users";
+      if (user.role === "Sub-Admin" || user.role === "Admissions Officer") defaultTab = "applications";
+      else if (user.role === "Content Editor") defaultTab = "content";
+      else if (user.role === "Super Admin") defaultTab = "dashboard";
+      else defaultTab = allowedTabs[0] || "users";
+
+      switchTab(defaultTab);
+    }
   }
 
   // ================= TAB NAVIGATION =================
@@ -37,6 +127,38 @@
         switchTab(tabName);
       });
     });
+
+    // Role scope simulation listener (for doomsday testing)
+    const selectScope = document.getElementById("selectRoleScope");
+    if (selectScope) {
+      selectScope.addEventListener("change", async (e) => {
+        const newScope = e.target.value;
+        try {
+          const res = await authFetch("/api/auth/scope", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scope: newScope })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            currentUser = data.user;
+            updateUserSessionUI();
+            showToast(`Switched view to ${data.user.role_label}`, "info");
+            
+            // Reload relevant section data
+            const tabs = currentUser.allowed_tabs || [];
+            if (tabs.includes("applications")) loadApplications();
+            if (tabs.includes("enquiries")) loadEnquiries();
+            if (tabs.includes("users")) loadUsers();
+            if (tabs.includes("content") || tabs.includes("gallery")) loadContent();
+          } else {
+            showToast(data.error || "Failed to switch role view", "error");
+          }
+        } catch (err) {
+          showToast("Error communicating with server", "error");
+        }
+      });
+    }
 
     document.getElementById("btnReloadPreview")?.addEventListener("click", () => {
       const frame = document.getElementById("collegeSiteFrame");
@@ -64,18 +186,27 @@
   }
 
   window.switchTab = function (tabName) {
+    // RBAC Security Check
+    if (currentUser && currentUser.allowed_tabs && !currentUser.allowed_tabs.includes(tabName)) {
+      showToast(`Access Restricted: Your assigned role (${currentUser.role_label || currentUser.role}) cannot access this section.`, "error");
+      const fallbackTab = currentUser.allowed_tabs[0] || "users";
+      switchTab(fallbackTab);
+      return;
+    }
+
     navTabs.forEach((t) => t.classList.toggle("active", t.getAttribute("data-tab") === tabName));
     tabPanels.forEach((p) => p.classList.toggle("active", p.id === `tab-${tabName}`));
 
     const titles = {
-      dashboard: ["Dashboard Overview", "Manage and publish real-time content for Sridevi Arts & Science College, Ponneri"],
+      dashboard: ["Dashboard Overview", "Central institutional metrics and overview"],
       gallery: ["Campus Gallery & Photos", "Upload and organize high-resolution event and campus images"],
       notices: ["Campus Bulletin & Notices", "Post timely academic, fest, and cultural updates on the homepage"],
-      programmes: ["Academic Programmes", "Manage 12 undergraduate and postgraduate course offerings"],
+      programmes: ["Academic Programmes", "Manage undergraduate and postgraduate course offerings"],
       stats: ["Key Statistics", "Highlight institutional achievements and metrics"],
       content: ["Hero & General Content", "Customize top announcement bar, Ponneri address, and contacts"],
       applications: ["Online Admission Applications (2026–27)", "Review student candidate registrations submitted via the website"],
       enquiries: ["Public Enquiries & Messages", "Manage questions and feedback from parents, students, and recruiters"],
+      users: ["User Accounts & Permissions", "Create and manage administrative credentials and sub-admin roles"],
       preview: ["Live Site Preview", "Real-time preview of the public college website"],
     };
 
@@ -84,8 +215,15 @@
       pageSubtitle.textContent = titles[tabName][1];
     }
 
+    // Toggle Save Changes button: only visible on content tab
+    const btnSave = document.getElementById("btnSaveAll");
+    if (btnSave) {
+      btnSave.style.display = (tabName === "content") ? "inline-flex" : "none";
+    }
+
     if (tabName === "applications") loadApplications();
     if (tabName === "enquiries") loadEnquiries();
+    if (tabName === "users") loadUsers();
 
     if (tabName === "preview") {
       const frame = document.getElementById("collegeSiteFrame");
@@ -393,7 +531,7 @@
       formData.append("section", "photos");
 
       try {
-        const res = await fetch("/api/upload", {
+        const res = await authFetch("/api/upload", {
           method: "POST",
           body: formData,
         });
@@ -471,7 +609,7 @@
 
   async function addNoticeApi(noticeData) {
     try {
-      const res = await fetch("/api/notices", {
+      const res = await authFetch("/api/notices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(noticeData),
@@ -491,7 +629,7 @@
   window.deleteNotice = async function (id) {
     if (!confirm("Are you sure you want to remove this bulletin notice?")) return;
     try {
-      const res = await fetch(`/api/notices/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/notices/${id}`, { method: "DELETE" });
       if (res.ok) {
         showToast("Notice removed", "info");
         await loadContent();
@@ -503,7 +641,7 @@
 
   async function addProgrammeApi(progData) {
     try {
-      const res = await fetch("/api/programmes", {
+      const res = await authFetch("/api/programmes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(progData),
@@ -512,6 +650,8 @@
       if (res.ok && data.success) {
         showToast("Academic programme added!", "success");
         await loadContent();
+      } else {
+        showToast(data.error || "Failed to add programme", "error");
       }
     } catch (err) {
       showToast("Server error: " + err.message, "error");
@@ -521,7 +661,7 @@
   window.deleteProgramme = async function (id) {
     if (!confirm("Are you sure you want to remove this programme?")) return;
     try {
-      const res = await fetch(`/api/programmes/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/programmes/${id}`, { method: "DELETE" });
       if (res.ok) {
         showToast("Programme removed", "info");
         await loadContent();
@@ -536,15 +676,30 @@
   let enquiriesList = [];
 
   async function loadApplications() {
+    const tbody = document.getElementById("applicationsTableBody");
     try {
-      const res = await fetch("/api/applications");
-      if (!res.ok) throw new Error("Could not fetch applications");
+      const res = await authFetch("/api/applications");
+      if (!res.ok) {
+        let errMsg = `HTTP ${res.status}`;
+        try {
+          const errData = await res.json();
+          if (errData && errData.error) errMsg = errData.error;
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
       applicationsList = await res.json();
       renderApplicationsTable();
     } catch (err) {
       console.warn("Error loading applications:", err);
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #dc2626; padding: 30px; font-weight: 500;">
+          <div style="font-size: 14px; margin-bottom: 8px;">⚠️ Could not load applications: ${escapeHtml(err.message)}</div>
+          <button type="button" class="btn-secondary text-xs" onclick="window.loadApplications()" style="margin: 0 auto; display: inline-flex;">↻ Retry Loading</button>
+        </td></tr>`;
+      }
     }
   }
+  window.loadApplications = loadApplications;
 
   function renderApplicationsTable() {
     const tbody = document.getElementById("applicationsTableBody");
@@ -558,13 +713,12 @@
     if (!tbody) return;
 
     const searchInput = document.getElementById("appSearchInput");
-    const searchTerm = (searchInput?.value || "").toLowerCase();
+    const searchTerm = (searchInput?.value || "").toLowerCase().trim();
     const filtered = applicationsList.filter((a) => {
-      return (
-        (a.name || "").toLowerCase().includes(searchTerm) ||
-        (a.course || "").toLowerCase().includes(searchTerm) ||
-        (a.mobile || "").toLowerCase().includes(searchTerm)
-      );
+      const name = String(a.name || "").toLowerCase();
+      const course = String(a.course || "").toLowerCase();
+      const mobile = String(a.mobile || "").toLowerCase();
+      return name.includes(searchTerm) || course.includes(searchTerm) || mobile.includes(searchTerm);
     });
 
     if (!filtered.length) {
@@ -573,25 +727,27 @@
     }
 
     tbody.innerHTML = filtered
-      .map((a) => `
+      .map((a) => {
+        const cleanMobile = String(a.mobile || "").replace(/\D/g, "");
+        return `
         <tr>
           <td><small style="color: var(--muted);">${escapeHtml(a.submittedAt || "Recent")}</small></td>
           <td>
-            <strong>${escapeHtml(a.name)}</strong><br />
+            <strong>${escapeHtml(a.name || "Unnamed")}</strong><br />
             <small style="color: var(--muted);">${escapeHtml(a.gender || "")} · DOB: ${escapeHtml(a.dob || "N/A")}</small>
           </td>
           <td>
             <span class="badge-pill purple">${escapeHtml(a.courseType || "UG")}</span><br />
-            <strong>${escapeHtml(a.course)}</strong>
+            <strong>${escapeHtml(a.course || "General")}</strong>
           </td>
           <td>
-            <a href="tel:${escapeHtml(a.mobile)}" style="font-weight: 600; color: var(--purple);">📞 ${escapeHtml(a.mobile)}</a><br />
-            <a href="https://wa.me/91${escapeHtml(a.mobile.replace(/\D/g, ''))}" target="_blank" style="font-size: 11px; color: #10b981;">💬 WhatsApp</a>
+            <a href="tel:${escapeHtml(a.mobile || "")}" style="font-weight: 600; color: var(--purple);">📞 ${escapeHtml(a.mobile || "—")}</a><br />
+            ${cleanMobile ? `<a href="https://wa.me/91${cleanMobile}" target="_blank" style="font-size: 11px; color: #10b981;">💬 WhatsApp</a>` : ""}
           </td>
           <td><small>${escapeHtml(a.email || "—")}</small></td>
           <td>
             <span>${escapeHtml(a.schoolOrCollege || "—")}</span><br />
-            <small><strong>${escapeHtml(a.percentage || "")}</strong> (${escapeHtml(a.marksTotal || "Marks")})</small>
+            <small><strong>${escapeHtml(a.percentage || "")}</strong> ${a.marksTotal ? `(${escapeHtml(a.marksTotal)} Marks)` : ""}</small>
           </td>
           <td>
             <span class="badge-pill warning">${escapeHtml(a.community || "General")}</span><br />
@@ -600,20 +756,24 @@
             </small>
           </td>
           <td>
-            <button class="btn-action-icon" onclick="deleteApplication('${a.id}')" title="Delete application">🗑</button>
+            <button class="btn-action-icon" onclick="deleteApplication('${escapeHtml(a.id)}')" title="Delete application">🗑</button>
           </td>
         </tr>
-      `)
+      `;
+      })
       .join("");
   }
 
   window.deleteApplication = async function (id) {
     if (!confirm("Are you sure you want to remove this student application?")) return;
     try {
-      const res = await fetch(`/api/applications/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/applications/${id}`, { method: "DELETE" });
       if (res.ok) {
         showToast("Application record deleted", "info");
         await loadApplications();
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.error || "Delete failed", "error");
       }
     } catch (err) {
       showToast("Delete failed: " + err.message, "error");
@@ -622,15 +782,30 @@
 
   // ================= PUBLIC ENQUIRIES =================
   async function loadEnquiries() {
+    const tbody = document.getElementById("enquiriesTableBody");
     try {
-      const res = await fetch("/api/enquiries");
-      if (!res.ok) throw new Error("Could not fetch enquiries");
+      const res = await authFetch("/api/enquiries");
+      if (!res.ok) {
+        let errMsg = `HTTP ${res.status}`;
+        try {
+          const errData = await res.json();
+          if (errData && errData.error) errMsg = errData.error;
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
       enquiriesList = await res.json();
       renderEnquiriesTable();
     } catch (err) {
       console.warn("Error loading enquiries:", err);
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #dc2626; padding: 30px; font-weight: 500;">
+          <div style="font-size: 14px; margin-bottom: 8px;">⚠️ Could not load enquiries: ${escapeHtml(err.message)}</div>
+          <button type="button" class="btn-secondary text-xs" onclick="window.loadEnquiries()" style="margin: 0 auto; display: inline-flex;">↻ Retry Loading</button>
+        </td></tr>`;
+      }
     }
   }
+  window.loadEnquiries = loadEnquiries;
 
   function renderEnquiriesTable() {
     const tbody = document.getElementById("enquiriesTableBody");
@@ -660,7 +835,7 @@
           <td><span class="badge-pill purple">${escapeHtml(e.subject || "General")}</span></td>
           <td style="max-width: 320px;"><small>${escapeHtml(e.message)}</small></td>
           <td>
-            <button class="btn-action-icon" onclick="deleteEnquiry('${e.id}')" title="Delete enquiry">🗑</button>
+            <button class="btn-action-icon" onclick="deleteEnquiry('${escapeHtml(e.id)}')" title="Delete enquiry">🗑</button>
           </td>
         </tr>
       `)
@@ -670,10 +845,13 @@
   window.deleteEnquiry = async function (id) {
     if (!confirm("Are you sure you want to delete this enquiry message?")) return;
     try {
-      const res = await fetch(`/api/enquiries/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/enquiries/${id}`, { method: "DELETE" });
       if (res.ok) {
         showToast("Enquiry message removed", "info");
         await loadEnquiries();
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.error || "Delete failed", "error");
       }
     } catch (err) {
       showToast("Delete failed: " + err.message, "error");
@@ -682,7 +860,7 @@
 
   async function addStatApi(statData) {
     try {
-      const res = await fetch("/api/stats", {
+      const res = await authFetch("/api/stats", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(statData),
@@ -698,7 +876,7 @@
 
   window.deleteStat = async function (id) {
     try {
-      const res = await fetch(`/api/stats/${id}`, { method: "DELETE" });
+      const res = await authFetch(`/api/stats/${id}`, { method: "DELETE" });
       if (res.ok) {
         showToast("Metric removed", "info");
         await loadContent();
@@ -728,7 +906,7 @@
   function debouncedSaveStats() {
     clearTimeout(statDebounceTimer);
     statDebounceTimer = setTimeout(async () => {
-      await fetch("/api/content", {
+      await authFetch("/api/content", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stats: siteContent.stats }),
@@ -755,7 +933,7 @@
       const p = (siteContent.photos || []).find((x) => x.id === activeModalPhotoId);
       if (p) {
         p.label = newLabel;
-        await fetch("/api/content", {
+        await authFetch("/api/content", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ photos: siteContent.photos }),
@@ -793,7 +971,7 @@
   window.deletePhoto = async function (photoId) {
     if (!confirm("Are you sure you want to remove this photo from the campus gallery?")) return;
     try {
-      const res = await fetch(`/api/photos/${photoId}`, { method: "DELETE" });
+      const res = await authFetch(`/api/photos/${photoId}`, { method: "DELETE" });
       const data = await res.json();
       if (res.ok && data.success) {
         showToast("Photo removed from gallery", "info");
@@ -834,7 +1012,7 @@
     siteContent.contact.address = document.getElementById("fieldContactAddress").value.trim();
 
     try {
-      const res = await fetch("/api/content", {
+      const res = await authFetch("/api/content", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(siteContent),
@@ -852,13 +1030,349 @@
 
   async function resetDemoData() {
     try {
-      const res = await fetch("/api/reset", { method: "POST" });
+      const res = await authFetch("/api/reset", { method: "POST" });
       if (res.ok) {
         showToast("Site content reset to original Sri Devi College data", "info");
         await loadContent();
       }
     } catch (err) {
       showToast("Reset failed: " + err.message, "error");
+    }
+  }
+
+  // ================= AUTHENTICATION & LOGIN GATE =================
+  async function checkAuthStatus() {
+    const loginOverlay = document.getElementById("loginOverlay");
+    if (!authToken) {
+      showLoginScreen();
+      return false;
+    }
+
+    try {
+      const res = await authFetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.authenticated && data.user) {
+          currentUser = data.user;
+          updateUserSessionUI();
+          hideLoginScreen();
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn("Auth check error:", e);
+    }
+
+    // Token invalid or expired
+    authToken = "";
+    sessionStorage.removeItem("sdasc_admin_token");
+    localStorage.removeItem("sdasc_admin_token");
+    showLoginScreen();
+    return false;
+  }
+
+  function showLoginScreen() {
+    const loginOverlay = document.getElementById("loginOverlay");
+    if (loginOverlay) loginOverlay.classList.add("active");
+    document.body.classList.add("login-locked");
+    const unameInput = document.getElementById("loginUsername");
+    if (unameInput) setTimeout(() => unameInput.focus(), 150);
+  }
+
+  function hideLoginScreen() {
+    const loginOverlay = document.getElementById("loginOverlay");
+    if (loginOverlay) loginOverlay.classList.remove("active");
+    document.body.classList.remove("login-locked");
+  }
+
+  function updateUserSessionUI() {
+    if (!currentUser) return;
+    const sessionUserName = document.getElementById("sessionUserName");
+    const sessionUserRole = document.getElementById("sessionUserRole");
+    const sessionScopeChip = document.getElementById("sessionScopeChip");
+    const userAvatarInitial = document.getElementById("userAvatarInitial");
+    if (sessionUserName) sessionUserName.textContent = currentUser.username;
+    if (sessionUserRole) sessionUserRole.textContent = currentUser.role_label || currentUser.role || "Admin";
+    if (sessionScopeChip) {
+      sessionScopeChip.textContent = currentUser.assigned_job || (currentUser.role === "Admin" ? "User Management Only" : (currentUser.role === "Content Editor" ? "Website Content Only" : "Admissions Only"));
+    }
+    if (userAvatarInitial) userAvatarInitial.textContent = (currentUser.username || "A").charAt(0).toUpperCase();
+
+    applyRolePermissions(currentUser);
+  }
+
+  function setupAuthHandlers() {
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+    const btnTogglePw = document.getElementById("btnTogglePassword");
+    const loginPassword = document.getElementById("loginPassword");
+    const btnLogout = document.getElementById("btnLogout");
+
+    if (btnTogglePw && loginPassword) {
+      btnTogglePw.addEventListener("click", () => {
+        const isPw = loginPassword.type === "password";
+        loginPassword.type = isPw ? "text" : "password";
+        btnTogglePw.style.color = isPw ? "#0284c7" : "#94a3b8";
+      });
+    }
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = document.getElementById("loginUsername")?.value.trim();
+        const password = document.getElementById("loginPassword")?.value;
+        const btnSubmit = document.getElementById("btnLoginSubmit");
+
+        if (!username || !password) return;
+
+        if (loginError) loginError.style.display = "none";
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = `<span>Verifying credentials...</span>`;
+        }
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            authToken = data.token;
+            currentUser = data.user;
+            sessionStorage.setItem("sdasc_admin_token", authToken);
+            localStorage.setItem("sdasc_admin_token", authToken);
+            updateUserSessionUI();
+            hideLoginScreen();
+            showToast(`Welcome back, ${currentUser.name}!`, "success");
+
+            // Initialize/refresh CMS data based on role permissions
+            await checkDbHealth();
+            const tabs = currentUser.allowed_tabs || [];
+            if (tabs.includes("content") || tabs.includes("gallery") || tabs.includes("notices") || tabs.includes("programmes") || tabs.includes("stats") || tabs.includes("dashboard")) {
+              await loadContent();
+            }
+            if (tabs.includes("applications")) {
+              await loadApplications();
+            }
+            if (tabs.includes("enquiries")) {
+              await loadEnquiries();
+            }
+            if (tabs.includes("users")) {
+              await loadUsers();
+            }
+          } else {
+            if (loginError) {
+              loginError.textContent = data.error || "Invalid username or password.";
+              loginError.style.display = "block";
+            }
+          }
+        } catch (err) {
+          if (loginError) {
+            loginError.textContent = "Server connection error. Please try again.";
+            loginError.style.display = "block";
+          }
+        } finally {
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `<span>Sign In to Console</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+          }
+        }
+      });
+    }
+
+    if (btnLogout) {
+      btnLogout.addEventListener("click", async () => {
+        if (confirm("Are you sure you want to sign out of the Admin Console?")) {
+          try {
+            await authFetch("/api/auth/logout", { method: "POST" });
+          } catch (e) {}
+          authToken = "";
+          currentUser = null;
+          sessionStorage.removeItem("sdasc_admin_token");
+          localStorage.removeItem("sdasc_admin_token");
+          showLoginScreen();
+          showToast("Signed out of administrative console", "info");
+        }
+      });
+    }
+  }
+
+  // ================= USER & SUB-ADMIN MANAGEMENT =================
+  let usersList = [];
+
+  async function loadUsers() {
+    if (!authToken) return;
+    try {
+      const res = await authFetch("/api/users");
+      if (!res.ok) return;
+      const data = await res.json();
+      usersList = data.users || [];
+      renderUsersTable(usersList);
+      const count = usersList.length;
+      const b = document.getElementById("badgeUserCount");
+      const l = document.getElementById("userCountLabel");
+      if (b) b.textContent = count;
+      if (l) l.textContent = count;
+    } catch (err) {
+      console.warn("Failed to load users:", err);
+    }
+  }
+
+  function renderUsersTable(users) {
+    const tbody = document.getElementById("usersTableBody");
+    if (!tbody) return;
+
+    if (!users || !users.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--muted); padding: 30px;">No user accounts found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = users
+      .map((u) => {
+        const isPrimary = u.is_primary_admin || u.username === "doomsday";
+        const roleClass = u.role === "Admin" ? "admin" : (u.role === "Content Editor" ? "editor" : (u.role === "Super Admin" ? "super-admin" : "sub-admin"));
+        const jobDesc = u.assigned_job || (u.role === "Admin" ? "User Accounts & Security Only" : (u.role === "Content Editor" ? "Website Content & Media Only" : "Admissions & Enquiries Only"));
+        const dateStr = u.created_at ? new Date(u.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "Active";
+        
+        return `
+          <tr>
+            <td>
+              <strong style="color: var(--navy); font-size: 13.5px;">${escapeHtml(u.username)}</strong>
+              ${isPrimary ? `<span style="font-size: 10px; color: #b45309; margin-left: 6px; font-weight: 700;">★ Super Admin</span>` : ""}
+            </td>
+            <td style="color: #334155; font-weight: 500;">${escapeHtml(u.name || u.username)}</td>
+            <td>
+              <span class="role-badge ${roleClass}">${escapeHtml(u.role_label || u.role || "Sub-Admin")}</span>
+              <div style="font-size: 11px; color: #64748b; margin-top: 4px; font-weight: 500;">${escapeHtml(jobDesc)}</div>
+            </td>
+            <td style="color: var(--muted); font-size: 12.5px;">${dateStr}</td>
+            <td>
+              <span style="font-size: 11px; color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                ● Active
+              </span>
+            </td>
+            <td>
+              ${
+                isPrimary
+                  ? `<span style="color: var(--muted); font-size: 11.5px; font-style: italic;">Protected</span>`
+                  : `<button type="button" class="btn-del-user" data-username="${escapeHtml(u.username)}" title="Delete user">Delete</button>`
+              }
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    tbody.querySelectorAll(".btn-del-user").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const uname = btn.getAttribute("data-username");
+        if (!uname) return;
+        if (confirm(`Are you sure you want to delete user account '${uname}'? This cannot be undone.`)) {
+          await deleteUser(uname);
+        }
+      });
+    });
+  }
+
+  async function deleteUser(username) {
+    try {
+      const res = await authFetch(`/api/users/${encodeURIComponent(username)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`User '${username}' deleted successfully`, "success");
+        await loadUsers();
+      } else {
+        showToast(data.error || "Failed to delete user", "error");
+      }
+    } catch (e) {
+      showToast("Error communicating with server", "error");
+    }
+  }
+
+  function setupUserManagement() {
+    const modal = document.getElementById("modalCreateUser");
+    const openBtn = document.getElementById("btnOpenCreateUserModal");
+    const closeBtn = document.getElementById("btnCloseCreateUserModal");
+    const cancelBtn = document.getElementById("btnCancelCreateUser");
+    const form = document.getElementById("formCreateUser");
+    const errBox = document.getElementById("createUserError");
+
+    function closeModal() {
+      if (modal) modal.classList.add("hidden");
+      if (form) form.reset();
+      if (errBox) errBox.style.display = "none";
+    }
+
+    if (openBtn && modal) {
+      openBtn.addEventListener("click", () => {
+        if (errBox) errBox.style.display = "none";
+        modal.classList.remove("hidden");
+        const uInput = document.getElementById("newUsername");
+        if (uInput) setTimeout(() => uInput.focus(), 150);
+      });
+    }
+
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = document.getElementById("newUsername")?.value.trim().toLowerCase();
+        const name = document.getElementById("newFullName")?.value.trim();
+        const role = document.getElementById("newRole")?.value;
+        const password = document.getElementById("newPassword")?.value;
+        const submitBtn = document.getElementById("btnSubmitCreateUser");
+
+        if (!username || !password) return;
+
+        if (errBox) errBox.style.display = "none";
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Creating...";
+        }
+
+        try {
+          const res = await authFetch("/api/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, name, role, password }),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            closeModal();
+            showToast(data.message || `User '${username}' created!`, "success");
+            await loadUsers();
+          } else {
+            if (errBox) {
+              errBox.textContent = data.error || "Failed to create user account.";
+              errBox.style.display = "block";
+            }
+          }
+        } catch (err) {
+          if (errBox) {
+            errBox.textContent = "Server error while creating user.";
+            errBox.style.display = "block";
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Create Account";
+          }
+        }
+      });
     }
   }
 

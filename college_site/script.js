@@ -43,6 +43,7 @@
       modal.classList.remove("hidden");
       modal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      if (typeof pauseMosaicMorph === "function") pauseMosaicMorph();
     }
   }
 
@@ -52,6 +53,7 @@
       modal.classList.add("hidden");
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      if (typeof resumeMosaicMorph === "function") resumeMosaicMorph();
     }
   }
 
@@ -117,7 +119,7 @@
     openModal("siteLightboxModal");
   }
 
-  // Photo Mosaic Rendering
+  // Photo Mosaic Rendering & Dynamic Auto-Morph Sequencer (< 1s speed)
   const defaultPhotos = [
     { src: "photo/IMG20260228131225.jpg", label: "Awards & Academic Honors Ceremony" },
     { src: "photo/IMG_20260227_142615_304.jpg", label: "Proud Convocation & Graduation Moment" },
@@ -132,9 +134,123 @@
   let campusPhotosList = [...defaultPhotos];
   let featuredPhotoIndex = 0;
 
+  // Gallery Auto-Morph Sequencer: Random image selection & dynamic sizing with comfortable viewing time
+  let mosaicMorphTimer = null;
+  let mosaicActiveIndex = 0;
+  let isMosaicPaused = false;
+  const MORPH_INTERVAL = 3600; // Comfortable viewing time (3.6s)
+
+  function stopMosaicMorph() {
+    if (mosaicMorphTimer) {
+      clearInterval(mosaicMorphTimer);
+      mosaicMorphTimer = null;
+    }
+  }
+
+  function pauseMosaicMorph() {
+    isMosaicPaused = true;
+  }
+
+  function resumeMosaicMorph() {
+    isMosaicPaused = false;
+  }
+
+  // Exactly one image randomly grows in size; all other images (even bottom/top rows) reduce proportionally
+  function setGalleryActiveTile(activeTile) {
+    const photoMosaic = document.querySelector("#photoMosaic");
+    if (!photoMosaic || !activeTile) return;
+
+    const rows = Array.from(photoMosaic.querySelectorAll(".photo-mosaic-row"));
+    const activeRow = activeTile.closest(".photo-mosaic-row");
+    const isMobile = window.innerWidth < 600;
+
+    // Dynamic random grow factor between 1.95 and 2.40 (1.65 - 1.95 on mobile)
+    const activeGrow = isMobile
+      ? (1.65 + Math.random() * 0.3).toFixed(2)
+      : (1.95 + Math.random() * 0.45).toFixed(2);
+
+    // Natural height for active row: 330px - 365px on desktop (230px - 255px on mobile)
+    const activeHeight = isMobile
+      ? `${230 + Math.floor(Math.random() * 25)}px`
+      : `${330 + Math.floor(Math.random() * 35)}px`;
+
+    // Reduced height for inactive row so other images shrink naturally
+    const inactiveHeight = isMobile ? "115px" : "145px";
+
+    rows.forEach((r) => {
+      const rowTiles = Array.from(r.querySelectorAll(".photo-mosaic-tile"));
+      if (r === activeRow) {
+        r.style.setProperty("--row-h", activeHeight);
+        const siblingCount = rowTiles.length - 1;
+        const siblingGrow = siblingCount > 0
+          ? ((4.0 - parseFloat(activeGrow)) / siblingCount).toFixed(2)
+          : "0.75";
+
+        rowTiles.forEach((tile) => {
+          if (tile === activeTile) {
+            tile.style.setProperty("--grow", activeGrow);
+            tile.classList.add("tile-big");
+          } else {
+            tile.style.setProperty("--grow", siblingGrow);
+            tile.classList.remove("tile-big");
+          }
+        });
+      } else {
+        // Other row(s) (e.g. bottom row) reduce their height & grow size
+        r.style.setProperty("--row-h", inactiveHeight);
+        rowTiles.forEach((tile) => {
+          tile.style.setProperty("--grow", "1.0");
+          tile.classList.remove("tile-big");
+        });
+      }
+    });
+  }
+
+  // Randomly select next tile to grow
+  function transformNextMosaicTile() {
+    const photoMosaic = document.querySelector("#photoMosaic");
+    if (!photoMosaic) return;
+
+    const tiles = Array.from(photoMosaic.querySelectorAll(".photo-mosaic-tile"));
+    if (!tiles.length) return;
+
+    // Pick a random tile different from the current one
+    let nextIndex = Math.floor(Math.random() * tiles.length);
+    if (tiles.length > 1 && nextIndex === mosaicActiveIndex) {
+      nextIndex = (nextIndex + 1 + Math.floor(Math.random() * (tiles.length - 1))) % tiles.length;
+    }
+    mosaicActiveIndex = nextIndex;
+    const activeTile = tiles[mosaicActiveIndex];
+    setGalleryActiveTile(activeTile);
+  }
+
+  function startMosaicMorph() {
+    stopMosaicMorph();
+    transformNextMosaicTile();
+    mosaicMorphTimer = setInterval(() => {
+      if (!isMosaicPaused) {
+        transformNextMosaicTile();
+      }
+    }, MORPH_INTERVAL);
+  }
+
+  function setupMosaicInteractivity() {
+    const photoMosaic = document.querySelector("#photoMosaic");
+    if (!photoMosaic) return;
+
+    photoMosaic.addEventListener("mouseenter", () => {
+      isMosaicPaused = true;
+    });
+    photoMosaic.addEventListener("mouseleave", () => {
+      isMosaicPaused = false;
+    });
+  }
+
   function renderPhotoMosaic(photos) {
     const photoMosaic = document.querySelector("#photoMosaic");
     if (!photoMosaic) return;
+
+    stopMosaicMorph();
 
     if (photos && photos.length) {
       campusPhotosList = photos.map((p) => ({
@@ -169,14 +285,35 @@
       .join("");
 
     photoMosaic.querySelectorAll(".photo-mosaic-tile").forEach((tile) => {
+      // Lightbox view
       tile.addEventListener("click", () => {
         const idx = parseInt(tile.getAttribute("data-index"), 10);
         if (campusPhotosList[idx]) {
           openLightbox(campusPhotosList[idx].src, campusPhotosList[idx].label);
         }
       });
+
+      // Hover interaction: set hovered tile as the single big tile
+      tile.addEventListener("mouseenter", () => {
+        const idx = parseInt(tile.getAttribute("data-index"), 10);
+        if (!isNaN(idx)) mosaicActiveIndex = idx;
+        setGalleryActiveTile(tile);
+      });
     });
+
+    setupMosaicInteractivity();
+    startMosaicMorph();
   }
+
+  // Responsive breakpoint listener for re-rendering grid
+  let lastMosaicRowSize = window.innerWidth < 600 ? 2 : 4;
+  window.addEventListener("resize", () => {
+    const newRowSize = window.innerWidth < 600 ? 2 : 4;
+    if (newRowSize !== lastMosaicRowSize) {
+      lastMosaicRowSize = newRowSize;
+      renderPhotoMosaic();
+    }
+  });
 
   // Course Details Modal Popup Logic
   function openCourseDetails(prog) {
@@ -187,26 +324,14 @@
     const cmSeats = document.getElementById("cmSeats");
     const cmFee = document.getElementById("cmFee");
     const cmDesc = document.getElementById("cmDesc");
-    const cmApplyBtn = document.getElementById("cmApplyBtn");
 
     if (cmBadge) cmBadge.textContent = prog.number || "DEGREE PROGRAMME";
     if (cmTitle) cmTitle.textContent = prog.title || "";
     if (cmDept) cmDept.textContent = prog.department || "Sridevi Arts & Science College";
-    if (cmDuration) cmDuration.textContent = `⏱ ${prog.duration || "3 Years"}`;
-    if (cmSeats) cmSeats.textContent = `💺 ${prog.seats || "100 Seats"}`;
-    if (cmFee) cmFee.textContent = `💰 ${prog.fee || "Affordable Tuition"}`;
+    if (cmDuration) cmDuration.textContent = prog.duration || "3 Years";
+    if (cmSeats) cmSeats.textContent = prog.seats || "100 Seats";
+    if (cmFee) cmFee.textContent = prog.fee || "Affordable Tuition";
     if (cmDesc) cmDesc.textContent = prog.desc || "";
-
-    if (cmApplyBtn) {
-      cmApplyBtn.onclick = () => {
-        closeModal("courseModal");
-        const courseSelect = document.getElementById("appCourse");
-        if (courseSelect && prog.title) {
-          courseSelect.value = prog.title;
-        }
-        openModal("applyModal");
-      };
-    }
 
     openModal("courseModal");
   }
@@ -248,13 +373,12 @@
             <span class="prog-dept-title">${escapeHtml(p.department || "Department")}</span>
             <h3 class="prog-title">${escapeHtml(p.title)}</h3>
             <div class="prog-meta-strip">
-              <span class="prog-seats">💺 ${escapeHtml(p.seats || "Available")}</span>
-              <span class="prog-fee">💰 ${escapeHtml(p.fee || "Enquire")}</span>
+              <span class="prog-seats">Seats: ${escapeHtml(p.seats || "Available")}</span>
+              <span class="prog-fee">Fee: ${escapeHtml(p.fee || "Enquire")}</span>
             </div>
             <p class="prog-desc">${escapeHtml(p.desc || "")}</p>
             <div class="prog-actions">
-              <button class="prog-btn-apply btn-open-modal" data-target="applyModal" data-course="${escapeHtml(p.title)}">Apply Now ✍</button>
-              <button class="prog-btn-info btn-view-course" data-id="${escapeHtml(p.id)}">Details ↗</button>
+              <button class="prog-btn-info btn-view-course full-width" data-id="${escapeHtml(p.id)}">Course Details &amp; Syllabus →</button>
             </div>
           </div>
         </article>`;
@@ -352,9 +476,9 @@
 
     container.innerHTML = usps
       .map(
-        (u) => `
+        (u, idx) => `
         <div class="usp-card">
-          <span class="usp-icon">${u.icon || "✦"}</span>
+          <span class="usp-badge-number">0${idx + 1}</span>
           <h3>${escapeHtml(u.title)}</h3>
           <p>${escapeHtml(u.desc)}</p>
         </div>`
@@ -544,7 +668,7 @@
           if (appFeedback) {
             appFeedback.className = "form-feedback success";
             appFeedback.innerHTML = `
-              🎉 <strong>Application Submitted Successfully!</strong><br />
+              <strong>Application Submitted Successfully!</strong><br />
               Reference ID: <strong>${escapeHtml(data.application?.id || "N/A")}</strong><br />
               ${escapeHtml(data.message)}
             `;
@@ -557,7 +681,7 @@
       } catch (error) {
         if (appFeedback) {
           appFeedback.className = "form-feedback error";
-          appFeedback.textContent = `⚠️ Error: ${error.message}`;
+          appFeedback.textContent = `Error: ${error.message}`;
           appFeedback.style.display = "block";
         }
       } finally {
@@ -601,7 +725,7 @@
         if (res.ok && data.success) {
           if (enqFeedback) {
             enqFeedback.className = "form-feedback success";
-            enqFeedback.textContent = `✓ ${data.message}`;
+            enqFeedback.textContent = data.message;
             enqFeedback.style.display = "block";
           }
           enquiryForm.reset();
@@ -611,7 +735,7 @@
       } catch (err) {
         if (enqFeedback) {
           enqFeedback.className = "form-feedback error";
-          enqFeedback.textContent = `⚠️ Error: ${err.message}`;
+          enqFeedback.textContent = `Error: ${err.message}`;
           enqFeedback.style.display = "block";
         }
       } finally {
