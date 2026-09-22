@@ -10,64 +10,65 @@
     "assigned_job": "Administration & User Management"
   },
   {
-    "username": "temp_user_test",
-    "password_hash": "scrypt:32768:8:1$EPeMdbLvkUiLfHtN$6ba020c18f8f5b72691d69ee6e19c8cccf5c40925ffa940e343e34ace2fa84311b1007d107fc34ca37451360089d0780c96be13097447be2cd8f6b36087d8b9f",
-    "name": "Renamed Test User",
+    "username": "akash",
+    "password_hash": "scrypt:32768:8:1$U8esWwSaYnjxzWbi$65a5d6633ae417f4d860def58b1c946ceee79bd5b67c66c6b96deec8abcdac1b22880dde1d08168b1f62094210dbe60ec8473f388d634fa0d26902faf88188ae",
+    "name": "akashBCA",
+    "role": "Admin",
+    "role_label": "Administrator",
+    "assigned_job": "Administration & User Management",
+    "created_at": "2026-09-22T06:41:55.147314",
+    "created_by": "doomsday"
+  },
+  {
+    "username": "nila",
+    "password_hash": "scrypt:32768:8:1$Yrx8biCUtsMAGNCs$b89375b1551a7d3ce4c85c6b319e3c44cdd0391c112ab57127f10ece5efcbbe2afea71838520cd59ea7d62e4e8ee2d56f2ee329cc9b2036094a7ccf14b24c017",
+    "name": "nilaBCA",
     "role": "Content Editor",
     "role_label": "Content Editor",
     "assigned_job": "Website Content, Gallery & Notices Only",
-    "created_at": "2026-09-21T14:08:18.739410",
+    "created_at": "2026-09-22T07:31:36.112908",
     "created_by": "doomsday"
-  },
-  {
-    "username": "gopinath",
-    "password_hash": "scrypt:32768:8:1$SZQcZaiiRAr5yiGY$aa8b6186b959d3aca98aa197277b0d97185cfcf4d34f54ce93c7fe3de4f59ae6a97608c2fa174dd113616d1e05acf03f4ad53fcf417010cdc626dac17d320256",
-    "name": "lakshmipathi",
-    "role": "Sub-Admin",
-    "created_at": "2026-09-21T09:31:10.274879",
-    "created_by": "doomsday",
-    "role_label": "Sub-Admin",
-    "assigned_job": "Admissions & Public Enquiries Only"
   },
   {
     "username": "lakshu",
-    "password_hash": "scrypt:32768:8:1$SZQcZaiiRAr5yiGY$aa8b6186b959d3aca98aa197277b0d97185cfcf4d34f54ce93c7fe3de4f59ae6a97608c2fa174dd113616d1e05acf03f4ad53fcf417010cdc626dac17d320256",
-    "name": "lakshmipathi",
+    "password_hash": "scrypt:32768:8:1$eD5a5QE6O1JzGcvs$f5b46fd822e97efbbe3f4ae8b0dff05f21a052d952f48a3ab40d3933671de90cb7e789f449ab19cf6bbbf39cf9d63f50f8be89479db5395ebe86c6a12a930583",
+    "name": "hemavathiBCA",
     "role": "Sub-Admin",
     "created_at": "2026-09-21T09:31:10.274879",
     "created_by": "doomsday",
     "role_label": "Sub-Admin",
-    "assigned_job": "Admissions & Public Enquiries Only"
-  },
-  {
-    "username": "otp_test_staff",
-    "password_hash": "scrypt:32768:8:1$SvalXs3d5MCjfInO$b9c6e86ef368000ee38154e47068b019f67351dd2ecbdb71595feeb7b59bad50176a0f9dd68edb5755112bfa9779807bfe2fe78354df70f141fabbe218843742",
-    "name": "Renamed Staff Member",
-    "role": "Sub-Admin",
-    "role_label": "Sub-Admin",
     "assigned_job": "Admissions & Public Enquiries Only",
-    "created_at": "2026-09-21T14:17:55.922048",
-    "created_by": "doomsday",
     "phone": "9876543210"
   },
   {
-    "username": "sub_tester",
-    "password_hash": "scrypt:32768:8:1$kGjmXyu91KCUVCr1$010e84210708562dcaabc77e4aac626d8b8b9e52b03c5bae05dd871baa6df295a1e40e529016332d44c569f6bac37dedbe6d1ecb2fd6e31c3659cc15f249363e",
-    "name": "Sub Tester",
-    "role": "Sub-Admin",
-    "role_label": "Sub-Admin",
-    "assigned_job": "Admissions & Public Enquiries Only",
-    "created_at": "2026-09-21T14:31:26.891885",
-    "created_by": "doomsday"
+    "username": "hemavathi",
+    "password_hash": "scrypt:32768:8:1$REqRb818H0FlOIgv$938f66806e7ab25d67ed59df3fd36008bdc14225069479c802df99d1e71190c06c4fc17eb568da9f2a4185cdc037f3c288ae9d5d5f0778df1ca3bbccf7250a0e",
+    "name": "BCA",
+    "role": "Content Editor",
+    "role_label": "Content Editor",
+    "assigned_job": "Website Content, Gallery & Notices Only",
+    "created_at": "2026-09-22T07:39:45.572373",
+    "created_by": "akash"
   },
   {
-    "username": "sub_tester",
-    "password_hash": "scrypt:32768:8:1$kGjmXyu91KCUVCr1$010e84210708562dcaabc77e4aac626d8b8b9e52b03c5bae05dd871baa6df295a1e40e529016332d44c569f6bac37dedbe6d1ecb2fd6e31c3659cc15f249363e",
-    "name": "Sub Tester",
+    "username": "akashbca",
+    "password_hash": "scrypt:32768:8:1$BTDEIKYNx8b8xon1$c7aed1da54352624cf0c465376a77e60d9d29dd808088723701169162c22d8b6c5c01943e0c5a0a1adbda7fa8eff731764afcf84f69d893623cf8fe8254fc9e6",
+    "name": "BCA",
+    "role": "Super Admin",
+    "role_label": "Super Administrator",
+    "assigned_job": "Full System Oversight",
+    "created_at": "2026-09-22T08:07:27.206773",
+    "created_by": "akash"
+  },
+  {
+    "username": "test_subadmin_deep",
+    "password_hash": "scrypt:32768:8:1$DLPJ9l4s3z8EQDtO$85c157e3548ea8e177df55ba5ded6e33a911367f54493d480d549d15515ca8f20b28bbf959493466ae731b3aa5f4fb4ff6b5bcc21636a10e73447f12f3370666",
+    "name": "Deep Test SubAdmin Renamed",
     "role": "Sub-Admin",
     "role_label": "Sub-Admin",
     "assigned_job": "Admissions & Public Enquiries Only",
-    "created_at": "2026-09-21T14:31:26.891885",
-    "created_by": "doomsday"
+    "created_at": "2026-09-22T13:53:58.368753",
+    "created_by": "doomsday",
+    "phone": "9998887776"
   }
 ]

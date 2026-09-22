@@ -77,7 +77,7 @@
         <div class="nav-links">
           <a href="#campus">Campus Life</a>
           <a href="#about">About College</a>
-          <a href="#programmes">Courses (12)</a>
+          <a href="#programmes" id="navCoursesLink">Courses</a>
           <a href="#management">Management</a>
           <a href="#usps">Why Sridevi?</a>
           <a href="#placement">Placements</a>
@@ -107,15 +107,6 @@
             Sridevi Arts and Science College is a premier co-educational institution affiliated to the University of Madras, dedicated to imparting purposeful, affordable, and quality higher education to students from rural and semi-urban communities.
           </p>
 
-          <div class="hero-actions">
-            <a class="button primary" href="#programmes" id="heroBtnExplore">
-              Explore 12 Academic Programmes →
-            </a>
-            <a class="button outline" href="#about">
-              About Our Institution
-            </a>
-          </div>
-
           <!-- Quick Badges -->
           <div class="hero-highlights">
             <div class="highlight-item">
@@ -126,7 +117,7 @@
             </div>
             <div class="highlight-item">
               <div class="hi-text">
-                <strong>12 Courses</strong>
+                <strong id="heroCoursesCount">Courses</strong>
                 <span>Arts, Science &amp; Commerce</span>
               </div>
             </div>
@@ -153,7 +144,7 @@
             <a href="#programmes" class="quick-card">
               <div>
                 <h4>Academic Courses</h4>
-                <p>12 UG &amp; PG Degree Programs</p>
+                <p id="quickStripCoursesDesc">UG &amp; PG Degree Programs</p>
               </div>
               <span class="qc-arrow">→</span>
             </a>
@@ -304,7 +295,7 @@
               <span class="stat-label">Students Empowered Annually</span>
             </div>
             <div class="stat-card">
-              <strong class="stat-value">12</strong>
+              <strong class="stat-value" id="statAcademicProgsCount">12</strong>
               <span class="stat-label">Academic Programmes Offered</span>
             </div>
             <div class="stat-card">
@@ -397,7 +388,7 @@
           <div class="section-heading">
             <div>
               <div class="eyebrow">Academics at Sridevi</div>
-              <h2>12 Comprehensive Academic Programmes</h2>
+              <h2 id="progSectionHeading">12 Comprehensive Academic Programmes</h2>
             </div>
             <p>
               Affiliated to the University of Madras. From foundational commerce and computing to modern Artificial Intelligence and postgraduate arts, choose your path to professional success.
@@ -406,14 +397,14 @@
 
           <!-- Filter Tabs -->
           <div class="programme-filters" id="progFilters">
-            <button class="filter-btn active" data-filter="all">All Programmes (12)</button>
-            <button class="filter-btn" data-filter="Computer Science">Computing &amp; AI (3)</button>
-            <button class="filter-btn" data-filter="Commerce">Commerce &amp; CS (2)</button>
-            <button class="filter-btn" data-filter="Management">Management (1)</button>
-            <button class="filter-btn" data-filter="Arts">Arts &amp; Languages (2)</button>
-            <button class="filter-btn" data-filter="Science">Science (1)</button>
-            <button class="filter-btn" data-filter="Postgraduate">Postgraduate (1)</button>
-            <button class="filter-btn" data-filter="Athletics">Sports &amp; Placement (2)</button>
+            <button class="filter-btn active" data-filter="all">All Programmes (<span id="countTabAll">12</span>)</button>
+            <button class="filter-btn" data-filter="Computer Science">Computing &amp; AI (<span id="countTabCS">3</span>)</button>
+            <button class="filter-btn" data-filter="Commerce">Commerce &amp; CS (<span id="countTabComm">2</span>)</button>
+            <button class="filter-btn" data-filter="Management">Management (<span id="countTabMgmt">1</span>)</button>
+            <button class="filter-btn" data-filter="Arts">Arts &amp; Languages (<span id="countTabArts">2</span>)</button>
+            <button class="filter-btn" data-filter="Science">Science (<span id="countTabSci">1</span>)</button>
+            <button class="filter-btn" data-filter="Postgraduate">Postgraduate (<span id="countTabPG">1</span>)</button>
+            <button class="filter-btn" data-filter="Athletics">Sports &amp; Placement (<span id="countTabSports">2</span>)</button>
           </div>
 
           <!-- Courses Grid -->
@@ -493,9 +484,6 @@
                   <span>Free Aptitude &amp; Interview Coaching</span>
                 </div>
               </div>
-              <div class="placement-actions">
-                <a href="#contact" class="button primary">Contact Placement Coordinator →</a>
-              </div>
             </div>
             <div class="placement-image">
               <img src="photo/IMG20260228131225.jpg" alt="Student Placement and Awards" />
@@ -518,7 +506,6 @@
                 <span class="fest-badge">FEATURED FEST</span>
                 <h4>SRISPARX-2k25</h4>
                 <p>Inter-Collegiate Cultural Festival uniting students across colleges. Registrations now open!</p>
-                <a href="#contact" class="button primary small">Enquire at Campus Desk</a>
               </div>
             </div>
 
@@ -746,8 +733,6 @@
         <div class="course-modal-body">
           <div class="course-meta-pills">
             <span class="meta-pill" id="cmDuration">3 Years</span>
-            <span class="meta-pill" id="cmSeats">100 Seats</span>
-            <span class="meta-pill" id="cmFee">₹17,500 / Year</span>
             <span class="meta-pill" id="cmAffiliation">Univ. of Madras</span>
           </div>
           <h4>Overview &amp; Scope</h4>
@@ -795,17 +780,7 @@
             <div class="form-group">
               <label for="appCourse">Select Desired Programme *</label>
               <select id="appCourse" required>
-                <!-- Dynamically populated with the 12 authentic courses -->
-                <option value="B.Com (General)">B.Com (General) — 100 Seats</option>
-                <option value="B.C.A (Computer Applications)">B.C.A (Computer Applications) — 100 Seats</option>
-                <option value="B.Sc (Computer Science)">B.Sc (Computer Science) — 100 Seats</option>
-                <option value="B.Sc (Computer Science with AI)">B.Sc (CS with Artificial Intelligence) — 60 Seats</option>
-                <option value="B.Sc (Mathematics)">B.Sc (Mathematics) — 70 Seats</option>
-                <option value="B.Com (Corporate Secretaryship)">B.Com (Corporate Secretaryship) — 70 Seats</option>
-                <option value="BBA (Business Administration)">BBA (Business Administration) — 70 Seats</option>
-                <option value="B.A (English Literature)">B.A (English Literature) — 70 Seats</option>
-                <option value="B.A (Tamil)">B.A (Tamil) — 70 Seats</option>
-                <option value="M.A (Tamil)">M.A (Tamil) — Postgraduate (40 Seats)</option>
+                <option value="" disabled selected>Select an academic programme</option>
               </select>
             </div>
           </div>

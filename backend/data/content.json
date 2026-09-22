@@ -7,23 +7,37 @@
     "address": "Krishnapuram, Ponneri - 601204, Tiruvallur Dist."
   },
   "hero": {
-    "eyebrow": "25 Glorious Years of Educational Excellence · Estd. 2001",
-    "title": "Empowering Minds. Shaping Tomorrow at Ponneri.",
+    "eyebrow": "25 Glorious Years of Excellence · Estd. 2001",
+    "title": "Empowering Rural Minds. Shaping Tomorrow at Ponneri.",
     "copy": "Sridevi Arts and Science College is a premier co-educational institution affiliated to the University of Madras, dedicated to imparting purposeful, affordable, and quality higher education to students from rural and semi-urban communities.",
-    "btn1Text": "Explore 12 Programmes",
-    "btn1Link": "#programmes",
-    "btn2Text": "Apply for Admission 2026–27 →",
-    "btn2Link": "#apply-modal",
     "videoPoster": "sridevi.png",
     "videoSrc": "sridevi.mp4"
   },
   "quickLinks": [
-    { "label": "Online Application", "link": "#apply-modal" },
-    { "label": "Campus Gallery", "link": "#campus" },
-    { "label": "Academic Courses", "link": "#programmes" },
-    { "label": "Management & Vision", "link": "#management" },
-    { "label": "Placement Cell", "link": "#placement" },
-    { "label": "SC/ST Scholarship", "link": "https://ssp.tn.gov.in" }
+    {
+      "label": "Online Application",
+      "link": "#apply-modal"
+    },
+    {
+      "label": "Campus Gallery",
+      "link": "#campus"
+    },
+    {
+      "label": "Academic Courses",
+      "link": "#programmes"
+    },
+    {
+      "label": "Management & Vision",
+      "link": "#management"
+    },
+    {
+      "label": "Placement Cell",
+      "link": "#placement"
+    },
+    {
+      "label": "SC/ST Scholarship",
+      "link": "https://ssp.tn.gov.in"
+    }
   ],
   "about": {
     "eyebrow": "Academic Heritage · Established 2001",
@@ -35,10 +49,26 @@
     "image": "photo/IMG_20260227_142615_304.jpg"
   },
   "stats": [
-    { "id": "stat-1", "value": "25+", "label": "Years of Academic Dedication" },
-    { "id": "stat-2", "value": "1,500+", "label": "Students Empowered Annually" },
-    { "id": "stat-3", "value": "12", "label": "Academic Programmes Offered" },
-    { "id": "stat-4", "value": "92%", "label": "Placement & Higher Studies Track" }
+    {
+      "id": "stat-1",
+      "value": "25+",
+      "label": "Years of Academic Dedication"
+    },
+    {
+      "id": "stat-2",
+      "value": "1,500+",
+      "label": "Students Empowered Annually"
+    },
+    {
+      "id": "stat-3",
+      "value": "12",
+      "label": "Academic Programmes Offered"
+    },
+    {
+      "id": "stat-4",
+      "value": "92%",
+      "label": "Placement & Higher Studies Track"
+    }
   ],
   "management": [
     {
@@ -84,8 +114,6 @@
       "category": "Commerce",
       "title": "B.Com (General)",
       "department": "Department of Commerce",
-      "seats": "100 Seats",
-      "fee": "₹17,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "One of our premier founding departments with high-caliber faculty, advanced accounting labs, and comprehensive training in financial markets and corporate taxation.",
       "image": "assets/sdasc/departments/112226_1625242329.jpeg",
@@ -97,8 +125,6 @@
       "category": "Computer Science",
       "title": "B.C.A (Computer Applications)",
       "department": "Department of Computer Applications",
-      "seats": "100 Seats",
-      "fee": "₹17,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Began in 2001, providing industry-aligned training in software development, web engineering, database architecture, and mobile applications.",
       "image": "assets/sdasc/departments/907227_1625278192.jpeg",
@@ -110,8 +136,6 @@
       "category": "Computer Science",
       "title": "B.Sc (Computer Science)",
       "department": "Department of Computer Science",
-      "seats": "100 Seats",
-      "fee": "₹17,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Celebrating 25 years of excellence, this department builds strong foundations in algorithms, system programming, cloud computing, and cybersecurity.",
       "image": "assets/sdasc/departments/734395_1625242361.jpeg",
@@ -123,8 +147,6 @@
       "category": "Science",
       "title": "B.Sc (Mathematics)",
       "department": "Department of Mathematics",
-      "seats": "70 Seats",
-      "fee": "₹12,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Renowned for producing University of Madras rank holders (including 90th and 31st university ranks) with deep analytical and quantitative rigor.",
       "image": "assets/sdasc/departments/224730_1625130953.jpeg",
@@ -136,8 +158,6 @@
       "category": "Commerce",
       "title": "B.Com (Corporate Secretaryship)",
       "department": "Department of Corporate Secretaryship",
-      "seats": "70 Seats",
-      "fee": "₹16,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Specialized curriculum focusing on company secretarial practices, corporate law, auditing, governance, and business communication.",
       "image": "assets/sdasc/departments/433611_1625217308.jpeg",
@@ -149,8 +169,6 @@
       "category": "Management",
       "title": "BBA (Business Administration)",
       "department": "Department of Business Administration",
-      "seats": "70 Seats",
-      "fee": "₹16,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Empowering future managers and entrepreneurs through practical case studies, Bizmind Club forums, business simulations, and executive mentoring.",
       "image": "assets/sdasc/departments/270117_1625239793.jpeg",
@@ -162,8 +180,6 @@
       "category": "Arts",
       "title": "B.A (English Literature)",
       "department": "Department of English",
-      "seats": "70 Seats",
-      "fee": "₹12,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Home to the English Literary Association, cultivating mastery in critical reading, communication, journalism, and public discourse.",
       "image": "assets/sdasc/departments/586820_1625240572.jpeg",
@@ -175,8 +191,6 @@
       "category": "Arts",
       "title": "B.A (Tamil)",
       "department": "Department of Tamil",
-      "seats": "70 Seats",
-      "fee": "₹12,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Fosters profound scholarship in classical and modern Tamil literature, linguistics, grammar, media studies, and cultural heritage.",
       "image": "assets/sdasc/departments/76783_1625277585.jpeg",
@@ -188,8 +202,6 @@
       "category": "Computer Science",
       "title": "B.Sc (Computer Science with AI)",
       "department": "Department of CS & Artificial Intelligence",
-      "seats": "60 Seats",
-      "fee": "₹17,500 / Year",
       "duration": "3 Years (UG)",
       "desc": "Next-generation degree integrating deep learning, neural networks, machine intelligence, natural language processing, and automated systems.",
       "image": "assets/sdasc/departments/50152_1709103994.jpeg",
@@ -201,8 +213,6 @@
       "category": "Postgraduate",
       "title": "M.A (Tamil)",
       "department": "Department of Postgraduate Tamil",
-      "seats": "40 Seats",
-      "fee": "₹13,000 / Year",
       "duration": "2 Years (PG)",
       "desc": "Advanced master's research degree concentrating on ancient epigraphy, Sangam literature, comparative literary theory, and higher pedagogy.",
       "image": "assets/sdasc/departments/781424_1709104179.jpeg",
@@ -214,8 +224,6 @@
       "category": "Co-Curricular",
       "title": "Physical Education & Sports",
       "department": "Department of Physical Education",
-      "seats": "All Students",
-      "fee": "Included in Campus Amenities",
       "duration": "Annual Coaching",
       "desc": "Expansive athletic facilities, multi-sport training grounds, inter-collegiate tournaments, martial arts, and annual athletic meets.",
       "image": "assets/sdasc/departments/482769_1655287421.jpeg",
@@ -227,8 +235,6 @@
       "category": "Placement",
       "title": "Employability & Placement Cell",
       "department": "Campus Placement Cell",
-      "seats": "100% Eligible Students",
-      "fee": "Complimentary Career Training",
       "duration": "3-Year Continuous Support",
       "desc": "Dedicated corporate platform providing aptitude coaching, mock interviews, foreign university counselling, and campus recruitment drives.",
       "image": "assets/sdasc/departments/211040_1696842795.jpeg",
@@ -298,14 +304,46 @@
     }
   ],
   "photos": [
-    { "id": "photo-1", "src": "photo/IMG20260228131225.jpg", "label": "Awards and Academic Honors Ceremony" },
-    { "id": "photo-2", "src": "photo/IMG_20260227_142615_304.jpg", "label": "Proud Convocation & Graduation Moment" },
-    { "id": "photo-3", "src": "photo/IMG_20260701_104825_496.jpg", "label": "Vibrant Campus Life at Sridevi College" },
-    { "id": "photo-4", "src": "photo/IMG_20260701_104949.jpg", "label": "Student Recognition & Merit Felicitations" },
-    { "id": "photo-5", "src": "photo/IMG_20260701_110148.jpg", "label": "Cultural Spirit & Stage Performances" },
-    { "id": "photo-6", "src": "photo/IMG_20260701_132844.jpg", "label": "Sridevi College Central Auditorium" },
-    { "id": "photo-7", "src": "photo/IMG_20260701_133523_953.jpg", "label": "Together on Campus: Student Community" },
-    { "id": "photo-8", "src": "photo/IMG_20260723_150208_229.jpg", "label": "Interactive Classroom & Lab Learning" }
+    {
+      "id": "photo-1",
+      "src": "photo/IMG20260228131225.jpg",
+      "label": "Awards and Academic Honors Ceremony"
+    },
+    {
+      "id": "photo-2",
+      "src": "photo/IMG_20260227_142615_304.jpg",
+      "label": "Proud Convocation & Graduation Moment"
+    },
+    {
+      "id": "photo-3",
+      "src": "photo/IMG_20260701_104825_496.jpg",
+      "label": "Vibrant Campus Life at Sridevi College"
+    },
+    {
+      "id": "photo-4",
+      "src": "photo/IMG_20260701_104949.jpg",
+      "label": "Student Recognition & Merit Felicitations"
+    },
+    {
+      "id": "photo-5",
+      "src": "photo/IMG_20260701_110148.jpg",
+      "label": "Cultural Spirit & Stage Performances"
+    },
+    {
+      "id": "photo-6",
+      "src": "photo/IMG_20260701_132844.jpg",
+      "label": "Sridevi College Central Auditorium"
+    },
+    {
+      "id": "photo-7",
+      "src": "photo/IMG_20260701_133523_953.jpg",
+      "label": "Together on Campus: Student Community"
+    },
+    {
+      "id": "photo-8",
+      "src": "photo/IMG_20260723_150208_229.jpg",
+      "label": "Interactive Classroom & Lab Learning"
+    }
   ],
   "contact": {
     "collegeName": "Sridevi Arts & Science College",

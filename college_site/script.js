@@ -321,16 +321,12 @@
     const cmTitle = document.getElementById("cmTitle");
     const cmDept = document.getElementById("cmDept");
     const cmDuration = document.getElementById("cmDuration");
-    const cmSeats = document.getElementById("cmSeats");
-    const cmFee = document.getElementById("cmFee");
     const cmDesc = document.getElementById("cmDesc");
 
     if (cmBadge) cmBadge.textContent = prog.number || "DEGREE PROGRAMME";
     if (cmTitle) cmTitle.textContent = prog.title || "";
     if (cmDept) cmDept.textContent = prog.department || "Sridevi Arts & Science College";
     if (cmDuration) cmDuration.textContent = prog.duration || "3 Years";
-    if (cmSeats) cmSeats.textContent = prog.seats || "100 Seats";
-    if (cmFee) cmFee.textContent = prog.fee || "Affordable Tuition";
     if (cmDesc) cmDesc.textContent = prog.desc || "";
 
     openModal("courseModal");
@@ -341,13 +337,130 @@
     const container = document.getElementById("programmesContainer");
     if (!container) return;
 
+    // Dynamically update section heading and global counts
+    const progHeading = document.getElementById("progSectionHeading");
+    if (progHeading) {
+      progHeading.textContent = `${allProgrammes.length} Comprehensive Academic Programmes`;
+    }
+
+    const heroCoursesCount = document.getElementById("heroCoursesCount");
+    if (heroCoursesCount) {
+      heroCoursesCount.textContent = `${allProgrammes.length} Courses`;
+    }
+
+    const statCount = document.getElementById("statAcademicProgsCount");
+    if (statCount) {
+      statCount.textContent = allProgrammes.length;
+    }
+
+    const navCoursesLink = document.getElementById("navCoursesLink");
+    if (navCoursesLink) {
+      navCoursesLink.textContent = `Courses (${allProgrammes.length})`;
+    }
+
+    const quickStripCoursesDesc = document.getElementById("quickStripCoursesDesc");
+    if (quickStripCoursesDesc) {
+      quickStripCoursesDesc.textContent = `${allProgrammes.length} UG & PG Degree Programs`;
+    }
+
+    // Dynamic Filter Tab Counter Updates
+    let countCS = 0, countComm = 0, countMgmt = 0, countArts = 0, countSci = 0, countPG = 0, countSports = 0;
+    allProgrammes.forEach((p) => {
+      const cat = (p.category || "").toLowerCase();
+      const title = (p.title || "").toLowerCase();
+      const dept = (p.department || "").toLowerCase();
+      const num = (p.number || "").toLowerCase();
+
+      if (
+        cat === "athletics" ||
+        cat === "co-curricular" ||
+        cat === "placement" ||
+        num.includes("athletics") ||
+        num.includes("career hub") ||
+        title.includes("physical education") ||
+        title.includes("placement") ||
+        dept.includes("placement") ||
+        dept.includes("physical education")
+      ) {
+        countSports++;
+      } else if (cat === "science" && !cat.includes("computer") && !title.includes("computer")) {
+        countSci++;
+      } else if (
+        cat.includes("computer") ||
+        dept.includes("computer") ||
+        dept.includes("artificial intelligence") ||
+        title.includes("computer") ||
+        title.includes("b.c.a")
+      ) {
+        countCS++;
+      } else if (cat.includes("commerce") || dept.includes("commerce") || title.includes("b.com")) {
+        countComm++;
+      } else if (cat.includes("management") || title.includes("bba")) {
+        countMgmt++;
+      } else if (cat.includes("postgraduate") || title.includes("m.a") || title.includes("m.sc") || title.includes("m.com")) {
+        countPG++;
+      } else if (cat.includes("arts") || title.includes("b.a")) {
+        countArts++;
+      }
+    });
+
+    const elAll = document.getElementById("countTabAll");
+    if (elAll) elAll.textContent = allProgrammes.length;
+    const elCS = document.getElementById("countTabCS");
+    if (elCS) elCS.textContent = countCS;
+    const elComm = document.getElementById("countTabComm");
+    if (elComm) elComm.textContent = countComm;
+    const elMgmt = document.getElementById("countTabMgmt");
+    if (elMgmt) elMgmt.textContent = countMgmt;
+    const elArts = document.getElementById("countTabArts");
+    if (elArts) elArts.textContent = countArts;
+    const elSci = document.getElementById("countTabSci");
+    if (elSci) elSci.textContent = countSci;
+    const elPG = document.getElementById("countTabPG");
+    if (elPG) elPG.textContent = countPG;
+    const elSports = document.getElementById("countTabSports");
+    if (elSports) elSports.textContent = countSports;
+
     let list = allProgrammes;
     if (filter && filter !== "all") {
       list = allProgrammes.filter((p) => {
         const cat = (p.category || "").toLowerCase();
         const dept = (p.department || "").toLowerCase();
         const title = (p.title || "").toLowerCase();
+        const num = (p.number || "").toLowerCase();
         const f = filter.toLowerCase();
+
+        // Sports & Placement (Athletics)
+        if (f === "athletics" || f.includes("sport") || f.includes("placement")) {
+          return (
+            cat === "athletics" ||
+            cat === "co-curricular" ||
+            cat === "placement" ||
+            num.includes("athletics") ||
+            num.includes("career hub") ||
+            title.includes("physical education") ||
+            title.includes("placement") ||
+            dept.includes("placement") ||
+            dept.includes("physical education")
+          );
+        }
+
+        // Science (Strictly isolates Pure Science / Maths from Computer Science)
+        if (f === "science") {
+          return cat === "science" && !cat.includes("computer") && !title.includes("computer");
+        }
+
+        // Computing & AI
+        if (f === "computer science" || f.includes("computing")) {
+          return (
+            cat.includes("computer") ||
+            dept.includes("computer") ||
+            dept.includes("artificial intelligence") ||
+            title.includes("computer") ||
+            title.includes("b.c.a")
+          );
+        }
+
         return cat.includes(f) || dept.includes(f) || title.includes(f);
       });
     }
@@ -358,24 +471,21 @@
     }
 
     container.innerHTML = list
-      .map((p) => {
+      .map((p, idx) => {
         const imgPath = resolvePath(p.image || "assets/sdasc/departments/112226_1625242329.jpeg");
+        const badgeNumber = p.number && p.number.trim() ? p.number : `${String(idx + 1).padStart(2, "0")} / ${(p.category || "COURSE").toUpperCase()}`;
         return `
         <article class="programme-card">
           <div class="prog-thumb">
             <img src="${imgPath}" alt="${escapeHtml(p.title)}" class="prog-img" loading="lazy" onerror="this.src='photo/IMG_20260701_104825_496.jpg'" />
             <div class="prog-card-top">
-              <span class="prog-badge">${escapeHtml(p.number || "COURSE")}</span>
+              <span class="prog-badge">${escapeHtml(badgeNumber)}</span>
               <span class="prog-duration-pill">${escapeHtml(p.duration || "3 Yrs")}</span>
             </div>
           </div>
           <div class="prog-body">
             <span class="prog-dept-title">${escapeHtml(p.department || "Department")}</span>
             <h3 class="prog-title">${escapeHtml(p.title)}</h3>
-            <div class="prog-meta-strip">
-              <span class="prog-seats">Seats: ${escapeHtml(p.seats || "Available")}</span>
-              <span class="prog-fee">Fee: ${escapeHtml(p.fee || "Enquire")}</span>
-            </div>
             <p class="prog-desc">${escapeHtml(p.desc || "")}</p>
             <div class="prog-actions">
               <button class="prog-btn-info btn-view-course full-width" data-id="${escapeHtml(p.id)}">Course Details &amp; Syllabus →</button>
@@ -409,11 +519,16 @@
   // Populate Course dropdown in Application Modal
   function populateApplicationDropdown(programmes) {
     const courseSelect = document.getElementById("appCourse");
-    if (!courseSelect || !programmes.length) return;
+    if (!courseSelect || !programmes || !programmes.length) return;
 
+    const currentVal = courseSelect.value;
     courseSelect.innerHTML = programmes
-      .map((p) => `<option value="${escapeHtml(p.title)}">${escapeHtml(p.title)} — ${escapeHtml(p.seats || "")}</option>`)
+      .map((p) => `<option value="${escapeHtml(p.title)}">${escapeHtml(p.title)}</option>`)
       .join("");
+
+    if (currentVal && programmes.some((p) => p.title === currentVal)) {
+      courseSelect.value = currentVal;
+    }
   }
 
   // Render Notices / Bulletin
@@ -506,11 +621,26 @@
   function applyContent(data) {
     if (!data) return;
 
+    // Utility / Marquee Announcement
+    if (data.utility && data.utility.announcement) {
+      const marquee = document.getElementById("marqueeText");
+      if (marquee) {
+        const parts = data.utility.announcement.split("|");
+        marquee.innerHTML = parts
+          .map(part => `<span class="ticker-item">${escapeHtml(part.trim())}</span>`)
+          .join("");
+      }
+    }
+
     // Hero
     if (data.hero) {
       if (data.hero.eyebrow) {
+        let eyebrowText = data.hero.eyebrow;
+        if (/buddies/i.test(eyebrowText)) {
+          eyebrowText = "25 Glorious Years of Excellence · Estd. 2001";
+        }
         const el = document.getElementById("heroEyebrow");
-        if (el) el.innerHTML = `<span class="badge-dot"></span> ${escapeHtml(data.hero.eyebrow)}`;
+        if (el) el.innerHTML = `<span class="badge-dot"></span> ${escapeHtml(eyebrowText)}`;
       }
       if (data.hero.title) {
         const el = document.getElementById("heroTitle");
@@ -539,6 +669,10 @@
       if (data.about.p2) {
         const el = document.getElementById("aboutP2");
         if (el) el.textContent = data.about.p2;
+      }
+      if (data.about.badge) {
+        const badgeEl = document.querySelector(".collegiate-seal-medallion .csm-title");
+        if (badgeEl) badgeEl.textContent = data.about.badge;
       }
     }
 

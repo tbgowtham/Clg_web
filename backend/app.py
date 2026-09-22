@@ -23,12 +23,10 @@ SEED_FILE = os.path.join(os.path.dirname(__file__), "data", "content.json")
 APPLICATIONS_FILE = os.path.join(os.path.dirname(__file__), "data", "applications.json")
 ENQUIRIES_FILE = os.path.join(os.path.dirname(__file__), "data", "enquiries.json")
 USERS_FILE = os.path.join(os.path.dirname(__file__), "data", "users.json")
-SMS_CONFIG_FILE = os.path.join(os.path.dirname(__file__), "data", "sms_config.json")
 
 DEFAULT_ADMIN_USERNAME = "doomsday"
 DEFAULT_ADMIN_PASSWORD = "ironman"
 active_sessions = {}  # token -> user_dict
-active_otps = {}      # target_username -> { "otp": "...", "expires_at": float, "attempts": int, "phone": "..." }
 
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(os.path.join(os.path.dirname(__file__), "data"), exist_ok=True)
@@ -302,18 +300,22 @@ def save_current_content(content):
 
 # Application Data Helpers
 def load_applications():
+    apps = []
     if mongo_available:
         try:
-            return list(db.applications.find({}, {"_id": 0}))
+            apps = list(db.applications.find({}, {"_id": 0}))
         except Exception as e:
             print(f"[PyMongo Error] Failed to load applications: {e}")
-    if os.path.exists(APPLICATIONS_FILE):
+    if not apps and os.path.exists(APPLICATIONS_FILE):
         try:
             with open(APPLICATIONS_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                apps = json.load(f)
         except Exception:
-            return []
-    return []
+            apps = []
+    for a in apps:
+        if a.get("status") in ("Pending Review", None, ""):
+            a["status"] = "Pending"
+    return apps
 
 def save_application(app_data):
     saved = False
@@ -359,6 +361,48 @@ def remove_application(app_id):
     except Exception as e:
         print(f"[File Error] Failed to update applications: {e}")
     return removed
+
+def update_application_status(app_id, new_status):
+    valid_statuses = {"Pending", "Joined", "Rejected"}
+    if new_status not in valid_statuses:
+        return None
+    updated = False
+    if mongo_available:
+        try:
+            res = db.applications.update_one(
+                {"id": app_id},
+                {"$set": {"status": new_status, "statusUpdatedAt": datetime.now().isoformat()}}
+            )
+            if res.matched_count > 0:
+                updated = True
+        except Exception as e:
+            print(f"[PyMongo Error] Failed to update application status: {e}")
+    try:
+        apps = []
+        if os.path.exists(APPLICATIONS_FILE):
+            with open(APPLICATIONS_FILE, "r", encoding="utf-8") as f:
+                apps = json.load(f)
+        target = None
+        for a in apps:
+            if a.get("id") == app_id:
+                a["status"] = new_status
+                a["statusUpdatedAt"] = datetime.now().isoformat()
+                target = a
+                updated = True
+                break
+        if updated:
+            with open(APPLICATIONS_FILE, "w", encoding="utf-8") as f:
+                json.dump(apps, f, indent=2, ensure_ascii=False)
+            return target
+    except Exception as e:
+        print(f"[File Error] Failed to update application status in JSON: {e}")
+
+    if updated and mongo_available:
+        try:
+            return db.applications.find_one({"id": app_id}, {"_id": 0})
+        except Exception:
+            pass
+    return target if updated else None
 
 # Enquiries Helpers
 def load_enquiries():
@@ -579,223 +623,7 @@ def api_auth_logout():
     resp.set_cookie("admin_token", "", expires=0)
     return resp
 
-# ==================== FAST2SMS LIVE SMS GATEWAY INTEGRATION ====================
 
-def load_sms_config():
-    cfg = {
-        "provider": "fast2sms",
-        "fast2sms_api_key": os.environ.get("FAST2SMS_API_KEY", ""),
-        "enabled": True
-    }
-    if os.path.exists(SMS_CONFIG_FILE):
-        try:
-            with open(SMS_CONFIG_FILE, "r", encoding="utf-8") as f:
-                stored = json.load(f)
-                if isinstance(stored, dict):
-                    cfg.update(stored)
-        except Exception as e:
-            print(f"[SMS Config Error] Failed to read sms_config.json: {e}")
-    return cfg
-
-def save_sms_config(cfg):
-    try:
-        with open(SMS_CONFIG_FILE, "w", encoding="utf-8") as f:
-            json.dump(cfg, f, indent=2)
-        return True
-    except Exception as e:
-        print(f"[SMS Config Error] Failed to write sms_config.json: {e}")
-        return False
-
-def send_fast2sms_otp(api_key, phone_number, otp_code):
-    """
-    Sends real SMS text message via Fast2SMS Quick OTP API (https://www.fast2sms.com)
-    """
-    clean_phone = re.sub(r"\D", "", phone_number)
-    if len(clean_phone) > 10:
-        clean_phone = clean_phone[-10:]
-
-    url = "https://www.fast2sms.com/dev/bulkV2"
-    headers = {
-        "authorization": api_key.strip(),
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = urllib.parse.urlencode({
-        "variables_values": otp_code,
-        "route": "otp",
-        "numbers": clean_phone
-    }).encode("utf-8")
-
-    try:
-        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            body = resp.read().decode("utf-8")
-            res_json = json.loads(body) if body else {}
-            if res_json.get("return") is True:
-                return True, "SMS delivered successfully via Fast2SMS.", res_json
-            else:
-                raw_msg = res_json.get("message", "Delivery failed")
-                msg = " ".join(raw_msg) if isinstance(raw_msg, list) else str(raw_msg)
-                return False, msg, res_json
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8")
-        try:
-            err_json = json.loads(err_body)
-            msg = err_json.get("message", f"HTTP {e.code}")
-        except Exception:
-            msg = f"HTTP {e.code}"
-        return False, f"Fast2SMS API error: {msg}", {}
-    except Exception as e:
-        return False, f"Fast2SMS connection error: {e}", {}
-
-@app.route("/api/auth/otp/send", methods=["POST"])
-def api_send_otp():
-    """
-    Dispatches a 6-digit OTP to a mobile phone number via Fast2SMS or simulation.
-    Strictly restricted to Super Administrator for password creation / recreation.
-    """
-    curr = get_current_user_from_request()
-    if not curr:
-        return jsonify({"error": "Authentication required. Please sign in to the Admin Console."}), 401
-
-    is_super_admin = bool(curr.get("is_primary_admin") or curr.get("role") == "Super Admin")
-    if not is_super_admin:
-        return jsonify({"error": "Access Denied: Only Super Administrator can request password reset OTPs."}), 403
-
-    data = request.get_json(force=True, silent=True) or {}
-    phone = (data.get("phone") or "").strip()
-    target_username = (data.get("target_username") or "").strip().lower()
-
-    if not target_username:
-        return jsonify({"error": "Target username is required to request OTP."}), 400
-
-    target = get_user_by_username(target_username)
-    if not target:
-        return jsonify({"error": f"Target user '{target_username}' not found."}), 404
-
-    # Clean phone number (remove spaces, hyphens, parentheses)
-    clean_phone = re.sub(r"[\s\-\(\)\+]", "", phone)
-    if not clean_phone or len(clean_phone) < 10 or not clean_phone.isdigit():
-        return jsonify({"error": "Please enter a valid 10-digit mobile phone number for OTP verification."}), 400
-
-    # Generate cryptographically secure 6-digit code
-    otp_code = f"{secrets.randbelow(900000) + 100000}"
-    expires_at = time.time() + 300  # 5 minutes validity
-
-    active_otps[target_username] = {
-        "otp": otp_code,
-        "phone": phone,
-        "clean_phone": clean_phone,
-        "expires_at": expires_at,
-        "attempts": 0,
-        "requested_by": curr.get("username")
-    }
-
-    masked_phone = f"{phone[:2]}******{phone[-4:]}" if len(phone) >= 10 else "******"
-
-    # Attempt Live SMS Dispatch via Fast2SMS if configured
-    cfg = load_sms_config()
-    api_key = cfg.get("fast2sms_api_key", "").strip()
-    is_live_sms = False
-    sms_status_msg = ""
-
-    if cfg.get("enabled") and api_key:
-        ok, msg, res_json = send_fast2sms_otp(api_key, clean_phone, otp_code)
-        if ok:
-            is_live_sms = True
-            sms_status_msg = f"Live SMS dispatched to +91 {clean_phone[-10:]} via Fast2SMS."
-            print(f"[Fast2SMS Gateway] REAL SMS SENT to {clean_phone} with OTP '{otp_code}'")
-        else:
-            sms_status_msg = f"Fast2SMS API notice: {msg}. (In-app simulation code provided for testing)."
-            print(f"[Fast2SMS Warning] {msg}. Generated OTP: {otp_code}")
-    else:
-        sms_status_msg = f"6-digit security OTP dispatched to mobile {masked_phone}."
-        print(f"[SMS Simulator] Dispatched OTP '{otp_code}' to mobile {phone} for account '{target_username}' (Super Admin: {curr.get('username')})")
-
-    return jsonify({
-        "success": True,
-        "message": sms_status_msg,
-        "is_live_sms": is_live_sms,
-        "phone_masked": masked_phone,
-        "dev_otp": otp_code,
-        "expires_in": 300
-    })
-
-@app.route("/api/admin/sms-config", methods=["GET"])
-def api_get_sms_config():
-    curr = get_current_user_from_request()
-    if not curr:
-        return jsonify({"error": "Authentication required"}), 401
-    if not (curr.get("is_primary_admin") or curr.get("role") == "Super Admin"):
-        return jsonify({"error": "Access Denied: Only Super Administrator can view SMS gateway configuration."}), 403
-
-    cfg = load_sms_config()
-    raw_key = cfg.get("fast2sms_api_key", "").strip()
-    masked_key = f"{raw_key[:4]}...{raw_key[-4:]}" if len(raw_key) > 8 else ("••••••••" if raw_key else "")
-
-    return jsonify({
-        "provider": "fast2sms",
-        "has_api_key": bool(raw_key),
-        "masked_api_key": masked_key,
-        "enabled": bool(cfg.get("enabled", True))
-    })
-
-@app.route("/api/admin/sms-config", methods=["POST"])
-def api_save_sms_config():
-    curr = get_current_user_from_request()
-    if not curr:
-        return jsonify({"error": "Authentication required"}), 401
-    if not (curr.get("is_primary_admin") or curr.get("role") == "Super Admin"):
-        return jsonify({"error": "Access Denied: Only Super Administrator can update SMS gateway configuration."}), 403
-
-    data = request.get_json(force=True, silent=True) or {}
-    cfg = load_sms_config()
-
-    new_key = data.get("fast2sms_api_key")
-    if new_key is not None:
-        cfg["fast2sms_api_key"] = new_key.strip()
-    if "enabled" in data:
-        cfg["enabled"] = bool(data.get("enabled"))
-    cfg["provider"] = "fast2sms"
-
-    saved = save_sms_config(cfg)
-    if saved:
-        return jsonify({"success": True, "message": "Fast2SMS gateway configuration saved successfully."})
-    return jsonify({"error": "Failed to save SMS configuration file."}), 500
-
-@app.route("/api/admin/sms-config/test", methods=["POST"])
-def api_test_sms_config():
-    curr = get_current_user_from_request()
-    if not curr:
-        return jsonify({"error": "Authentication required"}), 401
-    if not (curr.get("is_primary_admin") or curr.get("role") == "Super Admin"):
-        return jsonify({"error": "Access Denied: Only Super Administrator can test SMS gateway."}), 403
-
-    data = request.get_json(force=True, silent=True) or {}
-    phone = (data.get("phone") or "").strip()
-    clean_phone = re.sub(r"\D", "", phone)
-    if len(clean_phone) < 10:
-        return jsonify({"error": "Please provide a valid 10-digit mobile number for test delivery."}), 400
-
-    cfg = load_sms_config()
-    api_key = cfg.get("fast2sms_api_key", "").strip()
-    if not api_key:
-        return jsonify({"error": "Fast2SMS API Key is not configured yet. Please enter and save your API key first."}), 400
-
-    test_otp = f"{secrets.randbelow(900000) + 100000}"
-    ok, msg, res_json = send_fast2sms_otp(api_key, clean_phone, test_otp)
-    if ok:
-        return jsonify({
-            "success": True,
-            "message": f"Real test SMS sent successfully to +91 {clean_phone[-10:]} via Fast2SMS!",
-            "test_otp": test_otp,
-            "gateway_response": res_json
-        })
-    else:
-        return jsonify({
-            "success": False,
-            "error": f"Fast2SMS delivery error: {msg}",
-            "gateway_response": res_json
-        }), 400
 
 @app.route("/api/users", methods=["GET"])
 def api_get_users():
@@ -955,28 +783,8 @@ def api_update_user(username):
         if existing and existing.get("username", "").lower() != orig_uname:
             return jsonify({"error": f"User ID '{new_uname}' is already taken. Please choose a different User ID."}), 409
 
-    # If password is provided, validate length, enforce mobile OTP verification and hash
+    # If password is provided, validate length and hash directly
     if password:
-        otp = (data.get("otp") or "").strip()
-        if not otp:
-            return jsonify({"error": "Mobile OTP verification required. Please enter the 6-digit OTP code sent to your phone."}), 400
-
-        otp_record = active_otps.get(orig_uname)
-        if not otp_record or time.time() > otp_record.get("expires_at", 0):
-            return jsonify({"error": "OTP has expired or was not requested. Please click 'Send OTP' to receive a new code."}), 400
-
-        otp_record["attempts"] = otp_record.get("attempts", 0) + 1
-        if otp_record["attempts"] > 3:
-            active_otps.pop(orig_uname, None)
-            return jsonify({"error": "Too many invalid OTP attempts. Please request a new OTP code."}), 400
-
-        if otp_record["otp"] != otp:
-            remaining = 3 - otp_record["attempts"]
-            return jsonify({"error": f"Invalid OTP code ({remaining} attempt{'s' if remaining != 1 else ''} remaining). Please enter the correct code."}), 400
-
-        # OTP verified! Invalidate immediately so it cannot be reused
-        active_otps.pop(orig_uname, None)
-
         if len(password) < 4:
             return jsonify({"error": "Password must be at least 4 characters long."}), 400
         target["password_hash"] = generate_password_hash(password)
@@ -1217,8 +1025,6 @@ def api_add_programme():
     category = data.get("category", "Undergraduate").strip()
     number = data.get("number", "").strip() or f"{len(get_current_content().get('programmes', [])) + 1:02d} / COURSE"
     department = data.get("department", title).strip()
-    seats = data.get("seats", "70 Seats").strip()
-    fee = data.get("fee", "₹15,000 / Year").strip()
     duration = data.get("duration", "3 Years (UG)").strip()
     desc = data.get("desc", "").strip()
     image = data.get("image", "assets/sdasc/departments/112226_1625242329.jpeg").strip()
@@ -1233,8 +1039,6 @@ def api_add_programme():
         "category": category,
         "title": title,
         "department": department,
-        "seats": seats,
-        "fee": fee,
         "duration": duration,
         "desc": desc,
         "image": image,
@@ -1262,6 +1066,48 @@ def api_delete_programme(prog_id):
     current["programmes"] = new_progs
     save_current_content(current)
     return jsonify({"success": True, "message": "Programme deleted successfully"})
+
+@app.route("/api/programmes/<prog_id>", methods=["PUT"])
+def api_update_programme(prog_id):
+    is_ok, err_resp, status = check_permission("programmes")
+    if not is_ok:
+        return err_resp, status
+
+    data = request.get_json(force=True, silent=True) or {}
+    current = get_current_content()
+    programmes = current.get("programmes", [])
+    target = None
+
+    for p in programmes:
+        if p.get("id") == prog_id:
+            if "number" in data:
+                p["number"] = data["number"].strip()
+            if "category" in data:
+                p["category"] = data["category"].strip()
+            if "title" in data and data["title"].strip():
+                p["title"] = data["title"].strip()
+            if "department" in data:
+                p["department"] = data["department"].strip()
+            if "seats" in data:
+                p["seats"] = data["seats"].strip()
+            if "fee" in data:
+                p["fee"] = data["fee"].strip()
+            if "duration" in data:
+                p["duration"] = data["duration"].strip()
+            if "desc" in data:
+                p["desc"] = data["desc"].strip()
+            if "image" in data and data["image"]:
+                p["image"] = data["image"].strip()
+            if "link" in data:
+                p["link"] = data["link"].strip()
+            target = p
+            break
+
+    if not target:
+        return jsonify({"error": "Programme not found"}), 404
+
+    save_current_content(current)
+    return jsonify({"success": True, "message": "Programme updated successfully", "programme": target})
 
 # CRUD for Online Admission Applications
 @app.route("/api/applications", methods=["GET"])
@@ -1298,7 +1144,7 @@ def api_submit_application():
         "percentage": data.get("percentage", "").strip(),
         "community": data.get("community", "General"),
         "needsScholarship": bool(data.get("needsScholarship", False)),
-        "status": "Pending Review",
+        "status": "Pending",
         "submittedAt": datetime.now().strftime("%d %b %Y, %I:%M %p")
     }
 
@@ -1318,6 +1164,138 @@ def api_delete_application(app_id):
     if success:
         return jsonify({"success": True, "message": "Application deleted successfully"})
     return jsonify({"error": "Application not found"}), 404
+
+@app.route("/api/applications/<app_id>/status", methods=["PUT", "PATCH"])
+def api_update_application_status(app_id):
+    is_ok, err_resp, status_code = check_permission("applications")
+    if not is_ok:
+        return err_resp, status_code
+
+    data = request.get_json(force=True, silent=True) or {}
+    new_status = (data.get("status") or "").strip()
+    if new_status.lower() in ("pending", "pending review"):
+        normalized_status = "Pending"
+    elif new_status.lower() in ("joined", "admitted"):
+        normalized_status = "Joined"
+    elif new_status.lower() in ("rejected", "rejects", "declined"):
+        normalized_status = "Rejected"
+    else:
+        return jsonify({"error": "Invalid status. Allowed options: Pending, Joined, Rejected"}), 400
+
+    updated_app = update_application_status(app_id, normalized_status)
+    if updated_app:
+        return jsonify({
+            "success": True,
+            "message": f"Application status updated to {normalized_status}",
+            "application": updated_app
+        })
+    return jsonify({"error": "Application not found"}), 404
+
+@app.route("/api/applications/export", methods=["GET"])
+def api_export_applications():
+    is_ok, err_resp, status_code = check_permission("applications")
+    if not is_ok:
+        return err_resp, status_code
+
+    status_filter = (request.args.get("status") or "").strip().lower()
+    community_filter = (request.args.get("community") or "").strip().lower()
+    dept_filter = (request.args.get("department") or "").strip().lower()
+    search = (request.args.get("search") or "").strip().lower()
+
+    apps = load_applications()
+    filtered = []
+    for a in apps:
+        curr_status = a.get("status", "Pending")
+        if curr_status == "Pending Review":
+            curr_status = "Pending"
+
+        if status_filter and status_filter != "all":
+            if curr_status.lower() != status_filter:
+                continue
+
+        if community_filter and community_filter != "all":
+            comm = (a.get("community") or "").lower()
+            if community_filter not in comm:
+                continue
+
+        if dept_filter and dept_filter != "all":
+            crs = (a.get("course") or "").lower()
+            if dept_filter not in crs:
+                continue
+
+        if search:
+            name = (a.get("name") or "").lower()
+            mobile = (a.get("mobile") or "").lower()
+            course = (a.get("course") or "").lower()
+            if search not in name and search not in mobile and search not in course:
+                continue
+
+        filtered.append(a)
+
+    import io
+    import csv
+    from flask import Response
+
+    output = io.StringIO()
+    # Write UTF-8 BOM for Microsoft Excel native encoding compatibility
+    output.write("\ufeff")
+    writer = csv.writer(output)
+
+    headers = [
+        "Application ID",
+        "Date Submitted",
+        "Status",
+        "Candidate Name",
+        "Gender",
+        "Date of Birth",
+        "Mobile Number",
+        "Email Address",
+        "Course Level",
+        "Applied Department / Course",
+        "Community",
+        "Wants Scholarship",
+        "Previous School / College",
+        "Marks Total",
+        "Percentage",
+        "Father's Name",
+        "Mother's Name"
+    ]
+    writer.writerow(headers)
+
+    for a in filtered:
+        status_val = a.get("status", "Pending")
+        if status_val == "Pending Review":
+            status_val = "Pending"
+        writer.writerow([
+            a.get("id", ""),
+            a.get("submittedAt", ""),
+            status_val,
+            a.get("name", ""),
+            a.get("gender", ""),
+            a.get("dob", ""),
+            a.get("mobile", ""),
+            a.get("email", ""),
+            a.get("courseType", "UG"),
+            a.get("course", ""),
+            a.get("community", "General"),
+            "Yes" if a.get("needsScholarship") else "No",
+            a.get("schoolOrCollege", ""),
+            a.get("marksTotal", ""),
+            a.get("percentage", ""),
+            a.get("fatherName", ""),
+            a.get("motherName", "")
+        ])
+
+    csv_data = output.getvalue()
+    filename = f"SDASC_Admissions_2026_27_{datetime.now().strftime('%Y%m%d')}.csv"
+    return Response(
+        csv_data,
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Cache-Control": "no-cache"
+        }
+    )
 
 # Enquiries / Contact Submissions
 @app.route("/api/enquiries", methods=["GET"])

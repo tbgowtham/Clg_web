@@ -11,6 +11,14 @@
   let enquiriesList = [];
   let usersList = [];
 
+  // Admissions Filter State
+  let appFilters = {
+    search: "",
+    status: "all",
+    community: "all",
+    department: "all",
+  };
+
   const API_BASE = ""; // Relative to origin
 
   // Elements
@@ -111,11 +119,6 @@
       btnReset.style.display = (user.is_primary_admin || user.role === "Super Admin") ? "inline-flex" : "none";
     }
 
-    // SMS Gateway settings button (Super Admin only)
-    const btnSmsSettings = document.getElementById("btnOpenSmsSettings");
-    if (btnSmsSettings) {
-      btnSmsSettings.style.display = (user.is_primary_admin || user.role === "Super Admin") ? "inline-flex" : "none";
-    }
 
     // Role scope switcher (only for primary admin doomsday)
     const scopeWrap = document.getElementById("scopeSwitcherWrap");
@@ -420,6 +423,11 @@
   function renderProgrammes() {
     const progs = siteContent.programmes || [];
     const list = document.getElementById("programmesList");
+    const progNumberInput = document.getElementById("progNumber");
+    if (progNumberInput) {
+      progNumberInput.value = `${String(progs.length + 1).padStart(2, "0")} / SCIENCE`;
+    }
+
     if (!progs.length) {
       list.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);">No academic programmes defined.</div>`;
       return;
@@ -430,13 +438,21 @@
         (p) => `
         <div class="prog-item" data-id="${p.id}">
           <div class="prog-info">
-            <span class="badge">${escapeHtml(p.number)}</span>
+            <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px; flex-wrap: wrap;">
+              <span class="badge">${escapeHtml(p.number || 'COURSE')}</span>
+              <span class="badge-pill purple">${escapeHtml(p.category || 'General')}</span>
+              <span style="font-size: 11px; color: var(--muted);">${escapeHtml(p.duration || '3 Yrs')}</span>
+            </div>
             <h4>${escapeHtml(p.title)}</h4>
+            <small style="color: var(--muted); display: block; margin-bottom: 4px;">${escapeHtml(p.department || '')}</small>
             <p>${escapeHtml(p.desc)}</p>
           </div>
-          <button type="button" class="btn-icon-danger" title="Remove programme" onclick="deleteProgramme('${p.id}')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          </button>
+          <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end; justify-content: flex-start;">
+            <button type="button" class="btn-action-edit" title="Edit course details" onclick="openEditProgModal('${p.id}')">✏️ Edit</button>
+            <button type="button" class="btn-icon-danger" title="Remove programme" onclick="deleteProgramme('${p.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
         </div>`,
       )
       .join("");
@@ -469,10 +485,6 @@
     setVal("fieldHeroEyebrow", h.eyebrow || "");
     setVal("fieldHeroTitle", h.title || "");
     setVal("fieldHeroCopy", h.copy || "");
-    setVal("fieldHeroBtn1Text", h.btn1Text || "");
-    setVal("fieldHeroBtn1Link", h.btn1Link || "");
-    setVal("fieldHeroBtn2Text", h.btn2Text || "");
-    setVal("fieldHeroBtn2Link", h.btn2Link || "");
 
     setVal("fieldAboutTitle", a.title || "");
     setVal("fieldAboutP1", a.p1 || "");
@@ -638,12 +650,15 @@
     // Add Programme Form
     document.getElementById("formAddProg")?.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const number = document.getElementById("progNumber").value.trim();
-      const title = document.getElementById("progTitle").value.trim();
-      const desc = document.getElementById("progDesc").value.trim();
-      const link = document.getElementById("progLink").value.trim() || "#contact";
+      const number = document.getElementById("progNumber")?.value.trim() || "";
+      const category = document.getElementById("progCategory")?.value || "Science";
+      const title = document.getElementById("progTitle")?.value.trim() || "";
+      const department = document.getElementById("progDept")?.value.trim() || title;
+      const duration = document.getElementById("progDuration")?.value.trim() || "3 Years (UG)";
+      const desc = document.getElementById("progDesc")?.value.trim() || "";
+      const link = document.getElementById("progLink")?.value.trim() || "#apply-modal";
 
-      await addProgrammeApi({ number, title, desc, link });
+      await addProgrammeApi({ number, category, title, department, duration, desc, link });
       document.getElementById("formAddProg").reset();
     });
 
@@ -652,8 +667,61 @@
       await addStatApi({ value: "100%", label: "New Metric" });
     });
 
-    // Applications Search Input
-    document.getElementById("appSearchInput")?.addEventListener("input", renderApplicationsTable);
+    // Applications Search Input & Multi-Categorization Filters
+    document.getElementById("appSearchInput")?.addEventListener("input", (e) => {
+      appFilters.search = (e.target.value || "").trim();
+      renderApplicationsTable();
+    });
+
+    document.getElementById("filterAppStatus")?.addEventListener("change", (e) => {
+      setAppStatusFilter(e.target.value);
+    });
+
+    document.getElementById("filterAppCommunity")?.addEventListener("change", (e) => {
+      appFilters.community = e.target.value;
+      renderApplicationsTable();
+    });
+
+    document.getElementById("filterAppDept")?.addEventListener("change", (e) => {
+      appFilters.department = e.target.value;
+      renderApplicationsTable();
+    });
+
+    document.getElementById("btnResetAppFilters")?.addEventListener("click", () => {
+      resetAppFilters();
+    });
+
+    // Status Summary Quick Chips
+    document.querySelectorAll(".app-status-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const filterVal = chip.getAttribute("data-status-filter") || "all";
+        setAppStatusFilter(filterVal);
+      });
+    });
+
+    // Excel Export Button
+    document.getElementById("btnExportExcel")?.addEventListener("click", exportApplicationsToExcel);
+
+    // Edit Programme Modal listeners
+    document.getElementById("btnCloseEditProgModal")?.addEventListener("click", closeEditProgModal);
+    document.getElementById("btnCancelEditProg")?.addEventListener("click", closeEditProgModal);
+
+    document.getElementById("formEditProg")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const progId = document.getElementById("editProgId")?.value;
+      if (!progId) return;
+
+      const number = document.getElementById("editProgNumber")?.value.trim() || "";
+      const category = document.getElementById("editProgCategory")?.value || "Science";
+      const title = document.getElementById("editProgTitle")?.value.trim() || "";
+      const department = document.getElementById("editProgDept")?.value.trim() || title;
+      const duration = document.getElementById("editProgDuration")?.value.trim() || "";
+      const desc = document.getElementById("editProgDesc")?.value.trim() || "";
+      const link = document.getElementById("editProgLink")?.value.trim() || "#apply-modal";
+
+      await editProgrammeApi(progId, { number, category, title, department, duration, desc, link });
+      closeEditProgModal();
+    });
   }
 
   async function addNoticeApi(noticeData) {
@@ -720,6 +788,52 @@
     }
   };
 
+  async function editProgrammeApi(progId, progData) {
+    try {
+      const res = await authFetch(`/api/programmes/${progId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(progData),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast("Programme updated successfully!", "success");
+        await loadContent();
+      } else {
+        showToast(data.error || "Failed to update programme", "error");
+      }
+    } catch (err) {
+      showToast("Server error: " + err.message, "error");
+    }
+  }
+
+  window.openEditProgModal = function (progId) {
+    const progs = siteContent?.programmes || [];
+    const p = progs.find((item) => item.id === progId);
+    if (!p) {
+      showToast("Programme not found", "error");
+      return;
+    }
+
+    setVal("editProgId", p.id);
+    setVal("editProgNumber", p.number || "");
+    setVal("editProgCategory", p.category || "Science");
+    setVal("editProgTitle", p.title || "");
+    setVal("editProgDept", p.department || "");
+    setVal("editProgDuration", p.duration || "");
+    setVal("editProgDesc", p.desc || "");
+    setVal("editProgLink", p.link || "#apply-modal");
+
+    const modal = document.getElementById("modalEditProg");
+    if (modal) modal.classList.remove("hidden");
+  };
+
+  function closeEditProgModal() {
+    const modal = document.getElementById("modalEditProg");
+    if (modal) modal.classList.add("hidden");
+  }
+  window.closeEditProgModal = closeEditProgModal;
+
   // ================= ONLINE ADMISSION APPLICATIONS =================
 
 
@@ -749,39 +863,182 @@
   }
   window.loadApplications = loadApplications;
 
+  function getFilteredApplications() {
+    return applicationsList.filter((a) => {
+      let status = a.status || "Pending";
+      if (status === "Pending Review") status = "Pending";
+
+      // Status filter
+      if (appFilters.status && appFilters.status !== "all") {
+        if (status.toLowerCase() !== appFilters.status.toLowerCase()) return false;
+      }
+
+      // Community filter
+      if (appFilters.community && appFilters.community !== "all") {
+        const comm = String(a.community || "").toLowerCase();
+        const fComm = appFilters.community.toLowerCase();
+        if (!comm.includes(fComm)) return false;
+      }
+
+      // Department filter
+      if (appFilters.department && appFilters.department !== "all") {
+        const crs = String(a.course || "").toLowerCase();
+        const fDept = appFilters.department.toLowerCase();
+        if (!crs.includes(fDept)) return false;
+      }
+
+      // Search query
+      if (appFilters.search) {
+        const s = appFilters.search.toLowerCase();
+        const name = String(a.name || "").toLowerCase();
+        const course = String(a.course || "").toLowerCase();
+        const mobile = String(a.mobile || "").toLowerCase();
+        const email = String(a.email || "").toLowerCase();
+        const father = String(a.fatherName || "").toLowerCase();
+        if (!name.includes(s) && !course.includes(s) && !mobile.includes(s) && !email.includes(s) && !father.includes(s)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
+
+  function setAppStatusFilter(statusVal) {
+    appFilters.status = statusVal;
+
+    const select = document.getElementById("filterAppStatus");
+    if (select) select.value = statusVal;
+
+    document.querySelectorAll(".app-status-chip").forEach((chip) => {
+      const chipVal = chip.getAttribute("data-status-filter") || "all";
+      if (chipVal.toLowerCase() === statusVal.toLowerCase()) {
+        chip.classList.add("active");
+      } else {
+        chip.classList.remove("active");
+      }
+    });
+
+    renderApplicationsTable();
+  }
+  window.setAppStatusFilter = setAppStatusFilter;
+
+  function resetAppFilters() {
+    appFilters = {
+      search: "",
+      status: "all",
+      community: "all",
+      department: "all",
+    };
+
+    const searchInput = document.getElementById("appSearchInput");
+    if (searchInput) searchInput.value = "";
+
+    const statusSelect = document.getElementById("filterAppStatus");
+    if (statusSelect) statusSelect.value = "all";
+
+    const commSelect = document.getElementById("filterAppCommunity");
+    if (commSelect) commSelect.value = "all";
+
+    const deptSelect = document.getElementById("filterAppDept");
+    if (deptSelect) deptSelect.value = "all";
+
+    document.querySelectorAll(".app-status-chip").forEach((chip) => {
+      const chipVal = chip.getAttribute("data-status-filter") || "all";
+      if (chipVal === "all") chip.classList.add("active");
+      else chip.classList.remove("active");
+    });
+
+    renderApplicationsTable();
+    showToast("Filters reset — showing all admission records", "info");
+  }
+  window.resetAppFilters = resetAppFilters;
+
+  function populateDepartmentFilterDropdown() {
+    const select = document.getElementById("filterAppDept");
+    if (!select) return;
+
+    const depts = new Set();
+    applicationsList.forEach((a) => {
+      if (a.course && a.course.trim()) depts.add(a.course.trim());
+    });
+    const progs = siteContent?.programmes || [];
+    progs.forEach((p) => {
+      if (p.title && p.title.trim()) depts.add(p.title.trim());
+    });
+
+    const currentVal = appFilters.department || "all";
+    const sortedDepts = Array.from(depts).sort();
+
+    select.innerHTML =
+      `<option value="all">All Departments / Courses (${sortedDepts.length})</option>` +
+      sortedDepts
+        .map(
+          (d) => `<option value="${escapeHtml(d)}" ${d === currentVal ? "selected" : ""}>${escapeHtml(d)}</option>`,
+        )
+        .join("");
+  }
+
   function renderApplicationsTable() {
     const tbody = document.getElementById("applicationsTableBody");
     const countLabel = document.getElementById("appsCountLabel");
     const badge = document.getElementById("badgeAppCount");
     const dashCount = document.getElementById("dashTotalApps");
 
-    if (countLabel) countLabel.textContent = applicationsList.length;
-    if (badge) badge.textContent = applicationsList.length;
-    if (dashCount) dashCount.textContent = applicationsList.length;
-    if (!tbody) return;
+    // Dynamic Counter Calculation
+    let countTotal = applicationsList.length;
+    let countPending = 0;
+    let countJoined = 0;
+    let countRejected = 0;
 
-    const searchInput = document.getElementById("appSearchInput");
-    const searchTerm = (searchInput?.value || "").toLowerCase().trim();
-    const filtered = applicationsList.filter((a) => {
-      const name = String(a.name || "").toLowerCase();
-      const course = String(a.course || "").toLowerCase();
-      const mobile = String(a.mobile || "").toLowerCase();
-      return name.includes(searchTerm) || course.includes(searchTerm) || mobile.includes(searchTerm);
+    applicationsList.forEach((a) => {
+      const st = (a.status || "Pending").toLowerCase();
+      if (st === "joined" || st === "admitted") countJoined++;
+      else if (st === "rejected" || st === "rejects" || st === "declined") countRejected++;
+      else countPending++;
     });
 
+    // Update Counter Badges
+    const elAll = document.getElementById("countStatusAll");
+    const elPending = document.getElementById("countStatusPending");
+    const elJoined = document.getElementById("countStatusJoined");
+    const elRejected = document.getElementById("countStatusRejected");
+
+    if (elAll) elAll.textContent = countTotal;
+    if (elPending) elPending.textContent = countPending;
+    if (elJoined) elJoined.textContent = countJoined;
+    if (elRejected) elRejected.textContent = countRejected;
+
+    if (countLabel) countLabel.textContent = countTotal;
+    if (badge) badge.textContent = countTotal;
+    if (dashCount) dashCount.textContent = countTotal;
+
+    populateDepartmentFilterDropdown();
+
+    if (!tbody) return;
+
+    const filtered = getFilteredApplications();
+
     if (!filtered.length) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 30px;">No admission applications found.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--muted); padding: 36px 20px;">
+        <div style="font-size: 14px; margin-bottom: 8px; font-weight: 600;">No admission applications found matching your current filter criteria.</div>
+        <button type="button" class="btn-secondary text-xs" onclick="window.resetAppFilters()" style="margin: 0 auto; display: inline-flex;">Reset Filters</button>
+      </td></tr>`;
       return;
     }
 
     tbody.innerHTML = filtered
       .map((a) => {
         const cleanMobile = String(a.mobile || "").replace(/\D/g, "");
+        let status = a.status || "Pending";
+        if (status === "Pending Review") status = "Pending";
+        const statusClass = status.toLowerCase();
+
         return `
         <tr>
-          <td><small style="color: var(--muted);">${escapeHtml(a.submittedAt || "Recent")}</small></td>
+          <td><small style="color: var(--muted); font-weight: 500;">${escapeHtml(a.submittedAt || "Recent")}</small></td>
           <td>
-            <strong>${escapeHtml(a.name || "Unnamed")}</strong><br />
+            <strong style="color: var(--navy); font-size: 13.5px;">${escapeHtml(a.name || "Unnamed")}</strong><br />
             <small style="color: var(--muted);">${escapeHtml(a.gender || "")} · DOB: ${escapeHtml(a.dob || "N/A")}</small>
           </td>
           <td>
@@ -789,10 +1046,17 @@
             <strong>${escapeHtml(a.course || "General")}</strong>
           </td>
           <td>
-            <a href="tel:${escapeHtml(a.mobile || "")}" style="font-weight: 600; color: var(--purple);">📞 ${escapeHtml(a.mobile || "—")}</a><br />
-            ${cleanMobile ? `<a href="https://wa.me/91${cleanMobile}" target="_blank" style="font-size: 11px; color: #10b981;">💬 WhatsApp</a>` : ""}
+            <select class="status-badge-select status-select-${statusClass}" title="Change admission status" onchange="window.changeAppStatus('${escapeHtml(a.id)}', this.value)">
+              <option value="Pending" ${status === "Pending" ? "selected" : ""}>⏳ Pending</option>
+              <option value="Joined" ${status === "Joined" ? "selected" : ""}>✅ Joined</option>
+              <option value="Rejected" ${status === "Rejected" ? "selected" : ""}>❌ Rejected</option>
+            </select>
           </td>
-          <td><small>${escapeHtml(a.email || "—")}</small></td>
+          <td>
+            <a href="tel:${escapeHtml(a.mobile || "")}" style="font-weight: 600; color: var(--purple);">📞 ${escapeHtml(a.mobile || "—")}</a><br />
+            ${cleanMobile ? `<a href="https://wa.me/91${cleanMobile}" target="_blank" style="font-size: 11px; color: #10b981; font-weight: 600;">💬 WhatsApp</a>` : ""}
+          </td>
+          <td><small style="color: #475569;">${escapeHtml(a.email || "—")}</small></td>
           <td>
             <span>${escapeHtml(a.schoolOrCollege || "—")}</span><br />
             <small><strong>${escapeHtml(a.percentage || "")}</strong> ${a.marksTotal ? `(${escapeHtml(a.marksTotal)} Marks)` : ""}</small>
@@ -811,6 +1075,123 @@
       })
       .join("");
   }
+
+  window.changeAppStatus = async function (appId, newStatus) {
+    try {
+      const res = await authFetch(`/api/applications/${appId}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(`Candidate status marked as '${newStatus}'`, "success");
+        const target = applicationsList.find((a) => a.id === appId);
+        if (target) {
+          target.status = newStatus;
+        }
+        renderApplicationsTable();
+      } else {
+        showToast(data.error || "Failed to update status", "error");
+        renderApplicationsTable();
+      }
+    } catch (err) {
+      showToast("Error updating status: " + err.message, "error");
+      renderApplicationsTable();
+    }
+  };
+
+  function exportApplicationsToExcel() {
+    const listToExport = getFilteredApplications();
+    if (!listToExport.length) {
+      showToast("No admission records to export matching current filter criteria", "info");
+      return;
+    }
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const fileName = `SDASC_Admissions_2026_27_${todayStr}.xlsx`;
+
+    const headers = [
+      "Application ID",
+      "Date Submitted",
+      "Admission Status",
+      "Candidate Name",
+      "Gender",
+      "Date of Birth",
+      "Mobile Number",
+      "Email Address",
+      "Course Level",
+      "Programme / Course",
+      "Community",
+      "Wants SC/ST Scholarship",
+      "School / College",
+      "Marks Total",
+      "Percentage",
+      "Father's Name",
+      "Mother's Name",
+    ];
+
+    const rows = listToExport.map((a) => {
+      let status = a.status || "Pending";
+      if (status === "Pending Review") status = "Pending";
+      return [
+        a.id || "",
+        a.submittedAt || "",
+        status,
+        a.name || "",
+        a.gender || "",
+        a.dob || "",
+        a.mobile || "",
+        a.email || "",
+        a.courseType || "UG",
+        a.course || "",
+        a.community || "General",
+        a.needsScholarship ? "Yes" : "No",
+        a.schoolOrCollege || "",
+        a.marksTotal || "",
+        a.percentage || "",
+        a.fatherName || "",
+        a.motherName || "",
+      ];
+    });
+
+    // Try SheetJS (.xlsx) export
+    if (typeof XLSX !== "undefined") {
+      try {
+        const wsData = [headers, ...rows];
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws["!cols"] = [
+          { wch: 18 }, { wch: 22 }, { wch: 14 }, { wch: 22 }, { wch: 10 },
+          { wch: 14 }, { wch: 16 }, { wch: 26 }, { wch: 12 }, { wch: 32 },
+          { wch: 14 }, { wch: 14 }, { wch: 26 }, { wch: 12 }, { wch: 12 },
+          { wch: 20 }, { wch: 20 },
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Admissions 2026-27");
+        XLSX.writeFile(wb, fileName);
+        showToast(`Exported ${listToExport.length} application(s) to Excel (.xlsx)!`, "success");
+        return;
+      } catch (err) {
+        console.warn("SheetJS export encountered error, using CSV fallback:", err);
+      }
+    }
+
+    // Direct Excel-compatible UTF-8 BOM CSV Fallback
+    let csv = "\ufeff" + headers.map((h) => `"${h.replace(/"/g, '""')}"`).join(",") + "\n";
+    rows.forEach((row) => {
+      csv += row.map((c) => `"${String(c || "").replace(/"/g, '""')}"`).join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", fileName.replace(".xlsx", ".csv"));
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`Exported ${listToExport.length} application(s) to Excel CSV!`, "success");
+  }
+  window.exportApplicationsToExcel = exportApplicationsToExcel;
 
   window.deleteApplication = async function (id) {
     if (!confirm("Are you sure you want to remove this student application?")) return;
@@ -1043,10 +1424,10 @@
     siteContent.hero.eyebrow = document.getElementById("fieldHeroEyebrow").value.trim();
     siteContent.hero.title = document.getElementById("fieldHeroTitle").value.trim();
     siteContent.hero.copy = document.getElementById("fieldHeroCopy").value.trim();
-    siteContent.hero.btn1Text = document.getElementById("fieldHeroBtn1Text").value.trim();
-    siteContent.hero.btn1Link = document.getElementById("fieldHeroBtn1Link").value.trim();
-    siteContent.hero.btn2Text = document.getElementById("fieldHeroBtn2Text").value.trim();
-    siteContent.hero.btn2Link = document.getElementById("fieldHeroBtn2Link").value.trim();
+    delete siteContent.hero.btn1Text;
+    delete siteContent.hero.btn1Link;
+    delete siteContent.hero.btn2Text;
+    delete siteContent.hero.btn2Link;
 
     siteContent.about = siteContent.about || {};
     siteContent.about.title = document.getElementById("fieldAboutTitle").value.trim();
@@ -1332,8 +1713,6 @@
     });
   }
 
-  let otpCooldownTimer = null;
-
   function openEditUserModal(username) {
     const modal = document.getElementById("modalEditUser");
     const origInput = document.getElementById("editOrigUsername");
@@ -1342,24 +1721,10 @@
     const roleSelect = document.getElementById("editRole");
     const pwInput = document.getElementById("editPassword");
     const errBox = document.getElementById("editUserError");
-    const otpSection = document.getElementById("editOtpSection");
-    const otpCodeWrap = document.getElementById("otpCodeWrap");
     const phoneInput = document.getElementById("editPhone");
-    const otpInput = document.getElementById("editOtpCode");
-    const otpStatusNotice = document.getElementById("otpStatusNotice");
-    const btnSendOtp = document.getElementById("btnSendEditOtp");
 
     if (!modal) return;
     if (errBox) errBox.style.display = "none";
-    if (otpSection) otpSection.style.display = "none";
-    if (otpCodeWrap) otpCodeWrap.style.display = "none";
-    if (otpStatusNotice) otpStatusNotice.textContent = "";
-    if (otpInput) otpInput.value = "";
-    clearInterval(otpCooldownTimer);
-    if (btnSendOtp) {
-      btnSendOtp.disabled = false;
-      btnSendOtp.textContent = "Send OTP";
-    }
 
     const user = usersList.find((u) => u.username && u.username.toLowerCase() === username.toLowerCase());
     if (origInput) origInput.value = username;
@@ -1367,7 +1732,7 @@
     if (nameInput) nameInput.value = user ? (user.name || user.username) : username;
     if (roleSelect) roleSelect.value = user ? (user.role || "Sub-Admin") : "Sub-Admin";
     if (pwInput) pwInput.value = "";
-    if (phoneInput) phoneInput.value = user?.phone || "9876543210";
+    if (phoneInput) phoneInput.value = user?.phone || "";
 
     modal.classList.remove("hidden");
     if (uInput) setTimeout(() => uInput.focus(), 150);
@@ -1470,27 +1835,18 @@
       });
     }
 
-    // Modal & Form: Edit User / Rename ID / Reset Password with Mobile OTP
+    // Modal & Form: Edit User / Rename ID / Reset Password
     const editModal = document.getElementById("modalEditUser");
     const closeEditBtn = document.getElementById("btnCloseEditUserModal");
     const cancelEditBtn = document.getElementById("btnCancelEditUser");
     const editForm = document.getElementById("formEditUser");
     const editErrBox = document.getElementById("editUserError");
-    const pwInput = document.getElementById("editPassword");
-    const otpSection = document.getElementById("editOtpSection");
-    const otpCodeWrap = document.getElementById("otpCodeWrap");
-    const btnSendOtp = document.getElementById("btnSendEditOtp");
     const phoneInput = document.getElementById("editPhone");
-    const otpInput = document.getElementById("editOtpCode");
-    const otpStatusNotice = document.getElementById("otpStatusNotice");
 
     function closeEditModal() {
       if (editModal) editModal.classList.add("hidden");
       if (editForm) editForm.reset();
       if (editErrBox) editErrBox.style.display = "none";
-      if (otpSection) otpSection.style.display = "none";
-      if (otpCodeWrap) otpCodeWrap.style.display = "none";
-      clearInterval(otpCooldownTimer);
     }
 
     if (closeEditBtn) closeEditBtn.addEventListener("click", closeEditModal);
@@ -1498,93 +1854,6 @@
     if (editModal) {
       editModal.addEventListener("click", (e) => {
         if (e.target === editModal) closeEditModal();
-      });
-    }
-
-    // Reveal OTP section dynamically when typing in New Password
-    if (pwInput && otpSection) {
-      pwInput.addEventListener("input", () => {
-        const hasPw = Boolean(pwInput.value.trim());
-        otpSection.style.display = hasPw ? "block" : "none";
-        if (!hasPw) {
-          if (otpCodeWrap) otpCodeWrap.style.display = "none";
-          if (otpInput) otpInput.value = "";
-          if (otpStatusNotice) otpStatusNotice.textContent = "";
-        }
-      });
-    }
-
-    // Handle "Send OTP" button
-    if (btnSendOtp) {
-      btnSendOtp.addEventListener("click", async () => {
-        const targetUsername = document.getElementById("editOrigUsername")?.value.trim();
-        const phone = phoneInput ? phoneInput.value.trim() : "";
-        if (!phone || phone.length < 10) {
-          alert("Please enter a valid 10-digit mobile phone number to receive the OTP code.");
-          if (phoneInput) phoneInput.focus();
-          return;
-        }
-
-        btnSendOtp.disabled = true;
-        btnSendOtp.textContent = "Sending...";
-
-        try {
-          const res = await authFetch("/api/auth/otp/send", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone, target_username: targetUsername })
-          });
-          const data = await res.json();
-
-          if (res.ok && data.success) {
-            const successMsg = data.is_live_sms 
-              ? `Live SMS dispatched via Fast2SMS to ${data.phone_masked || phone}!`
-              : `Security OTP sent to ${data.phone_masked || phone}!`;
-            showToast(successMsg, "success");
-            if (otpCodeWrap) otpCodeWrap.style.display = "block";
-            if (otpStatusNotice) {
-              otpStatusNotice.textContent = data.is_live_sms
-                ? `✓ Live SMS sent via Fast2SMS to ${data.phone_masked || phone}. Valid for 5 minutes.`
-                : `Security OTP sent to ${data.phone_masked || phone}. Valid for 5 minutes.`;
-              otpStatusNotice.style.color = data.is_live_sms ? "#15803d" : "#0284c7";
-            }
-            if (otpInput) {
-              setTimeout(() => otpInput.focus(), 150);
-            }
-
-            // Simulated SMS Alert banner in UI for immediate test verification
-            if (data.dev_otp) {
-              showSmsSimulationAlert(phone, data.dev_otp);
-            }
-
-            // 60-second resend cooldown timer
-            let countdown = 60;
-            btnSendOtp.textContent = `Resend (${countdown}s)`;
-            clearInterval(otpCooldownTimer);
-            otpCooldownTimer = setInterval(() => {
-              countdown--;
-              if (countdown <= 0) {
-                clearInterval(otpCooldownTimer);
-                btnSendOtp.disabled = false;
-                btnSendOtp.textContent = "Resend OTP";
-              } else {
-                btnSendOtp.textContent = `Resend (${countdown}s)`;
-              }
-            }, 1000);
-          } else {
-            btnSendOtp.disabled = false;
-            btnSendOtp.textContent = "Send OTP";
-            showToast(data.error || "Failed to dispatch OTP", "error");
-            if (otpStatusNotice) {
-              otpStatusNotice.textContent = data.error || "Failed to send OTP.";
-              otpStatusNotice.style.color = "#dc2626";
-            }
-          }
-        } catch (e) {
-          btnSendOtp.disabled = false;
-          btnSendOtp.textContent = "Send OTP";
-          showToast("Server connection error while requesting OTP", "error");
-        }
       });
     }
 
@@ -1604,28 +1873,15 @@
 
         const payload = { new_username: newUsername, name, role };
         if (password) {
-          const otpVal = otpInput ? otpInput.value.trim() : "";
-          if (!otpVal) {
-            if (editErrBox) {
-              editErrBox.textContent = "Mobile OTP verification required: Please enter the 6-digit OTP code sent to your phone.";
-              editErrBox.style.display = "block";
-            }
-            if (otpInput) {
-              if (otpCodeWrap) otpCodeWrap.style.display = "block";
-              otpInput.focus();
-            }
-            return;
-          }
           payload.password = password;
-          payload.otp = otpVal;
-          if (phoneInput && phoneInput.value.trim()) {
-            payload.phone = phoneInput.value.trim();
-          }
+        }
+        if (phoneInput && phoneInput.value.trim()) {
+          payload.phone = phoneInput.value.trim();
         }
 
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.textContent = "Verifying & Saving...";
+          submitBtn.textContent = "Saving...";
         }
 
         try {
@@ -1672,199 +1928,6 @@
         }
       });
     }
-
-    // Fast2SMS Gateway Configuration Modal Handlers
-    const smsModal = document.getElementById("modalSmsSettings");
-    const openSmsBtn = document.getElementById("btnOpenSmsSettings");
-    const closeSmsBtn = document.getElementById("btnCloseSmsSettingsModal");
-    const cancelSmsBtn = document.getElementById("btnCancelSmsSettings");
-    const formSms = document.getElementById("formSmsSettings");
-    const apiKeyInput = document.getElementById("inputSmsApiKey");
-    const toggleKeyBtn = document.getElementById("btnToggleApiKeyVisibility");
-    const testPhoneInput = document.getElementById("inputTestSmsPhone");
-    const btnSendTest = document.getElementById("btnSendTestSms");
-    const testSmsStatus = document.getElementById("testSmsStatus");
-    const smsAlertBox = document.getElementById("smsSettingsAlert");
-
-    function closeSmsModal() {
-      if (smsModal) smsModal.classList.add("hidden");
-      if (smsAlertBox) smsAlertBox.style.display = "none";
-      if (testSmsStatus) testSmsStatus.style.display = "none";
-    }
-
-    if (openSmsBtn && smsModal) {
-      openSmsBtn.addEventListener("click", async () => {
-        if (smsAlertBox) smsAlertBox.style.display = "none";
-        if (testSmsStatus) testSmsStatus.style.display = "none";
-        smsModal.classList.remove("hidden");
-
-        try {
-          const res = await authFetch("/api/admin/sms-config");
-          if (res.ok) {
-            const data = await res.json();
-            if (apiKeyInput) {
-              apiKeyInput.value = "";
-              if (data.has_api_key) {
-                apiKeyInput.placeholder = `Active Key: ${data.masked_api_key} (Enter new key to change)`;
-              } else {
-                apiKeyInput.placeholder = "Paste your Fast2SMS API Key here...";
-              }
-            }
-          }
-        } catch (e) {
-          console.warn("Failed to load SMS config:", e);
-        }
-      });
-    }
-
-    if (closeSmsBtn) closeSmsBtn.addEventListener("click", closeSmsModal);
-    if (cancelSmsBtn) cancelSmsBtn.addEventListener("click", closeSmsModal);
-    if (smsModal) {
-      smsModal.addEventListener("click", (e) => {
-        if (e.target === smsModal) closeSmsModal();
-      });
-    }
-
-    if (toggleKeyBtn && apiKeyInput) {
-      toggleKeyBtn.addEventListener("click", () => {
-        const isPw = apiKeyInput.type === "password";
-        apiKeyInput.type = isPw ? "text" : "password";
-        toggleKeyBtn.style.color = isPw ? "#0284c7" : "#94a3b8";
-      });
-    }
-
-    if (formSms) {
-      formSms.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const key = apiKeyInput ? apiKeyInput.value.trim() : "";
-        const saveBtn = document.getElementById("btnSaveSmsSettings");
-
-        if (saveBtn) {
-          saveBtn.disabled = true;
-          saveBtn.textContent = "Saving...";
-        }
-
-        try {
-          const res = await authFetch("/api/admin/sms-config", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fast2sms_api_key: key, enabled: true })
-          });
-          const data = await res.json();
-
-          if (res.ok && data.success) {
-            showToast("Fast2SMS API configuration saved!", "success");
-            closeSmsModal();
-          } else {
-            if (smsAlertBox) {
-              smsAlertBox.textContent = data.error || "Failed to save configuration.";
-              smsAlertBox.style.display = "block";
-            }
-          }
-        } catch (err) {
-          if (smsAlertBox) {
-            smsAlertBox.textContent = "Server error while saving SMS configuration.";
-            smsAlertBox.style.display = "block";
-          }
-        } finally {
-          if (saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.textContent = "Save Configuration";
-          }
-        }
-      });
-    }
-
-    if (btnSendTest) {
-      btnSendTest.addEventListener("click", async () => {
-        const phone = testPhoneInput ? testPhoneInput.value.trim() : "";
-        if (!phone || phone.length < 10) {
-          alert("Please enter a valid 10-digit mobile number to send the test SMS.");
-          if (testPhoneInput) testPhoneInput.focus();
-          return;
-        }
-
-        btnSendTest.disabled = true;
-        btnSendTest.textContent = "Sending...";
-        if (testSmsStatus) {
-          testSmsStatus.style.display = "block";
-          testSmsStatus.style.color = "#0284c7";
-          testSmsStatus.textContent = `Dispatching test SMS to +91 ${phone}...`;
-        }
-
-        try {
-          const res = await authFetch("/api/admin/sms-config/test", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone })
-          });
-          const data = await res.json();
-
-          if (res.ok && data.success) {
-            if (testSmsStatus) {
-              testSmsStatus.style.color = "#15803d";
-              testSmsStatus.textContent = `✓ ${data.message}`;
-            }
-            showToast(`Test SMS delivered to +91 ${phone}!`, "success");
-          } else {
-            if (testSmsStatus) {
-              testSmsStatus.style.color = "#dc2626";
-              testSmsStatus.textContent = `✗ ${data.error || "Failed to dispatch test SMS."}`;
-            }
-          }
-        } catch (e) {
-          if (testSmsStatus) {
-            testSmsStatus.style.color = "#dc2626";
-            testSmsStatus.textContent = "✗ Network error connecting to server.";
-          }
-        } finally {
-          btnSendTest.disabled = false;
-          btnSendTest.textContent = "Send Test SMS";
-        }
-      });
-    }
-  }
-
-  function showSmsSimulationAlert(phone, code) {
-    const existing = document.getElementById("smsSimAlert");
-    if (existing) existing.remove();
-
-    const banner = document.createElement("div");
-    banner.id = "smsSimAlert";
-    banner.className = "sms-sim-alert";
-    banner.innerHTML = `
-      <div class="sms-sim-header">
-        <div class="sms-sim-title">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-          <span>Incoming SMS Gateway &bull; ${escapeHtml(phone)}</span>
-        </div>
-        <button type="button" class="sms-sim-close" onclick="this.closest('#smsSimAlert').remove()">&times;</button>
-      </div>
-      <div class="sms-sim-body">
-        <p><strong>[Sri Devi Arts & Science College CMS]</strong> Your Super Admin password authorization OTP is <strong style="color: #0284c7; font-size: 14px; letter-spacing: 1px;">${escapeHtml(code)}</strong>. Valid for 5 minutes.</p>
-        <button type="button" class="sms-sim-autofill" id="btnAutofillOtp">Auto-Fill OTP (${escapeHtml(code)})</button>
-      </div>
-    `;
-    document.body.appendChild(banner);
-
-    const autofillBtn = banner.querySelector("#btnAutofillOtp");
-    if (autofillBtn) {
-      autofillBtn.addEventListener("click", () => {
-        const otpInput = document.getElementById("editOtpCode");
-        if (otpInput) {
-          otpInput.value = code;
-          otpInput.focus();
-        }
-        banner.remove();
-      });
-    }
-
-    setTimeout(() => {
-      if (banner && banner.parentNode) {
-        banner.style.opacity = "0";
-        setTimeout(() => banner.remove(), 300);
-      }
-    }, 20000);
   }
 
   // ================= UTILITIES =================

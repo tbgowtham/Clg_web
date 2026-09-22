@@ -1,504 +1,608 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f2e5a" />
-    <title>Sri Devi College — Admin Management CMS</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Playfair+Display:ital,wght@0,500..800;1,500..800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="admin.css" />
-  </head>
-  <body>
-    <!-- Administrative Login Gate Overlay -->
-    <div id="loginOverlay" class="login-overlay active">
-      <div class="login-card">
-        <div class="login-header">
-          <div class="login-logo-wrap">
-            <img src="/assets/sdasc/sdaasc-logo.png" alt="SDASC Logo" class="login-logo-img" onerror="this.src='/assets/sdasc/sdaasc-logo2.png'" />
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f2e5a" />
+  <title>Sri Devi College — Admin Management CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Playfair+Display:ital,wght@0,500..800;1,500..800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+  <!-- SheetJS Library for Instant Client-Side Excel (.xlsx) Generation -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+  <!-- Administrative Login Gate Overlay -->
+  <div id="loginOverlay" class="login-overlay active">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo-wrap">
+          <img src="/assets/sdasc/sdaasc-logo.png" alt="SDASC Logo" class="login-logo-img"
+            onerror="this.src='/assets/sdasc/sdaasc-logo2.png'" />
+        </div>
+        <h2>Administrative Access</h2>
+        <p>Sridevi Arts &amp; Science College &bull; Central CMS</p>
+        <span class="login-security-tag">Protected Portal &bull; Affiliated to University of Madras</span>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div id="loginError" class="login-error-alert" style="display: none;"></div>
+
+        <div class="form-group">
+          <label for="loginUsername">Admin Username</label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input type="text" id="loginUsername" placeholder="Enter username" required autocomplete="username"
+              autofocus />
           </div>
-          <h2>Administrative Access</h2>
-          <p>Sridevi Arts &amp; Science College &bull; Central CMS</p>
-          <span class="login-security-tag">Protected Portal &bull; Affiliated to University of Madras</span>
         </div>
 
-        <form id="loginForm" class="login-form">
-          <div id="loginError" class="login-error-alert" style="display: none;"></div>
-
-          <div class="form-group">
-            <label for="loginUsername">Admin Username</label>
-            <div class="input-with-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              <input type="text" id="loginUsername" placeholder="Enter username (doomsday)" required autocomplete="username" autofocus />
-            </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input type="password" id="loginPassword" placeholder="Enter password" required
+              autocomplete="current-password" />
+            <button type="button" id="btnTogglePassword" class="btn-toggle-pw" title="Show/Hide Password">
+            </button>
           </div>
-
-          <div class="form-group">
-            <label for="loginPassword">Password</label>
-            <div class="input-with-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              <input type="password" id="loginPassword" placeholder="Enter password" required autocomplete="current-password" />
-              <button type="button" id="btnTogglePassword" class="btn-toggle-pw" title="Show/Hide Password">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" id="btnLoginSubmit" class="btn-login-submit">
-            <span>Sign In to Console</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </button>
-        </form>
-
-        <div class="login-footer">
-          <small>Authorized Personnel Only &bull; Ponneri, Chennai</small>
         </div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn-login-submit">
+          <span>Sign In to Console</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <small>Authorized Personnel Only &bull; Ponneri, Chennai</small>
       </div>
     </div>
+  </div>
 
-    <div class="utility">
-      <span>Sri Devi Arts &amp; Science College &nbsp; | &nbsp; Administration Management Console</span>
-      <span>Connected to MongoDB &nbsp; · &nbsp; Real-time Content Sync</span>
-    </div>
-    <div class="admin-app">
-      <!-- Sidebar Navigation -->
-      <aside class="sidebar">
-        <div class="brand">
-          <div class="logo-mark">S</div>
-          <div class="brand-text">
-            <h2>Sri Devi</h2>
-            <small>Arts &amp; Science College</small>
-          </div>
+  <div class="utility">
+    <span>Sri Devi Arts &amp; Science College &nbsp; | &nbsp; Administration Management Console</span>
+    <span>Connected to MongoDB &nbsp; · &nbsp; Real-time Content Sync</span>
+  </div>
+  <div class="admin-app">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-mark">S</div>
+        <div class="brand-text">
+          <h2>Sri Devi</h2>
+          <small>Arts &amp; Science College</small>
         </div>
+      </div>
 
-        <div class="db-status-chip" id="dbStatusBadge">
-          <span class="pulse-dot"></span>
-          <span id="dbStatusText">Connecting MongoDB...</span>
+      <div class="db-status-chip" id="dbStatusBadge">
+        <span class="pulse-dot"></span>
+        <span id="dbStatusText">Connecting MongoDB...</span>
+      </div>
+
+
+      <nav class="nav-menu">
+        <button class="nav-tab active" data-tab="dashboard">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-tab" data-tab="gallery">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span>Campus Gallery</span>
+          <span class="badge" id="badgePhotoCount">0</span>
+        </button>
+        <button class="nav-tab" data-tab="notices">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span>Notices &amp; Bulletin</span>
+          <span class="badge" id="badgeNoticeCount">0</span>
+        </button>
+        <button class="nav-tab" data-tab="programmes">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>Academics</span>
+          <span class="badge" id="badgeProgCount">0</span>
+        </button>
+        <button class="nav-tab" data-tab="stats">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Key Statistics</span>
+        </button>
+        <button class="nav-tab" data-tab="content">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Hero &amp; General</span>
+        </button>
+        <button class="nav-tab" data-tab="applications">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Admissions (Online)</span>
+          <span class="badge" id="badgeAppCount">0</span>
+        </button>
+        <button class="nav-tab" data-tab="enquiries">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <span>Public Enquiries</span>
+          <span class="badge" id="badgeEnqCount">0</span>
+        </button>
+        <button class="nav-tab" data-tab="users">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>User Accounts</span>
+          <span class="badge" id="badgeUserCount">1</span>
+        </button>
+        <button class="nav-tab" data-tab="preview">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span>Live Site Preview</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="/" target="_blank" class="btn-live-site">
+          <span>View Public Site</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </a>
+        <button id="btnResetDefaults" class="btn-secondary text-xs">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          <span>Reset Demo Data</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Action Bar -->
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1 id="pageTitle">Dashboard Overview</h1>
+          <p id="pageSubtitle">Manage and publish real-time content for Sri Devi Arts &amp; Science College</p>
         </div>
+        <div class="topbar-actions">
+          <div class="user-session-group">
+            <div class="user-session-chip" id="userSessionChip">
+              <div class="user-avatar" id="userAvatarInitial">D</div>
+              <div class="user-meta">
+                <div class="user-name-line">
+                  <strong id="sessionUserName">doomsday</strong>
+                  <span class="user-scope-chip" id="sessionScopeChip">User Management Only</span>
+                </div>
+                <span id="sessionUserRole">Admin</span>
+              </div>
+            </div>
 
-
-        <nav class="nav-menu">
-          <button class="nav-tab active" data-tab="dashboard">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span>Dashboard</span>
+            <!-- Dynamic Role Scope Switcher (Visible to primary administrator doomsday for testing) -->
+            <div class="scope-switcher-wrap" id="scopeSwitcherWrap" style="display: none;">
+              <span class="scope-switcher-label">View As:</span>
+              <select id="selectRoleScope" class="select-role-scope" title="Simulate role views">
+                <option value="Admin">Admin (Users Only)</option>
+                <option value="Sub-Admin">Sub-Admin (Admissions Only)</option>
+                <option value="Content Editor">Content Editor (Content Only)</option>
+                <option value="Super Admin">Super Admin (All Access)</option>
+              </select>
+            </div>
+          </div>
+          <button id="btnSyncMongo" class="btn-secondary" title="Refresh data">
+            <svg class="spin-on-sync" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+            </svg>
+            <span>Refresh</span>
           </button>
-          <button class="nav-tab" data-tab="gallery">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            <span>Campus Gallery</span>
-            <span class="badge" id="badgePhotoCount">0</span>
+          <button id="btnSaveAll" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>Save Changes</span>
           </button>
-          <button class="nav-tab" data-tab="notices">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            <span>Notices &amp; Bulletin</span>
-            <span class="badge" id="badgeNoticeCount">0</span>
-          </button>
-          <button class="nav-tab" data-tab="programmes">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-            <span>Academics</span>
-            <span class="badge" id="badgeProgCount">0</span>
-          </button>
-          <button class="nav-tab" data-tab="stats">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-            <span>Key Statistics</span>
-          </button>
-          <button class="nav-tab" data-tab="content">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-            <span>Hero &amp; General</span>
-          </button>
-          <button class="nav-tab" data-tab="applications">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            <span>Admissions (Online)</span>
-            <span class="badge" id="badgeAppCount">0</span>
-          </button>
-          <button class="nav-tab" data-tab="enquiries">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            <span>Public Enquiries</span>
-            <span class="badge" id="badgeEnqCount">0</span>
-          </button>
-          <button class="nav-tab" data-tab="users">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            <span>User Accounts</span>
-            <span class="badge" id="badgeUserCount">1</span>
-          </button>
-          <button class="nav-tab" data-tab="preview">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-            <span>Live Site Preview</span>
-          </button>
-        </nav>
-
-        <div class="sidebar-footer">
-          <a href="/" target="_blank" class="btn-live-site">
-            <span>View Public Site</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-          </a>
-          <button id="btnResetDefaults" class="btn-secondary text-xs">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-            <span>Reset Demo Data</span>
+          <button id="btnLogout" class="btn-logout" title="Sign Out of Admin Console">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Sign Out</span>
           </button>
         </div>
-      </aside>
+      </header>
 
-      <!-- Main Content Area -->
-      <main class="main-content">
-        <!-- Top Action Bar -->
-        <header class="topbar">
-          <div class="topbar-title">
-            <h1 id="pageTitle">Dashboard Overview</h1>
-            <p id="pageSubtitle">Manage and publish real-time content for Sri Devi Arts &amp; Science College</p>
+      <!-- Dynamic Content Sections -->
+      <div class="tab-panels">
+
+        <!-- TAB 1: DASHBOARD -->
+        <section id="tab-dashboard" class="tab-panel active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <h3 id="dashTotalPhotos">0</h3>
+                <span>Campus Photos in Gallery</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <h3 id="dashTotalNotices">0</h3>
+                <span>Active Bulletin Notices</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <h3 id="dashTotalProgrammes">0</h3>
+                <span>Academic Programmes</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <h3 id="dashTotalApps">0</h3>
+                <span>Online Applications (2026–27)</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <h3 id="dashTotalEnquiries">0</h3>
+                <span>Public Enquiries Received</span>
+              </div>
+            </div>
           </div>
-          <div class="topbar-actions">
-            <div class="user-session-group">
-              <div class="user-session-chip" id="userSessionChip">
-                <div class="user-avatar" id="userAvatarInitial">D</div>
-                <div class="user-meta">
-                  <div class="user-name-line">
-                    <strong id="sessionUserName">doomsday</strong>
-                    <span class="user-scope-chip" id="sessionScopeChip">User Management Only</span>
-                  </div>
-                  <span id="sessionUserRole">Admin</span>
-                </div>
-              </div>
 
-              <!-- Dynamic Role Scope Switcher (Visible to primary administrator doomsday for testing) -->
-              <div class="scope-switcher-wrap" id="scopeSwitcherWrap" style="display: none;">
-                <span class="scope-switcher-label">View As:</span>
-                <select id="selectRoleScope" class="select-role-scope" title="Simulate role views">
-                  <option value="Admin">Admin (Users Only)</option>
-                  <option value="Sub-Admin">Sub-Admin (Admissions Only)</option>
-                  <option value="Content Editor">Content Editor (Content Only)</option>
-                  <option value="Super Admin">Super Admin (All Access)</option>
-                </select>
-              </div>
-            </div>
-            <button id="btnSyncMongo" class="btn-secondary" title="Refresh data">
-              <svg class="spin-on-sync" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-              <span>Refresh</span>
-            </button>
-            <button id="btnSaveAll" class="btn-primary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-              <span>Save Changes</span>
-            </button>
-            <button id="btnLogout" class="btn-logout" title="Sign Out of Admin Console">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-              <span>Sign Out</span>
-            </button>
-          </div>
-        </header>
-
-        <!-- Dynamic Content Sections -->
-        <div class="tab-panels">
-
-          <!-- TAB 1: DASHBOARD -->
-          <section id="tab-dashboard" class="tab-panel active">
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-icon purple">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                </div>
-                <div class="stat-info">
-                  <h3 id="dashTotalPhotos">0</h3>
-                  <span>Campus Photos in Gallery</span>
-                </div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon gold">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                </div>
-                <div class="stat-info">
-                  <h3 id="dashTotalNotices">0</h3>
-                  <span>Active Bulletin Notices</span>
-                </div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon cyan">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                </div>
-                <div class="stat-info">
-                  <h3 id="dashTotalProgrammes">0</h3>
-                  <span>Academic Programmes</span>
-                </div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon green">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                </div>
-                <div class="stat-info">
-                  <h3 id="dashTotalApps">0</h3>
-                  <span>Online Applications (2026–27)</span>
-                </div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon purple">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                </div>
-                <div class="stat-info">
-                  <h3 id="dashTotalEnquiries">0</h3>
-                  <span>Public Enquiries Received</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Quick Action Banners -->
-            <div class="dash-quick-grid">
-              <div class="card card-action">
-                <div class="card-header">
-                  <h3>Quick Upload Campus Photo</h3>
-                  <p>Drag and drop or select an image to upload directly into MongoDB</p>
-                </div>
-                <div class="mini-upload-zone" id="dashDropzone">
-                  <input type="file" id="dashFileInput" accept="image/*" class="file-input-hidden" />
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                  <span>Drag &amp; drop an image here or click to browse</span>
-                </div>
-              </div>
-
-              <div class="card card-action">
-                <div class="card-header">
-                  <h3>Post Urgent Bulletin Notice</h3>
-                  <p>Publish an immediate announcement on the college homepage</p>
-                </div>
-                <form id="dashQuickNoticeForm" class="quick-form">
-                  <div class="form-row">
-                    <input type="text" id="dashNoticeDay" placeholder="Day (e.g. 24)" style="width: 100px;" required />
-                    <input type="text" id="dashNoticeMonth" placeholder="Month (e.g. SEP)" style="width: 110px;" required />
-                  </div>
-                  <input type="text" id="dashNoticeTitle" placeholder="Notice title or announcement text..." required />
-                  <button type="submit" class="btn-primary" style="margin-top: 6px;">
-                    <span>Publish Announcement &rarr;</span>
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            <!-- Recent Highlights Preview -->
-            <div class="card">
-              <div class="card-header flex-between">
-                <div>
-                  <h3>Campus Mosaic Gallery Highlights</h3>
-                  <p>Live snapshot of photos currently appearing on Sri Devi's campus life section</p>
-                </div>
-                <button class="btn-secondary text-xs" onclick="switchTab('gallery')">Manage All Photos &rarr;</button>
-              </div>
-              <div class="mini-gallery-strip" id="dashGalleryStrip"></div>
-            </div>
-          </section>
-
-          <!-- TAB 2: CAMPUS GALLERY -->
-          <section id="tab-gallery" class="tab-panel">
-            <!-- Upload Card -->
-            <div class="card upload-card">
+          <!-- Quick Action Banners -->
+          <div class="dash-quick-grid">
+            <div class="card card-action">
               <div class="card-header">
-                <h3>Upload Campus Image</h3>
-                <p>Upload high-resolution event, campus, or award photos. Uploaded files are served dynamically by the Flask backend.</p>
+                <h3>Quick Upload Campus Photo</h3>
+                <p>Drag and drop or select an image to upload directly into MongoDB</p>
               </div>
-              <div class="upload-dropzone" id="galleryDropzone">
-                <input type="file" id="galleryFileInput" accept="image/*" class="file-input-hidden" />
-                <div class="dropzone-content" id="dropzoneContent">
-                  <div class="drop-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                  </div>
-                  <h4>Drag &amp; Drop photo here or <span class="accent-link">Browse files</span></h4>
-                  <p>PNG, JPG, JPEG, WEBP or GIF up to 25MB</p>
-                </div>
-                <!-- Preview area once selected -->
-                <div class="dropzone-preview hidden" id="uploadPreview">
-                  <img id="previewImg" src="" alt="Upload preview" />
-                  <div class="preview-details">
-                    <h5 id="previewFileName">filename.jpg</h5>
-                    <span id="previewFileSize">0 KB</span>
-                    <input type="text" id="previewCaption" placeholder="Enter photo label / caption (e.g. Auditorium Annual Day)" />
-                    <div class="preview-actions">
-                      <button type="button" id="btnConfirmUpload" class="btn-primary">
-                        <span>Upload to MongoDB</span>
-                      </button>
-                      <button type="button" id="btnCancelUpload" class="btn-secondary">
-                        <span>Cancel</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              <div class="mini-upload-zone" id="dashDropzone">
+                <input type="file" id="dashFileInput" accept="image/*" class="file-input-hidden" />
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Drag &amp; drop an image here or click to browse</span>
               </div>
             </div>
 
-            <!-- Existing Photos Manager -->
-            <div class="card">
-              <div class="card-header flex-between">
-                <div>
-                  <h3>Campus Photos (<span id="galleryCountLabel">0</span>)</h3>
-                  <p>Click on any photo to preview full size, edit the caption, or remove it from the website.</p>
-                </div>
-                <div class="search-box">
-                  <input type="text" id="gallerySearchInput" placeholder="Filter by caption..." />
-                </div>
+            <div class="card card-action">
+              <div class="card-header">
+                <h3>Post Urgent Bulletin Notice</h3>
+                <p>Publish an immediate announcement on the college homepage</p>
               </div>
-              <div class="gallery-grid" id="galleryGrid">
-                <!-- Injected via JavaScript -->
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 3: NOTICES & BULLETIN -->
-          <section id="tab-notices" class="tab-panel">
-            <div class="grid-2col">
-              <!-- Add Notice Card -->
-              <div class="card">
-                <div class="card-header">
-                  <h3>Add New Bulletin Notice</h3>
-                  <p>Create a campus announcement with calendar date and target destination.</p>
+              <form id="dashQuickNoticeForm" class="quick-form">
+                <div class="form-row">
+                  <input type="text" id="dashNoticeDay" placeholder="Day (e.g. 24)" style="width: 100px;" required />
+                  <input type="text" id="dashNoticeMonth" placeholder="Month (e.g. SEP)" style="width: 110px;"
+                    required />
                 </div>
-                <form id="formAddNotice" class="standard-form">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="noticeDay">Day (01-31)</label>
-                      <input type="text" id="noticeDay" maxlength="2" placeholder="18" required />
-                    </div>
-                    <div class="form-group">
-                      <label for="noticeMonth">Month (e.g. JUN)</label>
-                      <input type="text" id="noticeMonth" maxlength="4" placeholder="JUN" required />
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="noticeTitle">Notice Headline / Announcement</label>
-                    <textarea id="noticeTitle" rows="3" placeholder="Applications open for the 2026–27 academic year &rarr;" required></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label for="noticeLink">Link Target (Anchor or URL)</label>
-                    <input type="text" id="noticeLink" placeholder="#contact or https://..." value="#contact" />
-                  </div>
-                  <button type="submit" class="btn-primary">
-                    <span>Add Notice to Bulletin</span>
-                  </button>
-                </form>
-              </div>
-
-              <!-- Notices List Card -->
-              <div class="card">
-                <div class="card-header flex-between">
-                  <div>
-                    <h3>Current Bulletins</h3>
-                    <p>Live announcements displayed in the Research &amp; Bulletin section</p>
-                  </div>
-                </div>
-                <div class="notices-list" id="noticesList">
-                  <!-- Injected via JS -->
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 4: ACADEMICS / PROGRAMMES -->
-          <section id="tab-programmes" class="tab-panel">
-            <div class="grid-2col">
-              <!-- Add Programme Card -->
-              <div class="card">
-                <div class="card-header">
-                  <h3>Add Academic Programme</h3>
-                  <p>Add undergraduate or postgraduate degree offerings.</p>
-                </div>
-                <form id="formAddProg" class="standard-form">
-                  <div class="form-group">
-                    <label for="progNumber">Programme Badge / Category</label>
-                    <input type="text" id="progNumber" placeholder="01 / UNDERGRADUATE" value="01 / UNDERGRADUATE" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="progTitle">Programme Title</label>
-                    <input type="text" id="progTitle" placeholder="Computer Science &amp; Applications" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="progDesc">Description</label>
-                    <textarea id="progDesc" rows="3" placeholder="Build the skills behind the digital world with practical learning..." required></textarea>
-                  </div>
-                  <div class="form-group">
-                    <label for="progLink">Action Link</label>
-                    <input type="text" id="progLink" placeholder="#contact" value="#contact" />
-                  </div>
-                  <button type="submit" class="btn-primary">
-                    <span>Add Programme</span>
-                  </button>
-                </form>
-              </div>
-
-              <!-- Current Programmes List -->
-              <div class="card">
-                <div class="card-header">
-                  <h3>Active Programmes</h3>
-                  <p>Displayed in the "Programmes built for what's next" section</p>
-                </div>
-                <div class="programmes-list" id="programmesList">
-                  <!-- Injected via JS -->
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 5: KEY STATISTICS -->
-          <section id="tab-stats" class="tab-panel">
-            <div class="card">
-              <div class="card-header flex-between">
-                <div>
-                  <h3>College Key Statistics</h3>
-                  <p>Highlight Sri Devi's achievements, placement rates, student body, and legacy.</p>
-                </div>
-                <button type="button" id="btnAddStatRow" class="btn-secondary text-xs">
-                  <span>+ Add New Metric</span>
+                <input type="text" id="dashNoticeTitle" placeholder="Notice title or announcement text..." required />
+                <button type="submit" class="btn-primary" style="margin-top: 6px;">
+                  <span>Publish Announcement &rarr;</span>
                 </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Recent Highlights Preview -->
+          <div class="card">
+            <div class="card-header flex-between">
+              <div>
+                <h3>Campus Mosaic Gallery Highlights</h3>
+                <p>Live snapshot of photos currently appearing on Sri Devi's campus life section</p>
               </div>
-              <div class="stats-editor-grid" id="statsEditorGrid">
-                <!-- Dynamically populated stat row cards -->
+              <button class="btn-secondary text-xs" onclick="switchTab('gallery')">Manage All Photos &rarr;</button>
+            </div>
+            <div class="mini-gallery-strip" id="dashGalleryStrip"></div>
+          </div>
+        </section>
+
+        <!-- TAB 2: CAMPUS GALLERY -->
+        <section id="tab-gallery" class="tab-panel">
+          <!-- Upload Card -->
+          <div class="card upload-card">
+            <div class="card-header">
+              <h3>Upload Campus Image</h3>
+              <p>Upload high-resolution event, campus, or award photos. Uploaded files are served dynamically by the
+                Flask backend.</p>
+            </div>
+            <div class="upload-dropzone" id="galleryDropzone">
+              <input type="file" id="galleryFileInput" accept="image/*" class="file-input-hidden" />
+              <div class="dropzone-content" id="dropzoneContent">
+                <div class="drop-icon">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                </div>
+                <h4>Drag &amp; Drop photo here or <span class="accent-link">Browse files</span></h4>
+                <p>PNG, JPG, JPEG, WEBP or GIF up to 25MB</p>
+              </div>
+              <!-- Preview area once selected -->
+              <div class="dropzone-preview hidden" id="uploadPreview">
+                <img id="previewImg" src="" alt="Upload preview" />
+                <div class="preview-details">
+                  <h5 id="previewFileName">filename.jpg</h5>
+                  <span id="previewFileSize">0 KB</span>
+                  <input type="text" id="previewCaption"
+                    placeholder="Enter photo label / caption (e.g. Auditorium Annual Day)" />
+                  <div class="preview-actions">
+                    <button type="button" id="btnConfirmUpload" class="btn-primary">
+                      <span>Upload to MongoDB</span>
+                    </button>
+                    <button type="button" id="btnCancelUpload" class="btn-secondary">
+                      <span>Cancel</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- TAB 6: HERO & GENERAL CONTENT -->
-          <section id="tab-content" class="tab-panel">
-            <div class="grid-2col">
-              <!-- Hero Section Editor -->
-              <div class="card">
-                <div class="card-header">
-                  <h3>Hero Section Copy</h3>
-                  <p>The first impression when visitors land on the college website</p>
+          <!-- Existing Photos Manager -->
+          <div class="card">
+            <div class="card-header flex-between">
+              <div>
+                <h3>Campus Photos (<span id="galleryCountLabel">0</span>)</h3>
+                <p>Click on any photo to preview full size, edit the caption, or remove it from the website.</p>
+              </div>
+              <div class="search-box">
+                <input type="text" id="gallerySearchInput" placeholder="Filter by caption..." />
+              </div>
+            </div>
+            <div class="gallery-grid" id="galleryGrid">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: NOTICES & BULLETIN -->
+        <section id="tab-notices" class="tab-panel">
+          <div class="grid-2col">
+            <!-- Add Notice Card -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Add New Bulletin Notice</h3>
+                <p>Create a campus announcement with calendar date and target destination.</p>
+              </div>
+              <form id="formAddNotice" class="standard-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="noticeDay">Day (01-31)</label>
+                    <input type="text" id="noticeDay" maxlength="2" placeholder="18" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="noticeMonth">Month (e.g. JUN)</label>
+                    <input type="text" id="noticeMonth" maxlength="4" placeholder="JUN" required />
+                  </div>
                 </div>
-                <div class="standard-form">
+                <div class="form-group">
+                  <label for="noticeTitle">Notice Headline / Announcement</label>
+                  <textarea id="noticeTitle" rows="3"
+                    placeholder="Applications open for the 2026–27 academic year &rarr;" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="noticeLink">Link Target (Anchor or URL)</label>
+                  <input type="text" id="noticeLink" placeholder="#contact or https://..." value="#contact" />
+                </div>
+                <button type="submit" class="btn-primary">
+                  <span>Add Notice to Bulletin</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Notices List Card -->
+            <div class="card">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>Current Bulletins</h3>
+                  <p>Live announcements displayed in the Research &amp; Bulletin section</p>
+                </div>
+              </div>
+              <div class="notices-list" id="noticesList">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: ACADEMICS / PROGRAMMES -->
+        <section id="tab-programmes" class="tab-panel">
+          <div class="grid-2col">
+            <!-- Add Programme Card -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Add Academic Programme</h3>
+                <p>Add undergraduate or postgraduate degree offerings.</p>
+              </div>
+              <form id="formAddProg" class="standard-form">
+                <div class="form-row">
                   <div class="form-group">
-                    <label for="fieldUtilityBanner">Top Announcement Bar</label>
-                    <input type="text" id="fieldUtilityBanner" placeholder="Admissions open for 2026–27..." />
+                    <label for="progNumber">Programme Badge / Code</label>
+                    <input type="text" id="progNumber" placeholder="e.g. 13 / SCIENCE" value="13 / SCIENCE" required />
                   </div>
                   <div class="form-group">
-                    <label for="fieldHeroEyebrow">Eyebrow Tagline</label>
-                    <input type="text" id="fieldHeroEyebrow" placeholder="Learn with purpose" />
+                    <label for="progCategory">Category / Filter</label>
+                    <select id="progCategory"
+                      style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+                      <option value="Computer Science">Computer Science &amp; AI</option>
+                      <option value="Commerce">Commerce &amp; CS</option>
+                      <option value="Management">Management</option>
+                      <option value="Arts">Arts &amp; Languages</option>
+                      <option value="Science" selected>Science</option>
+                      <option value="Postgraduate">Postgraduate</option>
+                      <option value="Athletics">Sports &amp; Placement</option>
+                    </select>
                   </div>
-                  <div class="form-group">
-                    <label for="fieldHeroTitle">Main Headline</label>
-                    <input type="text" id="fieldHeroTitle" placeholder="Shape your future at Sri Devi." />
-                  </div>
-                  <div class="form-group">
-                    <label for="fieldHeroCopy">Hero Supporting Text</label>
-                    <textarea id="fieldHeroCopy" rows="4"></textarea>
-                  </div>
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="fieldHeroBtn1Text">Button 1 Label</label>
-                      <input type="text" id="fieldHeroBtn1Text" />
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldHeroBtn1Link">Button 1 Link</label>
-                      <input type="text" id="fieldHeroBtn1Link" />
-                    </div>
-                  </div>
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="fieldHeroBtn2Text">Button 2 Label</label>
-                      <input type="text" id="fieldHeroBtn2Text" />
-                    </div>
-                    <div class="form-group">
-                      <label for="fieldHeroBtn2Link">Button 2 Link</label>
-                      <input type="text" id="fieldHeroBtn2Link" />
-                    </div>
-                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="progTitle">Programme Title</label>
+                  <input type="text" id="progTitle" placeholder="e.g. B.Sc (Data Science)" required />
+                </div>
+                <div class="form-group">
+                  <label for="progDept">Academic Department</label>
+                  <input type="text" id="progDept" placeholder="e.g. Department of Data Science" required />
+                </div>
+                <div class="form-group">
+                  <label for="progDuration">Programme Duration</label>
+                  <input type="text" id="progDuration" placeholder="e.g. 3 Years (UG)" value="3 Years (UG)" />
+                </div>
+                <div class="form-group">
+                  <label for="progDesc">Description &amp; Highlights</label>
+                  <textarea id="progDesc" rows="3" placeholder="Overview of the degree curriculum and scope..."
+                    required></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="progLink">Action Link</label>
+                  <input type="text" id="progLink" placeholder="#apply-modal" value="#apply-modal" />
+                </div>
+                <button type="submit" class="btn-primary">
+                  <span>Add Programme</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Current Programmes List -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Active Programmes</h3>
+                <p>Displayed in the "Programmes built for what's next" section</p>
+              </div>
+              <div class="programmes-list" id="programmesList">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 5: KEY STATISTICS -->
+        <section id="tab-stats" class="tab-panel">
+          <div class="card">
+            <div class="card-header flex-between">
+              <div>
+                <h3>College Key Statistics</h3>
+                <p>Highlight Sri Devi's achievements, placement rates, student body, and legacy.</p>
+              </div>
+              <button type="button" id="btnAddStatRow" class="btn-secondary text-xs">
+                <span>+ Add New Metric</span>
+              </button>
+            </div>
+            <div class="stats-editor-grid" id="statsEditorGrid">
+              <!-- Dynamically populated stat row cards -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 6: HERO & GENERAL CONTENT -->
+        <section id="tab-content" class="tab-panel">
+          <div class="grid-2col">
+            <!-- Hero Section Editor -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Hero Section Copy</h3>
+                <p>The first impression when visitors land on the college website</p>
+              </div>
+              <div class="standard-form">
+                <div class="form-group">
+                  <label for="fieldUtilityBanner">Top Announcement Bar</label>
+                  <input type="text" id="fieldUtilityBanner" placeholder="Admissions open for 2026–27..." />
+                </div>
+                <div class="form-group">
+                  <label for="fieldHeroEyebrow">Eyebrow Tagline</label>
+                  <input type="text" id="fieldHeroEyebrow" placeholder="Learn with purpose" />
+                </div>
+                <div class="form-group">
+                  <label for="fieldHeroTitle">Main Headline</label>
+                  <input type="text" id="fieldHeroTitle" placeholder="Shape your future at Sri Devi." />
+                </div>
+                <div class="form-group">
+                  <label for="fieldHeroCopy">Hero Supporting Text</label>
+                  <textarea id="fieldHeroCopy" rows="4"></textarea>
                 </div>
               </div>
 
@@ -542,351 +646,452 @@
                 </div>
               </div>
             </div>
-          </section>
+        </section>
 
-          <!-- TAB: ONLINE ADMISSION APPLICATIONS -->
-          <section id="tab-applications" class="tab-panel">
-            <div class="card">
-              <div class="card-header flex-between">
-                <div>
-                  <h3>Online Admission Applications (<span id="appsCountLabel">0</span>)</h3>
-                  <p>Registrations received from the public website admission portal for 2026–2027.</p>
-                </div>
-                <div class="search-box">
-                  <input type="text" id="appSearchInput" placeholder="Filter by candidate name, course, or mobile..." />
-                </div>
+        <!-- TAB: ONLINE ADMISSION APPLICATIONS -->
+        <section id="tab-applications" class="tab-panel">
+          <!-- Status Quick Summary Chips / Counters -->
+          <div class="apps-summary-strip">
+            <button type="button" class="app-status-chip active" data-status-filter="all" id="chipFilterAll">
+              <span class="chip-title">All Applications</span>
+              <span class="chip-count" id="countStatusAll">0</span>
+            </button>
+            <button type="button" class="app-status-chip chip-pending" data-status-filter="Pending"
+              id="chipFilterPending">
+              <span class="chip-dot dot-pending"></span>
+              <span class="chip-title">Pending</span>
+              <span class="chip-count" id="countStatusPending">0</span>
+            </button>
+            <button type="button" class="app-status-chip chip-joined" data-status-filter="Joined" id="chipFilterJoined">
+              <span class="chip-dot dot-joined"></span>
+              <span class="chip-title">Joined</span>
+              <span class="chip-count" id="countStatusJoined">0</span>
+            </button>
+            <button type="button" class="app-status-chip chip-rejected" data-status-filter="Rejected"
+              id="chipFilterRejected">
+              <span class="chip-dot dot-rejected"></span>
+              <span class="chip-title">Rejected</span>
+              <span class="chip-count" id="countStatusRejected">0</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-header flex-between" style="border-bottom: 1px solid var(--line); padding-bottom: 14px;">
+              <div>
+                <h3 style="font-size: 17px; margin-bottom: 3px;">Online Admission Applications (<span
+                    id="appsCountLabel">0</span>)</h3>
+                <p style="font-size: 12.5px; color: var(--muted); margin: 0;">Manage student registrations received from
+                  the public portal for 2026–2027.</p>
               </div>
-              <div class="table-responsive">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Candidate Name</th>
-                      <th>Programme</th>
-                      <th>Mobile / WhatsApp</th>
-                      <th>Email</th>
-                      <th>School / Marks</th>
-                      <th>Community / Scholarship</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="applicationsTableBody">
-                    <tr>
-                      <td colspan="8" style="text-align: center; color: var(--muted); padding: 30px;">Loading applications...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB: PUBLIC ENQUIRIES -->
-          <section id="tab-enquiries" class="tab-panel">
-            <div class="card">
-              <div class="card-header flex-between">
-                <div>
-                  <h3>Public Enquiries &amp; Messages (<span id="enqCountLabel">0</span>)</h3>
-                  <p>Messages submitted by parents, students, and recruiters via the contact form.</p>
-                </div>
-              </div>
-              <div class="table-responsive">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Sender Name</th>
-                      <th>Contact</th>
-                      <th>Subject</th>
-                      <th>Message</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="enquiriesTableBody">
-                    <tr>
-                      <td colspan="6" style="text-align: center; color: var(--muted); padding: 30px;">Loading enquiries...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB: USER MANAGEMENT & SUB-ADMINS -->
-          <section id="tab-users" class="tab-panel">
-            <div class="card">
-              <div class="card-header flex-between">
-                <div>
-                  <h3>Admin &amp; Sub-Admin Accounts (<span id="userCountLabel">1</span>)</h3>
-                  <p>Create and control portal login access for faculty, admission officers, and sub-administrators.</p>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <button type="button" id="btnOpenSmsSettings" class="btn-secondary text-xs" style="display: none;" title="Configure Fast2SMS Gateway for live mobile OTP">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                    <span>SMS Gateway</span>
-                  </button>
-                  <button type="button" id="btnOpenCreateUserModal" class="btn-primary text-xs">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span>+ Create Sub-Admin</span>
-                  </button>
-                </div>
-              </div>
-              <div class="table-responsive">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Username</th>
-                      <th>Full Name / Designation</th>
-                      <th>Role &amp; Privileges</th>
-                      <th>Created Date</th>
-                      <th>Account Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="usersTableBody">
-                    <tr>
-                      <td colspan="6" style="text-align: center; color: var(--muted); padding: 30px;">Loading user accounts...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 7: LIVE PREVIEW -->
-          <section id="tab-preview" class="tab-panel">
-            <div class="preview-toolbar">
-              <div class="preview-info">
-                <span class="pulse-dot"></span>
-                <span>Live View: Sri Devi Arts &amp; Science College</span>
-              </div>
-              <div class="preview-actions">
-                <button type="button" id="btnReloadPreview" class="btn-secondary text-xs">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                  <span>Reload Preview</span>
-                </button>
-                <a href="/" target="_blank" class="btn-primary text-xs">
-                  <span>Open in Full Screen ↗</span>
-                </a>
-              </div>
-            </div>
-            <div class="preview-frame-wrap">
-              <iframe id="collegeSiteFrame" src="/" title="Sri Devi Arts &amp; Science College Live Preview"></iframe>
-            </div>
-          </section>
-
-        </div>
-      </main>
-    </div>
-
-    <!-- Lightbox Modal for Photo Inspection -->
-    <div class="modal-overlay hidden" id="photoModal">
-      <div class="modal-card">
-        <button class="modal-close" id="btnModalClose">&times;</button>
-        <div class="modal-body">
-          <img id="modalImg" src="" alt="Full view" />
-          <div class="modal-caption-wrap">
-            <input type="text" id="modalCaptionInput" placeholder="Edit label..." />
-            <div class="modal-btns">
-              <button id="btnModalSaveCaption" class="btn-primary text-xs">Save Caption</button>
-              <button id="btnModalDeletePhoto" class="btn-danger text-xs">Delete Photo</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Create New User / Sub-Admin -->
-    <div class="modal-overlay hidden" id="modalCreateUser">
-      <div class="modal-card" style="max-width: 480px; padding: 28px;">
-        <button class="modal-close" id="btnCloseCreateUserModal">&times;</button>
-        <div class="modal-header-custom" style="margin-bottom: 20px;">
-          <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--navy);">Create Admin or Sub-Admin</h3>
-          <p style="font-size: 13px; color: var(--muted); margin: 0;">Assign login credentials and CMS role permissions.</p>
-        </div>
-        <form id="formCreateUser" class="modal-form-custom">
-          <div id="createUserError" class="login-error-alert" style="display: none; margin-bottom: 14px;"></div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="newUsername" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Username <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="newUsername" class="form-control" placeholder="e.g. subadmin_admission" required pattern="[a-zA-Z0-9_.-]{3,30}" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
-            <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Alphanumeric, 3–30 characters, no spaces</small>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="newFullName" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Full Name / Designation <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="newFullName" class="form-control" placeholder="e.g. Admissions Department Staff" required style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="newRole" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Assigned Department &amp; Only Job <span style="color: #ef4444;">*</span></label>
-            <select id="newRole" class="form-control" required style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
-              <option value="Sub-Admin" selected>Sub-Admin — Admissions &amp; Enquiries Only</option>
-              <option value="Content Editor">Content Editor — Website Content, Gallery &amp; Notices Only</option>
-              <option value="Admin">Administrator — User Accounts &amp; Access Management Only</option>
-              <option value="Super Admin">Super Administrator — Full System Access (All Modules)</option>
-            </select>
-            <div style="margin-top: 6px; padding: 8px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; color: #475569; line-height: 1.4;">
-              <strong>Strict Role Segregation:</strong> Each account only has access to their assigned part and cannot access or modify any other parts of the college CMS.
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 20px;">
-            <label for="newPassword" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Initial Password <span style="color: #ef4444;">*</span></label>
-            <input type="password" id="newPassword" class="form-control" placeholder="Minimum 4 characters" required minlength="4" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
-          </div>
-
-          <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
-            <button type="button" class="btn-secondary text-xs" id="btnCancelCreateUser">Cancel</button>
-            <button type="submit" class="btn-primary text-xs" id="btnSubmitCreateUser">Create Account</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Modal: Edit User Account / Rename ID / Reset Password -->
-    <div class="modal-overlay hidden" id="modalEditUser">
-      <div class="modal-card" style="max-width: 480px; padding: 28px;">
-        <button class="modal-close" id="btnCloseEditUserModal">&times;</button>
-        <div class="modal-header-custom" style="margin-bottom: 20px;">
-          <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--navy);">Edit User Credentials &amp; ID</h3>
-          <p style="font-size: 13px; color: var(--muted); margin: 0;">Rename User ID or change password for any account (Super Admin privilege).</p>
-        </div>
-        <form id="formEditUser" class="modal-form-custom">
-          <input type="hidden" id="editOrigUsername" />
-          <div id="editUserError" class="login-error-alert" style="display: none; margin-bottom: 14px;"></div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="editUsername" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">User ID / Username <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="editUsername" class="form-control" placeholder="Enter new user ID" required pattern="[a-zA-Z0-9_.-]{3,30}" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
-            <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Alphanumeric, 3–30 characters. Renaming changes the account login ID immediately.</small>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="editFullName" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Full Name / Designation <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="editFullName" class="form-control" placeholder="e.g. Staff Full Name" required style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="editRole" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Assigned Department &amp; Role</label>
-            <select id="editRole" class="form-control" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
-              <option value="Sub-Admin">Sub-Admin — Admissions &amp; Enquiries Only</option>
-              <option value="Content Editor">Content Editor — Website Content, Gallery &amp; Notices Only</option>
-              <option value="Admin">Administrator — User Accounts &amp; Access Management Only</option>
-              <option value="Super Admin">Super Administrator — Full System Access (All Modules)</option>
-            </select>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="editPassword" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">
-              New Password 
-              <span style="color: var(--muted); font-weight: 400;">(Leave empty to keep existing password)</span>
-            </label>
-            <input type="password" id="editPassword" class="form-control" placeholder="Enter new password to change..." minlength="4" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
-            <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Only the Super Admin can recreate passwords using Mobile OTP verification.</small>
-          </div>
-
-          <!-- Mobile OTP Verification Section (Revealed when New Password is entered) -->
-          <div id="editOtpSection" class="otp-verification-panel" style="display: none; margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px;">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <strong style="font-size: 12.5px; color: #0f2e5a;">Super Admin Mobile OTP Authorization</strong>
-            </div>
-            <p style="font-size: 11.5px; color: #64748b; margin: 0 0 10px 0; line-height: 1.4;">
-              To change or recreate this password, dispatch a 6-digit OTP to your registered mobile phone number.
-            </p>
-
-            <div class="form-group" style="margin-bottom: 10px;">
-              <label for="editPhone" style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155;">Mobile Number</label>
-              <div style="display: flex; gap: 8px;">
-                <input type="tel" id="editPhone" class="form-control" placeholder="10-digit mobile number (e.g. 9876543210)" pattern="[0-9]{10}" style="flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;" />
-                <button type="button" id="btnSendEditOtp" class="btn-primary text-xs" style="white-space: nowrap; padding: 8px 14px;">
-                  <span>Send OTP</span>
+              <div class="header-export-wrap">
+                <button type="button" id="btnExportExcel" class="btn-excel-export"
+                  title="Export applications to Microsoft Excel (.xlsx)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Download in Excel</span>
                 </button>
               </div>
             </div>
 
-            <div class="form-group" id="otpCodeWrap" style="margin-bottom: 6px; display: none;">
-              <label for="editOtpCode" style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155;">Enter 6-Digit OTP Code <span style="color: #ef4444;">*</span></label>
-              <input type="text" id="editOtpCode" class="form-control" placeholder="• • • • • •" maxlength="6" pattern="[0-9]{6}" style="width: 160px; padding: 8px 12px; border: 1.5px solid #0284c7; border-radius: 6px; font-size: 16px; font-weight: 700; letter-spacing: 4px; text-align: center;" />
-              <div id="otpStatusNotice" style="font-size: 11px; color: #0284c7; margin-top: 5px;"></div>
+            <!-- Categorization & Multi-Filter Bar -->
+            <div class="apps-filter-bar">
+              <div class="filter-group-item search-grow">
+                <label for="appSearchInput">Search Student / Mobile</label>
+                <div class="input-icon-wrap">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="appSearchInput" placeholder="Name, course, or mobile..." />
+                </div>
+              </div>
+
+              <div class="filter-group-item">
+                <label for="filterAppStatus">Status</label>
+                <select id="filterAppStatus" class="filter-select">
+                  <option value="all">All Statuses</option>
+                  <option value="Pending">⏳ Pending</option>
+                  <option value="Joined">✅ Joined</option>
+                  <option value="Rejected">❌ Rejected</option>
+                </select>
+              </div>
+
+              <div class="filter-group-item">
+                <label for="filterAppCommunity">Community</label>
+                <select id="filterAppCommunity" class="filter-select">
+                  <option value="all">All Communities</option>
+                  <option value="BC">BC (Backward Class)</option>
+                  <option value="BCM">BCM (Backward Class Muslim)</option>
+                  <option value="MBC">MBC / DNC</option>
+                  <option value="SC">SC (Scheduled Caste)</option>
+                  <option value="SCA">SC (Arunthathiyar)</option>
+                  <option value="ST">ST (Scheduled Tribe)</option>
+                  <option value="OC">OC / General</option>
+                </select>
+              </div>
+
+              <div class="filter-group-item">
+                <label for="filterAppDept">Department / Course</label>
+                <select id="filterAppDept" class="filter-select">
+                  <option value="all">All Departments / Courses</option>
+                </select>
+              </div>
+
+              <div class="filter-actions-item">
+                <button type="button" id="btnResetAppFilters" class="btn-secondary text-xs" title="Reset all filters">
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Candidate Name</th>
+                    <th>Course</th>
+                    <th>Admission Status</th>
+                    <th>Mobile / WhatsApp</th>
+                    <th>Email</th>
+                    <th>School / Marks</th>
+                    <th>Community / Scholarship</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="applicationsTableBody">
+                  <tr>
+                    <td colspan="9" style="text-align: center; color: var(--muted); padding: 30px;">Loading
+                      applications...</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
+        </section>
 
-          <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
-            <button type="button" class="btn-secondary text-xs" id="btnCancelEditUser">Cancel</button>
-            <button type="submit" class="btn-primary text-xs" id="btnSubmitEditUser">Save Changes</button>
+        <!-- TAB: PUBLIC ENQUIRIES -->
+        <section id="tab-enquiries" class="tab-panel">
+          <div class="card">
+            <div class="card-header flex-between">
+              <div>
+                <h3>Public Enquiries &amp; Messages (<span id="enqCountLabel">0</span>)</h3>
+                <p>Messages submitted by parents, students, and recruiters via the contact form.</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Sender Name</th>
+                    <th>Contact</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="enquiriesTableBody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--muted); padding: 30px;">Loading enquiries...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </form>
+        </section>
+
+        <!-- TAB: USER MANAGEMENT & SUB-ADMINS -->
+        <section id="tab-users" class="tab-panel">
+          <div class="card">
+            <div class="card-header flex-between">
+              <div>
+                <h3>Admin &amp; Sub-Admin Accounts (<span id="userCountLabel">1</span>)</h3>
+                <p>Create and control portal login access for faculty, admission officers, and sub-administrators.</p>
+              </div>
+              <div>
+                <button type="button" id="btnOpenCreateUserModal" class="btn-primary text-xs">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>+ Create Sub-Admin</span>
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Full Name / Designation</th>
+                    <th>Role &amp; Privileges</th>
+                    <th>Created Date</th>
+                    <th>Account Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--muted); padding: 30px;">Loading user
+                      accounts...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 7: LIVE PREVIEW -->
+        <section id="tab-preview" class="tab-panel">
+          <div class="preview-toolbar">
+            <div class="preview-info">
+              <span class="pulse-dot"></span>
+              <span>Live View: Sri Devi Arts &amp; Science College</span>
+            </div>
+            <div class="preview-actions">
+              <button type="button" id="btnReloadPreview" class="btn-secondary text-xs">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Reload Preview</span>
+              </button>
+              <a href="/" target="_blank" class="btn-primary text-xs">
+                <span>Open in Full Screen ↗</span>
+              </a>
+            </div>
+          </div>
+          <div class="preview-frame-wrap">
+            <iframe id="collegeSiteFrame" src="/" title="Sri Devi Arts &amp; Science College Live Preview"></iframe>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Lightbox Modal for Photo Inspection -->
+  <div class="modal-overlay hidden" id="photoModal">
+    <div class="modal-card">
+      <button class="modal-close" id="btnModalClose">&times;</button>
+      <div class="modal-body">
+        <img id="modalImg" src="" alt="Full view" />
+        <div class="modal-caption-wrap">
+          <input type="text" id="modalCaptionInput" placeholder="Edit label..." />
+          <div class="modal-btns">
+            <button id="btnModalSaveCaption" class="btn-primary text-xs">Save Caption</button>
+            <button id="btnModalDeletePhoto" class="btn-danger text-xs">Delete Photo</button>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Modal: Fast2SMS Gateway Configuration (Super Admin Only) -->
-    <div class="modal-overlay hidden" id="modalSmsSettings">
-      <div class="modal-card" style="max-width: 500px; padding: 28px;">
-        <button class="modal-close" id="btnCloseSmsSettingsModal">&times;</button>
-        <div class="modal-header-custom" style="margin-bottom: 18px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="background: #e0f2fe; padding: 6px 8px; border-radius: 8px; color: #0284c7; display: flex; align-items: center;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-            </div>
-            <div>
-              <h3 style="font-size: 18px; margin: 0; color: var(--navy);">Fast2SMS Gateway Settings</h3>
-              <p style="font-size: 12.5px; color: var(--muted); margin: 2px 0 0 0;">Deliver real OTP messages directly to physical mobile phones.</p>
-            </div>
+  <!-- Modal: Create New User / Sub-Admin -->
+  <div class="modal-overlay hidden" id="modalCreateUser">
+    <div class="modal-card" style="max-width: 480px; padding: 28px;">
+      <button class="modal-close" id="btnCloseCreateUserModal">&times;</button>
+      <div class="modal-header-custom" style="margin-bottom: 20px;">
+        <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--navy);">Create Admin or Sub-Admin</h3>
+        <p style="font-size: 13px; color: var(--muted); margin: 0;">Assign login credentials and CMS role permissions.
+        </p>
+      </div>
+      <form id="formCreateUser" class="modal-form-custom">
+        <div id="createUserError" class="login-error-alert" style="display: none; margin-bottom: 14px;"></div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="newUsername"
+            style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Username <span
+              style="color: #ef4444;">*</span></label>
+          <input type="text" id="newUsername" class="form-control" placeholder="e.g. subadmin_admission" required
+            pattern="[a-zA-Z0-9_.-]{3,30}"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+          <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Alphanumeric, 3–30
+            characters, no spaces</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="newFullName" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Full
+            Name / Designation <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="newFullName" class="form-control" placeholder="e.g. Admissions Department Staff"
+            required style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="newRole" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Assigned
+            Department &amp; Only Job <span style="color: #ef4444;">*</span></label>
+          <select id="newRole" class="form-control" required
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+            <option value="Sub-Admin" selected>Sub-Admin — Admissions &amp; Enquiries Only</option>
+            <option value="Content Editor">Content Editor — Website Content, Gallery &amp; Notices Only</option>
+            <option value="Admin">Administrator — User Accounts &amp; Access Management Only</option>
+            <option value="Super Admin">Super Administrator — Full System Access (All Modules)</option>
+          </select>
+          <div
+            style="margin-top: 6px; padding: 8px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; color: #475569; line-height: 1.4;">
+            <strong>Strict Role Segregation:</strong> Each account only has access to their assigned part and cannot
+            access or modify any other parts of the college CMS.
           </div>
         </div>
 
-        <form id="formSmsSettings" class="modal-form-custom">
-          <div id="smsSettingsAlert" class="login-error-alert" style="display: none; margin-bottom: 14px;"></div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="newPassword"
+            style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Initial Password <span
+              style="color: #ef4444;">*</span></label>
+          <input type="password" id="newPassword" class="form-control" placeholder="Minimum 4 characters" required
+            minlength="4"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+        </div>
 
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #475569;">Selected Provider</label>
-            <div style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-weight: 600; color: #0f172a; display: flex; align-items: center; justify-content: space-between;">
-              <span>Fast2SMS &bull; Quick OTP Route (India)</span>
-              <span style="font-size: 11px; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 700;">● Active</span>
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 14px;">
-            <label for="inputSmsApiKey" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">
-              Fast2SMS API Key <span style="color: #ef4444;">*</span>
-            </label>
-            <div style="position: relative;">
-              <input type="password" id="inputSmsApiKey" class="form-control" placeholder="Paste your Fast2SMS API key here..." style="width: 100%; padding: 9px 40px 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: monospace;" />
-              <button type="button" id="btnToggleApiKeyVisibility" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;" title="Show/Hide Key">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </button>
-            </div>
-            <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 4px;">
-              Get your API key at <a href="https://www.fast2sms.com" target="_blank" style="color: #0284c7; text-decoration: underline; font-weight: 600;">fast2sms.com</a> (Free signup includes trial credits for live SMS).
-            </small>
-          </div>
-
-          <!-- Test Real SMS Section -->
-          <div style="margin-bottom: 20px; padding: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #166534; margin-bottom: 6px;">
-              Test Live SMS Delivery to Your Mobile
-            </label>
-            <div style="display: flex; gap: 8px;">
-              <input type="tel" id="inputTestSmsPhone" placeholder="Enter 10-digit mobile" maxlength="10" style="flex: 1; padding: 7px 10px; border: 1px solid #86efac; border-radius: 6px; font-size: 12.5px;" />
-              <button type="button" id="btnSendTestSms" class="btn-secondary text-xs" style="background: #15803d; color: #ffffff; border: none; white-space: nowrap; padding: 7px 14px; font-weight: 700;">
-                Send Test SMS
-              </button>
-            </div>
-            <div id="testSmsStatus" style="font-size: 11.5px; margin-top: 6px; display: none;"></div>
-          </div>
-
-          <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
-            <button type="button" class="btn-secondary text-xs" id="btnCancelSmsSettings">Cancel</button>
-            <button type="submit" class="btn-primary text-xs" id="btnSaveSmsSettings">Save Configuration</button>
-          </div>
-        </form>
-      </div>
+        <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-secondary text-xs" id="btnCancelCreateUser">Cancel</button>
+          <button type="submit" class="btn-primary text-xs" id="btnSubmitCreateUser">Create Account</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- Toast Notification Container -->
-    <div class="toast-container" id="toastContainer"></div>
+  <!-- Modal: Edit User Account / Rename ID / Reset Password -->
+  <div class="modal-overlay hidden" id="modalEditUser">
+    <div class="modal-card" style="max-width: 480px; padding: 28px;">
+      <button class="modal-close" id="btnCloseEditUserModal">&times;</button>
+      <div class="modal-header-custom" style="margin-bottom: 20px;">
+        <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--navy);">Edit User Credentials &amp; ID</h3>
+        <p style="font-size: 13px; color: var(--muted); margin: 0;">Rename User ID or change password for any account
+          (Super Admin privilege).</p>
+      </div>
+      <form id="formEditUser" class="modal-form-custom">
+        <input type="hidden" id="editOrigUsername" />
+        <div id="editUserError" class="login-error-alert" style="display: none; margin-bottom: 14px;"></div>
 
-    <script src="admin.js"></script>
-  </body>
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="editUsername"
+            style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">User ID / Username <span
+              style="color: #ef4444;">*</span></label>
+          <input type="text" id="editUsername" class="form-control" placeholder="Enter new user ID" required
+            pattern="[a-zA-Z0-9_.-]{3,30}"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+          <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Alphanumeric, 3–30
+            characters. Renaming changes the account login ID immediately.</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="editFullName"
+            style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Full Name / Designation
+            <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="editFullName" class="form-control" placeholder="e.g. Staff Full Name" required
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="editRole"
+            style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Assigned Department &amp;
+            Role</label>
+          <select id="editRole" class="form-control"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+            <option value="Sub-Admin">Sub-Admin — Admissions &amp; Enquiries Only</option>
+            <option value="Content Editor">Content Editor — Website Content, Gallery &amp; Notices Only</option>
+            <option value="Admin">Administrator — User Accounts &amp; Access Management Only</option>
+            <option value="Super Admin">Super Administrator — Full System Access (All Modules)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label for="editPassword" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">
+            New Password
+            <span style="color: var(--muted); font-weight: 400;">(Leave empty to keep existing password)</span>
+          </label>
+          <input type="password" id="editPassword" class="form-control" placeholder="Enter new password to change..."
+            minlength="4"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+          <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">Enter minimum 4
+            characters to update password directly.</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="editPhone" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Mobile
+            Number</label>
+          <input type="tel" id="editPhone" class="form-control" placeholder="10-digit mobile number (optional)"
+            pattern="[0-9]{10}"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;" />
+        </div>
+
+        <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-secondary text-xs" id="btnCancelEditUser">Cancel</button>
+          <button type="submit" class="btn-primary text-xs" id="btnSubmitEditUser">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Academic Programme -->
+  <div class="modal-overlay hidden" id="modalEditProg">
+    <div class="modal-card" style="max-width: 600px; padding: 28px;">
+      <button class="modal-close" id="btnCloseEditProgModal">&times;</button>
+      <div class="modal-header-custom" style="margin-bottom: 20px;">
+        <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--navy);">Edit Academic Programme</h3>
+        <p style="font-size: 13px; color: var(--muted); margin: 0;">Update course details, seats, tuition fees,
+          duration, and curriculum highlights.</p>
+      </div>
+      <form id="formEditProg" class="standard-form">
+        <input type="hidden" id="editProgId" />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editProgNumber">Programme Code / Badge</label>
+            <input type="text" id="editProgNumber" placeholder="e.g. 01 / COMMERCE" required />
+          </div>
+          <div class="form-group">
+            <label for="editProgCategory">Category / Department Filter</label>
+            <select id="editProgCategory"
+              style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+              <option value="Computer Science">Computer Science &amp; AI</option>
+              <option value="Commerce">Commerce &amp; CS</option>
+              <option value="Management">Management</option>
+              <option value="Arts">Arts &amp; Languages</option>
+              <option value="Science">Science</option>
+              <option value="Postgraduate">Postgraduate</option>
+              <option value="Athletics">Sports &amp; Placement</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="editProgTitle">Programme Title</label>
+          <input type="text" id="editProgTitle" placeholder="e.g. B.Com (General)" required />
+        </div>
+        <div class="form-group">
+          <label for="editProgDept">Academic Department</label>
+          <input type="text" id="editProgDept" placeholder="e.g. Department of Commerce" required />
+        </div>
+        <div class="form-group">
+          <label for="editProgDuration">Programme Duration</label>
+          <input type="text" id="editProgDuration" placeholder="e.g. 3 Years (UG)" />
+        </div>
+        <div class="form-group">
+          <label for="editProgDesc">Description &amp; Highlights</label>
+          <textarea id="editProgDesc" rows="3" placeholder="Curriculum overview..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="editProgLink">Action Link</label>
+          <input type="text" id="editProgLink" placeholder="#apply-modal" value="#apply-modal" />
+        </div>
+        <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button type="button" class="btn-secondary text-xs" id="btnCancelEditProg">Cancel</button>
+          <button type="submit" class="btn-primary text-xs" id="btnSubmitEditProg">Save Programme</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="admin.js"></script>
+</body>
+
 </html>
