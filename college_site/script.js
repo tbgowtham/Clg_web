@@ -322,12 +322,14 @@
     const cmDept = document.getElementById("cmDept");
     const cmDuration = document.getElementById("cmDuration");
     const cmDesc = document.getElementById("cmDesc");
+    const cmFullPageBtn = document.getElementById("cmFullPageBtn");
 
     if (cmBadge) cmBadge.textContent = prog.number || "DEGREE PROGRAMME";
     if (cmTitle) cmTitle.textContent = prog.title || "";
     if (cmDept) cmDept.textContent = prog.department || "Sridevi Arts & Science College";
     if (cmDuration) cmDuration.textContent = prog.duration || "3 Years";
     if (cmDesc) cmDesc.textContent = prog.desc || "";
+    if (cmFullPageBtn) cmFullPageBtn.href = `course.html?id=${encodeURIComponent(prog.id)}`;
 
     openModal("courseModal");
   }
@@ -474,21 +476,22 @@
       .map((p, idx) => {
         const imgPath = resolvePath(p.image || "assets/sdasc/departments/112226_1625242329.jpeg");
         const badgeNumber = p.number && p.number.trim() ? p.number : `${String(idx + 1).padStart(2, "0")} / ${(p.category || "COURSE").toUpperCase()}`;
+        const courseUrl = `course.html?id=${encodeURIComponent(p.id)}`;
         return `
         <article class="programme-card">
-          <div class="prog-thumb">
+          <a href="${courseUrl}" class="prog-thumb" aria-label="View ${escapeHtml(p.title)} full course page" style="display: block;">
             <img src="${imgPath}" alt="${escapeHtml(p.title)}" class="prog-img" loading="lazy" onerror="this.src='photo/IMG_20260701_104825_496.jpg'" />
             <div class="prog-card-top">
               <span class="prog-badge">${escapeHtml(badgeNumber)}</span>
               <span class="prog-duration-pill">${escapeHtml(p.duration || "3 Yrs")}</span>
             </div>
-          </div>
+          </a>
           <div class="prog-body">
             <span class="prog-dept-title">${escapeHtml(p.department || "Department")}</span>
-            <h3 class="prog-title">${escapeHtml(p.title)}</h3>
+            <h3 class="prog-title"><a href="${courseUrl}" style="color: inherit; text-decoration: none;">${escapeHtml(p.title)}</a></h3>
             <p class="prog-desc">${escapeHtml(p.desc || "")}</p>
             <div class="prog-actions">
-              <button class="prog-btn-info btn-view-course full-width" data-id="${escapeHtml(p.id)}">Course Details &amp; Syllabus →</button>
+              <a href="${courseUrl}" class="prog-btn-info full-width" style="text-decoration: none; display: flex; align-items: center; justify-content: center; text-align: center;">View Full Course Page &amp; Syllabus →</a>
             </div>
           </div>
         </article>`;

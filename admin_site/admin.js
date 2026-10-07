@@ -448,6 +448,7 @@
             <p>${escapeHtml(p.desc)}</p>
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end; justify-content: flex-start;">
+            <a href="/course.html?id=${encodeURIComponent(p.id)}" target="_blank" class="btn-secondary text-xs" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;" title="View Live Course Full Page">🌐 View Full Page ↗</a>
             <button type="button" class="btn-action-edit" title="Edit course details" onclick="openEditProgModal('${p.id}')">✏️ Edit</button>
             <button type="button" class="btn-icon-danger" title="Remove programme" onclick="deleteProgramme('${p.id}')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>

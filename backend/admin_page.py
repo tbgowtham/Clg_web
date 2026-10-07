@@ -811,6 +811,11 @@ def api_add_programme():
         "link": link
     }
 
+    # Optional extended fields for full course page template
+    for ext_field in ["eligibility", "syllabus", "career_prospects", "highlights", "facilities", "slug"]:
+        if ext_field in data:
+            prog_entry[ext_field] = data[ext_field]
+
     current = get_current_content()
     if "programmes" not in current:
         current["programmes"] = []
@@ -870,6 +875,9 @@ def api_update_programme(prog_id):
                 p["image"] = data["image"].strip()
             if "link" in data:
                 p["link"] = data["link"].strip()
+            for ext_field in ["eligibility", "syllabus", "career_prospects", "highlights", "facilities", "slug"]:
+                if ext_field in data:
+                    p[ext_field] = data[ext_field]
             target = p
             break
 

@@ -34,6 +34,14 @@ def serve_college_site_index():
     return send_from_directory(COLLEGE_SITE_DIR, "index.html")
 
 
+@college_website_bp.route("/course")
+@college_website_bp.route("/course/<path:course_id>")
+@college_website_bp.route("/course.html")
+def serve_course_page(course_id=None):
+    """Serves the dedicated full-page course template."""
+    return send_from_directory(COLLEGE_SITE_DIR, "course.html")
+
+
 @college_website_bp.route("/assets/<path:path>")
 def serve_assets(path):
     """Serves frontend CSS, JS, and image assets from college_site/assets."""
@@ -88,6 +96,45 @@ def api_get_content():
     """
     content = get_current_content()
     return jsonify(content)
+
+
+@college_website_bp.route("/api/courses/<path:course_id>", methods=["GET"])
+def api_get_course(course_id):
+    """
+    Fetches details for a specific academic course/programme by ID, slug, or title,
+    including full curriculum, eligibility, facilities, and surrounding college data.
+    """
+    content = get_current_content()
+    programmes = content.get("programmes", [])
+    found = None
+    cid = (course_id or "").strip().lower()
+
+    for p in programmes:
+        if p.get("id", "").lower() == cid or p.get("slug", "").lower() == cid:
+            found = p
+            break
+
+    if not found:
+        norm = cid.replace("-", " ").replace("_", " ")
+        for p in programmes:
+            p_title = p.get("title", "").lower()
+            if norm in p_title or p_title in norm:
+                found = p
+                break
+
+    if found:
+        return jsonify({
+            "course": found,
+            "all_programmes": programmes,
+            "photos": content.get("photos", []),
+            "utility": content.get("utility", {}),
+            "contact": content.get("contact", {})
+        })
+
+    return jsonify({
+        "error": f"Course '{course_id}' not found",
+        "available_courses": [{"id": p.get("id"), "title": p.get("title")} for p in programmes]
+    }), 404
 
 
 @college_website_bp.route("/api/enquiries", methods=["POST"])

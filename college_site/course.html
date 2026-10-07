@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f2e5a" />
+  <title>Academic Course Details &amp; Syllabus | Sridevi Arts and Science College</title>
+  <meta name="description"
+    content="Comprehensive syllabus, eligibility criteria, career opportunities, and department facilities for academic courses at Sridevi Arts and Science College, Ponneri. Affiliated to University of Madras." />
+  <link rel="icon" type="image/png" href="assets/sdasc/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="course.css" />
+</head>
+
+<body>
+  <!-- Live Announcements Ticker -->
+  <div class="marquee-bar">
+    <div class="marquee-label">ADMISSIONS 2026–27:</div>
+    <div class="marquee-track">
+      <div class="marquee-content">
+        <span class="ticker-item"><strong>Admissions Live:</strong> Online Applications Open for 12 UG &amp; PG Programmes.</span>
+        <span class="ticker-item"><strong>Affiliated to University of Madras</strong> | 25 Glorious Years of Educational Service (2001–2026).</span>
+        <span class="ticker-item"><strong>Scholarships:</strong> Tamil Nadu Postmatric SC/ST Scholarship Available via <a href="https://ssp.tn.gov.in" target="_blank" rel="noopener">ssp.tn.gov.in</a>.</span>
+        <span class="ticker-item"><strong>SRISPARX-2k25:</strong> Inter-Collegiate Cultural Fest Registrations Live!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Utility Bar -->
+  <div class="utility">
+    <div class="utility-left">
+      <span class="util-contact">
+        <span>Krishnapuram, Ponneri - 601204, Tiruvallur Dist.</span>
+      </span>
+      <span class="util-contact">
+        <a href="tel:+919443689578">+91 9443689578 / 8610952867</a>
+      </span>
+      <span class="util-contact hide-mobile">
+        <a href="mailto:sridevicollegeponneri@gmail.com">sridevicollegeponneri@gmail.com</a>
+      </span>
+    </div>
+    <div class="utility-right">
+      <a href="https://ssp.tn.gov.in" target="_blank" rel="noopener" class="util-link highlight-link">TN SC/ST Scholarship ↗</a>
+      <a href="/#placement" class="util-link">Placement Cell</a>
+      <a href="/#contact" class="util-link">Contact</a>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="header">
+    <nav class="nav">
+      <a class="logo-wrapper" href="/" aria-label="Sridevi Arts and Science College Home">
+        <img src="assets/sdasc/sdaasc-logo.png" alt="SDASC Logo" class="brand-logo" onerror="this.style.display='none'" />
+        <img src="assets/sdasc/sdaasc-logo2.png" alt="University Emblem" class="crest-logo hide-mobile" onerror="this.style.display='none'" />
+      </a>
+
+      <button class="menu-toggle" aria-label="Toggle Navigation Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links">
+        <a href="/">← College Home</a>
+        <a href="/#programmes">All Programmes</a>
+        <a href="#overview">Overview</a>
+        <a href="#curriculum">Syllabus</a>
+        <a href="#careers">Careers</a>
+        <a href="#facilities">Facilities</a>
+        <a href="#gallery">Campus Gallery</a>
+        <button class="nav-cta btn-open-modal" data-target="applyModal">Apply Now</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Breadcrumbs Bar -->
+  <div class="course-breadcrumb-bar">
+    <div class="container">
+      <div class="course-breadcrumb-inner">
+        <div class="breadcrumbs">
+          <a href="/">Home</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="/#programmes">Academic Courses</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current" id="bcCourseTitle">Course Details</span>
+        </div>
+        <a href="/#programmes" class="breadcrumb-back-link">← Browse All 12 Programmes</a>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- Dynamic Course Hero Section -->
+    <section class="course-hero">
+      <div class="course-hero-bg-pattern"></div>
+      <div class="course-hero-glow"></div>
+
+      <div class="container">
+        <div class="course-hero-grid">
+          <!-- Hero Left Column -->
+          <div class="course-hero-content">
+            <div class="course-hero-badges">
+              <span class="hero-dept-pill" id="courseHeroBadge">DEGREE PROGRAMME</span>
+              <span class="hero-univ-pill" id="courseHeroUniv">Affiliated to University of Madras</span>
+            </div>
+
+            <h1 class="course-hero-title" id="courseHeroTitle">Academic Programme</h1>
+            <div class="course-hero-dept" id="courseHeroDept">Department of Academic Studies</div>
+            <p class="course-hero-desc" id="courseHeroDesc">
+              Rigorous university degree curriculum, experienced faculty mentors, contemporary laboratories, and continuous placement preparation for purposeful careers.
+            </p>
+
+            <div class="course-hero-actions">
+              <button class="btn-hero-primary btn-open-modal" data-target="applyModal">
+                <span>Apply for Admission 2026–27</span>
+                <span>→</span>
+              </button>
+              <button class="btn-hero-outline" id="btnDownloadSyllabus">
+                <span>Print / Save Syllabus</span>
+                <span>🖨️</span>
+              </button>
+            </div>
+
+            <!-- Quick Course Switcher Dropdown -->
+            <div class="hero-switcher-box">
+              <label for="heroCourseSwitcher">Switch Course:</label>
+              <select id="heroCourseSwitcher" class="hero-switcher-select" aria-label="Select an academic course to view">
+                <!-- Dynamically populated via course.js -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Hero Right Column (Course Profile Card) -->
+          <div class="course-hero-card">
+            <div class="hero-card-media">
+              <img src="assets/sdasc/departments/112226_1625242329.jpeg" alt="Course Department" class="hero-card-img" id="heroCardImg" onerror="this.src='photo/IMG_20260701_104825_496.jpg'" />
+              <span class="hero-card-badge" id="heroCardBadge">3 Years Full-Time</span>
+            </div>
+
+            <div class="hero-quick-specs">
+              <div class="spec-box">
+                <span class="spec-label">Degree Level</span>
+                <span class="spec-val" id="specDegree">Undergraduate</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">Duration</span>
+                <span class="spec-val" id="specDuration">3 Years</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">Affiliation</span>
+                <span class="spec-val" id="specAffiliation">Univ. of Madras</span>
+              </div>
+              <div class="spec-box">
+                <span class="spec-label">Medium</span>
+                <span class="spec-val" id="specMedium">English / Tamil</span>
+              </div>
+            </div>
+
+            <div class="hero-card-cta">
+              <button class="button primary full-width btn-open-modal" data-target="applyModal">Apply for this Course</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fast Facts Key Metrics Strip (6 Cards) -->
+    <section class="fast-facts-strip">
+      <div class="container">
+        <div class="fast-facts-grid">
+          <div class="fast-fact-card">
+            <span class="fact-icon">🎓</span>
+            <span class="fact-title">Degree Conferred</span>
+            <span class="fact-val" id="factDegree">Undergraduate</span>
+          </div>
+          <div class="fast-fact-card">
+            <span class="fact-icon">⏳</span>
+            <span class="fact-title">Program Duration</span>
+            <span class="fact-val" id="factDuration">3 Years (6 Sems)</span>
+          </div>
+          <div class="fast-fact-card">
+            <span class="fact-icon">📋</span>
+            <span class="fact-title">Eligibility</span>
+            <span class="fact-val" id="factEligShort">10+2 / HSC Passed</span>
+          </div>
+          <div class="fast-fact-card">
+            <span class="fact-icon">🗣️</span>
+            <span class="fact-title">Instruction Medium</span>
+            <span class="fact-val" id="factMedium">English &amp; Tamil</span>
+          </div>
+          <div class="fast-fact-card">
+            <span class="fact-icon">🚌</span>
+            <span class="fact-title">Campus &amp; Bus Fleet</span>
+            <span class="fact-val" id="factCampus">Krishnapuram, Ponneri</span>
+          </div>
+          <div class="fast-fact-card">
+            <span class="fact-icon">💰</span>
+            <span class="fact-title">Scholarship Aid</span>
+            <span class="fact-val" id="factScholarship">TN SC/ST Portal</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Course Narrative & Department Profile Section -->
+    <section class="course-section" id="overview">
+      <div class="container">
+        <div class="course-grid-2col">
+          <!-- Left Column: Department Narrative & Learning Objectives -->
+          <div class="course-narrative-card">
+            <div class="eyebrow">Academic Curriculum &bull; University of Madras</div>
+            <h3 id="narrativeTitle">About the Academic Programme</h3>
+            <p id="narrativeDesc">
+              Our curriculum blends theoretical foundations with hands-on practice, domain projects, and corporate mentorship.
+            </p>
+
+            <h4 style="font-size: 17px; color: #0a1f3d; margin-top: 26px; margin-bottom: 12px;">Key Programme Distinctives &bull; Sridevi College</h4>
+            <ul class="highlights-list" id="highlightsList">
+              <!-- Dynamically populated via course.js -->
+            </ul>
+          </div>
+
+          <!-- Right Column: Department Sidebar & Eligibility Callout -->
+          <div class="dept-sidebar-card">
+            <div class="dept-sidebar-header">
+              <h4 id="sbDeptName">Department Name</h4>
+              <span id="sbDeptProg">Programme Information</span>
+            </div>
+
+            <!-- Eligibility Callout Box -->
+            <div class="eligibility-callout">
+              <h5>Admission Eligibility Criteria</h5>
+              <p id="sbEligibilityText">
+                Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination from a recognized Board.
+              </p>
+            </div>
+
+            <!-- Specifications Table -->
+            <table class="dept-meta-table">
+              <tbody>
+                <tr>
+                  <td>Degree Conferred</td>
+                  <td id="sbDegreeVal">Undergraduate (UG)</td>
+                </tr>
+                <tr>
+                  <td>Course Duration</td>
+                  <td id="sbDurationVal">3 Years (6 Semesters)</td>
+                </tr>
+                <tr>
+                  <td>University</td>
+                  <td id="sbAffilVal">University of Madras</td>
+                </tr>
+                <tr>
+                  <td>Study Medium</td>
+                  <td id="sbMediumVal">English &amp; Tamil Mentoring</td>
+                </tr>
+                <tr>
+                  <td>Shift / Mode</td>
+                  <td>Day College &bull; Co-Ed</td>
+                </tr>
+                <tr>
+                  <td>SC/ST Scholarship</td>
+                  <td>Eligible (ssp.tn.gov.in)</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <button class="button primary full-width btn-open-modal" data-target="applyModal">
+              Online Admission Application →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comprehensive Semester Syllabus Section -->
+    <section class="course-section syllabus-section" id="curriculum">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Academic Roadmap</div>
+            <h2>Curriculum &amp; Semester-by-Semester Syllabus</h2>
+          </div>
+          <p>
+            Aligned with the University of Madras academic regulations. Select any semester tab to inspect core papers, allied courses, practical laboratories, and major projects.
+          </p>
+        </div>
+
+        <!-- Semester Navigation Tabs -->
+        <div class="semester-tabs-nav" id="semesterTabsNav">
+          <!-- Dynamically populated via course.js -->
+        </div>
+
+        <!-- Semester Subjects Cards Grid -->
+        <div class="syllabus-modules-grid" id="syllabusModulesGrid">
+          <!-- Dynamically populated via course.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Career Opportunities & Industry Horizons -->
+    <section class="course-section careers-section" id="careers">
+      <div class="container">
+        <div class="section-heading centered">
+          <div class="eyebrow">Career Pathways &bull; Employability</div>
+          <h2>Where This Degree Takes You</h2>
+          <p>
+            Graduates from Sridevi Arts and Science College build rewarding careers in leading corporate conglomerates, IT enterprises, financial firms, civil services, and top postgraduate universities.
+          </p>
+        </div>
+
+        <!-- Career Roles Pill Cloud -->
+        <div class="career-roles-cloud" id="careerRolesCloud">
+          <!-- Dynamically populated via course.js -->
+        </div>
+
+        <!-- Pathways 2-Column Grid -->
+        <div class="career-path-grid">
+          <div class="career-box">
+            <h4>
+              <span>🏢</span>
+              <span>Leading Hiring Sectors &amp; Industries</span>
+            </h4>
+            <ul id="industrySectorsList">
+              <!-- Dynamically populated via course.js -->
+            </ul>
+          </div>
+
+          <div class="career-box">
+            <h4>
+              <span>🎓</span>
+              <span>Higher Studies &amp; Academic Horizons</span>
+            </h4>
+            <ul id="higherStudiesList">
+              <!-- Dynamically populated via course.js -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Department Laboratories & Campus Facilities -->
+    <section class="course-section" id="facilities">
+      <div class="container">
+        <div class="section-heading centered">
+          <div class="eyebrow">Campus Infrastructure &bull; Krishnapuram</div>
+          <h2>Specialized Laboratories &amp; Facilities</h2>
+          <p>
+            Purpose-built academic infrastructure designed to facilitate applied learning, research inquiries, and student empowerment.
+          </p>
+        </div>
+
+        <div class="facilities-grid" id="facilitiesGrid">
+          <!-- Dynamically populated via course.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CAMPUS & DEPARTMENT PHOTO GALLERY ==================== -->
+    <!-- (SIGNATURE FEATURE MATCHING THE COLLEGE WEB PAGE) -->
+    <section class="section campus-section" id="gallery">
+      <div class="container">
+        <div class="section-heading centered">
+          <div class="eyebrow">Campus Life &bull; Visual Gallery</div>
+          <h2>Moments of Purpose, Learning &amp; Community</h2>
+          <p>
+            From convocation honors and scientific discovery to athletic tournaments and cultural performances — explore the vibrant academic life at Sridevi College.
+          </p>
+        </div>
+
+        <!-- Dynamic Photo Mosaic Grid matching college web page -->
+        <div class="photo-mosaic" id="photoMosaic" aria-label="Sri Devi campus gallery">
+          <!-- Dynamically populated and morphing via course.js -->
+        </div>
+        <p class="gallery-hint">Click any photo for high-resolution view &bull; Auto-refreshes periodically</p>
+      </div>
+    </section>
+
+    <!-- Related Academic Programmes -->
+    <section class="course-section related-progs-section">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Explore Academics</div>
+            <h2>Other Degree Programmes at Sridevi</h2>
+          </div>
+          <p>
+            Browse other undergraduate and postgraduate offerings across Computer Science, Commerce, Management, Arts, and Sciences.
+          </p>
+        </div>
+
+        <div class="related-progs-grid" id="relatedProgsGrid">
+          <!-- Dynamically populated via course.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Direct Admission Call-To-Action Banner -->
+    <section class="course-admission-cta">
+      <div class="container">
+        <div class="course-admission-cta-content">
+          <div class="eyebrow light">Admissions Live for 2026–2027</div>
+          <h2>Begin Your Journey in <span id="ctaCourseName">This Programme</span></h2>
+          <p>
+            Affordable tuition, merit scholarships, TN Postmatric SC/ST support, dedicated college bus transit, and top placement assistance at Krishnapuram, Ponneri.
+          </p>
+          <div class="cta-actions-row">
+            <button class="button primary btn-open-modal" data-target="applyModal">Apply Online Now →</button>
+            <a href="tel:+919443689578" class="button outline">Call Admission Desk: +91 9443689578</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-col-brand">
+          <a class="logo-wrapper" href="/">
+            <img src="assets/sdasc/sdaasc-logo.png" alt="SDASC Logo" class="brand-logo" />
+            <div class="brand-titles">
+              <span class="brand-name" style="color: white;">SRIDEVI</span>
+              <span class="brand-sub" style="color: #93c5fd;">ARTS &amp; SCIENCE COLLEGE</span>
+            </div>
+          </a>
+          <p class="footer-tagline">
+            Affiliated to University of Madras · Co-Educational Institution · Estd. 2001 · Krishnapuram, Ponneri.
+          </p>
+          <div class="footer-social-links">
+            <a href="https://www.youtube.com/channel/UCKKrrLV9sZ1CQjq1V11FEWg" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://www.instagram.com/sridevi_college_ponneri/" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.linkedin.com/school/srideviartsandsciencecollegeponneri/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="https://ssp.tn.gov.in" target="_blank" rel="noopener">SC/ST Portal</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h3>Academic Courses</h3>
+          <ul>
+            <li><a href="course.html?id=prog-1">B.Com (General)</a></li>
+            <li><a href="course.html?id=prog-2">B.C.A (Computer Applications)</a></li>
+            <li><a href="course.html?id=prog-3">B.Sc (Computer Science)</a></li>
+            <li><a href="course.html?id=prog-9">B.Sc (CS with AI)</a></li>
+            <li><a href="course.html?id=prog-6">BBA (Business Administration)</a></li>
+            <li><a href="course.html?id=prog-5">B.Com (Corporate Secretaryship)</a></li>
+            <li><a href="course.html?id=prog-10">M.A (Tamil)</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/">College Homepage</a></li>
+            <li><a href="https://ssp.tn.gov.in" target="_blank" rel="noopener">TN SC/ST Scholarship</a></li>
+            <li><a href="/#placement">Placement Cell</a></li>
+            <li><a href="/#about">About the Trust</a></li>
+            <li><a href="/#campus">Campus Photo Mosaic</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Ponneri Campus</h3>
+          <p style="font-size: 13px; line-height: 1.6; color: #bfdbfe;">
+            Krishnapuram, Ponneri – 601 204,<br />
+            Tiruvallur Dist, Tamil Nadu.<br />
+            <strong>Phone:</strong> +91 9443689578 / 8610952867<br />
+            <strong>Email:</strong> sridevicollegeponneri@gmail.com
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 Sridevi Arts and Science College, Ponneri. Affiliated to University of Madras. All Rights Reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Back to top ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal for Photo Mosaic -->
+  <div id="siteLightboxModal" class="site-modal hidden" aria-hidden="true">
+    <div class="site-modal-card">
+      <button class="site-modal-close btn-close-modal" aria-label="Close image preview">&times;</button>
+      <img id="siteLightboxImg" src="" alt="Campus view" />
+      <div class="site-modal-info">
+        <h4 id="siteLightboxCaption">Campus Moment</h4>
+        <span>Sridevi Arts &amp; Science College &middot; Ponneri Campus Moments</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Online Admission Application Modal -->
+  <div id="applyModal" class="site-modal hidden" aria-hidden="true">
+    <div class="site-modal-card application-modal-card">
+      <button class="site-modal-close btn-close-modal" aria-label="Close application form">&times;</button>
+      <div class="app-modal-header">
+        <div class="header-logo-badge">
+          <img src="assets/sdasc/sdaasc-logo.png" alt="SDASC Logo" class="modal-logo" />
+          <div>
+            <h3>Sridevi Arts and Science College</h3>
+            <p>Online Admission Application — Academic Year 2026–2027</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="onlineAdmissionForm" class="admission-form">
+        <div class="form-step-title">1. Course Preference</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="appCourseType">Programme Level *</label>
+            <select id="appCourseType" required>
+              <option value="UG">Undergraduate (UG - 3 Years)</option>
+              <option value="PG">Postgraduate (PG - 2 Years)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="appCourse">Select Desired Programme *</label>
+            <select id="appCourse" required>
+              <option value="" disabled selected>Select an academic programme</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-step-title">2. Student Information</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="appName">Student's Full Name (As in Marksheet) *</label>
+            <input type="text" id="appName" required placeholder="e.g. Ramesh K" />
+          </div>
+          <div class="form-group">
+            <label for="appDob">Date of Birth *</label>
+            <input type="date" id="appDob" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="appGender">Gender *</label>
+            <select id="appGender" required>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="appCommunity">Community / Category *</label>
+            <select id="appCommunity" required>
+              <option value="SC">SC (Scheduled Caste - TN Scholarship Eligible)</option>
+              <option value="ST">ST (Scheduled Tribe - TN Scholarship Eligible)</option>
+              <option value="MBC">MBC / DNC</option>
+              <option value="BC">BC (Backward Class)</option>
+              <option value="BCM">BC Muslim</option>
+              <option value="General">General / OC</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="appFather">Parent / Guardian's Full Name *</label>
+          <input type="text" id="appFather" required placeholder="Parent or guardian name" />
+        </div>
+
+        <div class="form-step-title">3. Contact &amp; Communication</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="appMobile">Mobile Number (WhatsApp) *</label>
+            <input type="tel" id="appMobile" required placeholder="10-digit mobile number" pattern="[0-9]{10}" />
+          </div>
+          <div class="form-group">
+            <label for="appEmail">Email Address</label>
+            <input type="email" id="appEmail" placeholder="student@gmail.com" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="appAddress">Residential Address &amp; Town *</label>
+          <textarea id="appAddress" rows="2" required placeholder="Door No, Street, Village/Town, Pincode"></textarea>
+        </div>
+
+        <div class="form-step-title">4. Academic Background</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="appExam">Qualifying Examination *</label>
+            <select id="appExam" required>
+              <option value="HSC / +2 (Tamil Nadu Board)">HSC / +2 (Tamil Nadu State Board)</option>
+              <option value="CBSE +2">CBSE (+2)</option>
+              <option value="ICSE / ISC">ICSE / ISC</option>
+              <option value="Undergraduate Degree (for PG)">Undergraduate Degree (for PG Courses)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="appPercentage">HSC / Qualifying Exam Marks / % *</label>
+            <input type="text" id="appPercentage" required placeholder="e.g. 485/600 or 82%" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="appBus">College Bus Transit Facility Required? *</label>
+            <select id="appBus" required>
+              <option value="Yes">Yes — I require College Bus Transport</option>
+              <option value="No">No — Self Transport / Public Transit</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="app-submit-area">
+          <button type="submit" class="button primary full-width">Submit Online Application Now</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="course.js"></script>
+</body>
+
+</html>
