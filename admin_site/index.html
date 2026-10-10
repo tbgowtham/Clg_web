@@ -174,14 +174,6 @@
           <span>User Accounts</span>
           <span class="badge" id="badgeUserCount">1</span>
         </button>
-        <button class="nav-tab" data-tab="preview">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-          </svg>
-          <span>Live Site Preview</span>
-        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -381,14 +373,35 @@
           </div>
         </section>
 
-        <!-- TAB 2: CAMPUS GALLERY -->
+        <!-- TAB 2: CAMPUS & DEPARTMENT GALLERIES -->
         <section id="tab-gallery" class="tab-panel">
+          <!-- Gallery Scope Selector Banner -->
+          <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--gold);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+              <div>
+                <h4 style="margin: 0; font-size: 15px; color: var(--navy); display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 18px;">🖼️</span>
+                  <span id="galleryScopeTitle">Main College Homepage Gallery (Campus-Wide)</span>
+                </h4>
+                <p id="galleryScopeSubtitle" style="margin: 4px 0 0; font-size: 12px; color: var(--muted);">
+                  These photos appear exclusively on the college homepage photo mosaic (/index.html). Department pages have separate galleries.
+                </p>
+              </div>
+              <div id="galleryScopeSelectWrap" style="display: flex; align-items: center; gap: 8px;">
+                <label for="selectGalleryScope" style="font-size: 12px; font-weight: 700; color: var(--navy); white-space: nowrap;">Target Gallery:</label>
+                <select id="selectGalleryScope" class="select-dept-dropdown" style="font-size: 12.5px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); min-width: 260px;">
+                  <option value="campus" selected>🏫 Main College Homepage (Campus-Wide)</option>
+                  <!-- Populated dynamically via JS with all department options -->
+                </select>
+              </div>
+            </div>
+          </div>
+
           <!-- Upload Card -->
           <div class="card upload-card">
             <div class="card-header">
-              <h3>Upload Campus Image</h3>
-              <p>Upload high-resolution event, campus, or award photos. Uploaded files are served dynamically by the
-                Flask backend.</p>
+              <h3 id="galleryUploadHeading">Upload Image to Target Gallery</h3>
+              <p id="galleryUploadDesc">Upload high-resolution event, campus, or department photos. Uploaded files are served dynamically by the Flask backend.</p>
             </div>
             <div class="upload-dropzone" id="galleryDropzone">
               <input type="file" id="galleryFileInput" accept="image/*" class="file-input-hidden" />
@@ -492,70 +505,274 @@
         </section>
 
         <!-- TAB 4: ACADEMICS / PROGRAMMES -->
+        <!-- TAB 4: DEPARTMENT PAGES & ACADEMIC PROGRAMMES -->
         <section id="tab-programmes" class="tab-panel">
-          <div class="grid-2col">
-            <!-- Add Programme Card -->
-            <div class="card">
-              <div class="card-header">
-                <h3>Add Academic Programme</h3>
-                <p>Add undergraduate or postgraduate degree offerings.</p>
+          <!-- Top Bar for Department Selection & Actions -->
+          <div class="dept-editor-header-card">
+            <div class="dept-editor-header-left">
+              <div class="dept-icon-badge">🏛️</div>
+              <div>
+                <h3 id="deptEditorHeading">Department Page Content Editor</h3>
+                <p id="deptEditorSubheading">Customize the live static template for this department. All syllabus, eligibility, and media sync instantly to the public course page.</p>
               </div>
-              <form id="formAddProg" class="standard-form">
+            </div>
+            <div class="dept-editor-header-right">
+              <div id="deptPickerWrapper" style="display: flex; align-items: center; gap: 8px;">
+                <label for="selectActiveDept" style="font-size: 12px; font-weight: 700; color: var(--navy); white-space: nowrap;">Department:</label>
+                <select id="selectActiveDept" class="select-dept-dropdown">
+                  <!-- Populated dynamically via JS -->
+                </select>
+              </div>
+              <a id="btnLiveDeptPageTop" href="/course.html" target="_blank" class="btn-primary text-xs" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 600;">
+                🌐 View Live Page ↗
+              </a>
+              <button type="button" id="btnToggleCatalogue" class="btn-secondary text-xs" style="display: none;">
+                📚 All Programmes
+              </button>
+            </div>
+          </div>
+
+          <!-- Contributor Notice Banner -->
+          <div id="deptContributorBanner" class="contributor-scope-banner" style="display: none;">
+            <div class="banner-icon">👤</div>
+            <div class="banner-text">
+              <strong>Department Contributor Access:</strong> You are currently editing <span id="bannerDeptName">Department of Computer Science</span>. You have authoring privileges to modify all sections of this template.
+            </div>
+          </div>
+
+          <!-- Main Department Template Editor Form -->
+          <form id="formDeptTemplateEditor" class="dept-template-editor-form">
+            <input type="hidden" id="deptProgId" />
+
+            <!-- Card 1: Degree & Identity Specifications -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header">
+                <h3>1. Department Identity &amp; Programme Specifications</h3>
+                <p>Hero banner titles, degree levels, durations, and affiliation specs.</p>
+              </div>
+              <div class="standard-form">
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="progNumber">Programme Badge / Code</label>
-                    <input type="text" id="progNumber" placeholder="e.g. 13 / SCIENCE" value="13 / SCIENCE" required />
+                    <label for="deptProgTitle">Degree / Programme Title <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="deptProgTitle" placeholder="e.g. B.Sc (Computer Science)" required />
                   </div>
                   <div class="form-group">
-                    <label for="progCategory">Category / Filter</label>
-                    <select id="progCategory"
-                      style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+                    <label for="deptProgName">Department Name <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="deptProgName" placeholder="e.g. Department of Computer Science" required />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="deptProgNumber">Badge / Code</label>
+                    <input type="text" id="deptProgNumber" placeholder="e.g. 03 / SCIENCE" />
+                  </div>
+                  <div class="form-group">
+                    <label for="deptProgCategory">Academic Category</label>
+                    <select id="deptProgCategory">
                       <option value="Computer Science">Computer Science &amp; AI</option>
                       <option value="Commerce">Commerce &amp; CS</option>
                       <option value="Management">Management</option>
                       <option value="Arts">Arts &amp; Languages</option>
-                      <option value="Science" selected>Science</option>
-                      <option value="Postgraduate">Postgraduate</option>
-                      <option value="Athletics">Sports &amp; Placement</option>
+                      <option value="Science">Science &amp; Mathematics</option>
+                      <option value="Postgraduate">Postgraduate (PG)</option>
+                      <option value="Co-Curricular">Physical Education / Placement</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="deptProgDegreeLevel">Degree Level</label>
+                    <select id="deptProgDegreeLevel">
+                      <option value="Undergraduate (UG)">Undergraduate (UG)</option>
+                      <option value="Postgraduate (PG)">Postgraduate (PG)</option>
+                      <option value="Co-Curricular &amp; Placement">Co-Curricular &amp; Placement</option>
                     </select>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="progTitle">Programme Title</label>
-                  <input type="text" id="progTitle" placeholder="e.g. B.Sc (Data Science)" required />
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="deptProgDuration">Programme Duration</label>
+                    <input type="text" id="deptProgDuration" placeholder="e.g. 3 Years (6 Semesters)" />
+                  </div>
+                  <div class="form-group">
+                    <label for="deptProgAffiliation">Affiliation</label>
+                    <input type="text" id="deptProgAffiliation" placeholder="e.g. Affiliated to University of Madras" />
+                  </div>
+                  <div class="form-group">
+                    <label for="deptProgMedium">Medium of Instruction</label>
+                    <input type="text" id="deptProgMedium" placeholder="e.g. English &amp; Tamil Mentoring" />
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="progDept">Academic Department</label>
-                  <input type="text" id="progDept" placeholder="e.g. Department of Data Science" required />
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="deptProgImage">Department Banner Image (Path / URL)</label>
+                    <input type="text" id="deptProgImage" placeholder="assets/sdasc/departments/..." />
+                  </div>
+                  <div class="form-group">
+                    <label for="deptProgLink">Admission Action Target</label>
+                    <input type="text" id="deptProgLink" placeholder="#apply-modal" value="#apply-modal" />
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="progDuration">Programme Duration</label>
-                  <input type="text" id="progDuration" placeholder="e.g. 3 Years (UG)" value="3 Years (UG)" />
-                </div>
-                <div class="form-group">
-                  <label for="progDesc">Description &amp; Highlights</label>
-                  <textarea id="progDesc" rows="3" placeholder="Overview of the degree curriculum and scope..."
-                    required></textarea>
-                </div>
-                <div class="form-group">
-                  <label for="progLink">Action Link</label>
-                  <input type="text" id="progLink" placeholder="#apply-modal" value="#apply-modal" />
-                </div>
-                <button type="submit" class="btn-primary">
-                  <span>Add Programme</span>
-                </button>
-              </form>
+              </div>
             </div>
 
-            <!-- Current Programmes List -->
-            <div class="card">
+            <!-- Card 2: Narrative & Eligibility -->
+            <div class="card" style="margin-bottom: 20px;">
               <div class="card-header">
-                <h3>Active Programmes</h3>
-                <p>Displayed in the "Programmes built for what's next" section</p>
+                <h3>2. Department Narrative, Overview &amp; Eligibility Criteria</h3>
+                <p>The academic vision, teaching methodology, and admission qualifications.</p>
               </div>
-              <div class="programmes-list" id="programmesList">
+              <div class="standard-form">
+                <div class="form-group">
+                  <label for="deptProgDesc">Short Overview / Hero Tagline</label>
+                  <textarea id="deptProgDesc" rows="2" placeholder="Brief summary displayed in course header and cards..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="deptProgOverview">Comprehensive Department Profile &amp; Pedagogy</label>
+                  <textarea id="deptProgOverview" rows="4" placeholder="Detailed narrative explaining department heritage, laboratories, faculty mentorship, and academic focus..."></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="deptProgEligibility">Eligibility Criteria for Admission</label>
+                  <textarea id="deptProgEligibility" rows="2" placeholder="Pass in Higher Secondary (+2) examination with specific subject combinations..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Key Department Highlights (Bullet Points) -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>3. Department Highlights &amp; Learning Objectives</h3>
+                  <p>Bullet highlights showcased in the "Why Choose This Department" section.</p>
+                </div>
+                <button type="button" id="btnAddHighlightItem" class="btn-secondary text-xs">+ Add Highlight</button>
+              </div>
+              <div id="deptHighlightsList" class="dynamic-items-container">
+                <!-- Dynamically rendered via JS -->
+              </div>
+            </div>
+
+            <!-- Card 4: Curriculum & Semester Syllabus Breakdown -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>4. Curriculum &amp; Semester Syllabus Breakdown</h3>
+                  <p>Semester-by-semester subjects, practical labs, and major project papers.</p>
+                </div>
+                <button type="button" id="btnResetSyllabusTemplate" class="btn-secondary text-xs">Reset to Standard Modules</button>
+              </div>
+
+              <!-- Semester Selector Tabs -->
+              <div class="sem-tabs-bar" id="deptSemTabsBar">
+                <!-- Injected via JS: Sem 1, Sem 2, etc. -->
+              </div>
+
+              <div class="sem-subjects-editor" style="margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <h4 id="activeSemesterTitle" style="margin: 0; color: var(--navy); font-size: 14px;">Semester I Subjects</h4>
+                  <button type="button" id="btnAddSubjectItem" class="btn-secondary text-xs">+ Add Subject / Paper</button>
+                </div>
+                <div id="activeSemSubjectsList" class="dynamic-items-container">
+                  <!-- Dynamically rendered via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 5: Department Laboratories & Campus Facilities -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>5. Department Laboratories &amp; Campus Facilities</h3>
+                  <p>Specialized computing labs, reference libraries, equipment, and learning tools.</p>
+                </div>
+                <button type="button" id="btnAddFacilityItem" class="btn-secondary text-xs">+ Add Facility</button>
+              </div>
+              <div id="deptFacilitiesList" class="dynamic-items-container">
                 <!-- Injected via JS -->
               </div>
+            </div>
+
+            <!-- Card 6: Career Opportunities & Higher Studies Pathways -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header">
+                <h3>6. Career Opportunities &amp; Higher Studies Pathways</h3>
+                <p>Industry job roles and postgraduate academic trajectories for graduates.</p>
+              </div>
+              <div class="standard-form">
+                <div style="margin-bottom: 15px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="margin: 0; font-weight: 700; font-size: 13px;">Career Roles / Employment Scope</label>
+                    <button type="button" id="btnAddCareerItem" class="btn-secondary text-xs">+ Add Role</button>
+                  </div>
+                  <div id="deptCareersList" class="dynamic-items-container">
+                    <!-- Injected via JS -->
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="margin: 0; font-weight: 700; font-size: 13px;">Higher Studies &amp; Research Pathways</label>
+                    <button type="button" id="btnAddHigherStudyItem" class="btn-secondary text-xs">+ Add Pathway</button>
+                  </div>
+                  <div id="deptHigherStudiesList" class="dynamic-items-container">
+                    <!-- Injected via JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 7: Department Visual Gallery & Laboratory Photos -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header flex-between">
+                <div>
+                  <h3>7. Department Visual Gallery &amp; Laboratory Photos</h3>
+                  <p>Images displayed exclusively in this department's visual gallery on its dedicated page (course.html). Does not appear on the college homepage.</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" id="btnTriggerDeptUpload" class="btn-primary text-xs" style="display: inline-flex; align-items: center; gap: 4px;">
+                    <span>📤 Upload Image to Department</span>
+                  </button>
+                  <button type="button" id="btnAddDeptPhotoItem" class="btn-secondary text-xs">+ Add Image URL</button>
+                </div>
+              </div>
+
+              <!-- Quick File Upload Dropzone for Department -->
+              <input type="file" id="deptGalleryFileInput" accept="image/*" style="display: none;" />
+              <div id="deptUploadProgressWrap" style="display: none; margin-bottom: 15px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; align-items: center; justify-content: space-between;">
+                <span id="deptUploadProgressText" style="font-size: 13px; color: #166534; font-weight: 600;">Uploading image to department gallery...</span>
+              </div>
+
+              <div id="deptGalleryGrid" class="dept-gallery-cards-grid">
+                <!-- Dynamically rendered photo cards for this department -->
+              </div>
+            </div>
+
+            <!-- Save Bar Sticky Bottom -->
+            <div class="dept-editor-save-bar">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <button type="submit" id="btnSaveDeptPage" class="btn-primary" style="padding: 11px 26px; font-size: 14px; font-weight: 700;">
+                  <span>💾 Save Department Page</span>
+                </button>
+                <a id="btnLiveDeptPageBottom" href="/course.html" target="_blank" class="btn-secondary text-xs" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                  <span>🌐 View Live Department Page ↗</span>
+                </a>
+              </div>
+              <div id="deptSaveFeedback" class="dept-save-feedback"></div>
+            </div>
+          </form>
+
+          <!-- Super Admin All Programmes Catalogue -->
+          <div id="superAdminCatalogueWrap" class="card" style="margin-top: 30px;">
+            <div class="card-header flex-between">
+              <div>
+                <h3>All Academic Programmes &amp; Departments</h3>
+                <p>Complete directory of all 12 Ponneri degree offerings.</p>
+              </div>
+              <button type="button" id="btnOpenAddProgModal" class="btn-primary text-xs">+ Add New Programme</button>
+            </div>
+            <div class="programmes-list" id="programmesList">
+              <!-- Injected via JS -->
             </div>
           </div>
         </section>
@@ -831,6 +1048,7 @@
                     <th>Username</th>
                     <th>Full Name / Designation</th>
                     <th>Role &amp; Privileges</th>
+                    <th>Assigned Department</th>
                     <th>Created Date</th>
                     <th>Account Status</th>
                     <th>Actions</th>
@@ -838,37 +1056,11 @@
                 </thead>
                 <tbody id="usersTableBody">
                   <tr>
-                    <td colspan="6" style="text-align: center; color: var(--muted); padding: 30px;">Loading user
-                      accounts...</td>
+                    <td colspan="7" style="text-align: center; color: var(--muted); padding: 30px;">Loading user accounts...</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </div>
-        </section>
-
-        <!-- TAB 7: LIVE PREVIEW -->
-        <section id="tab-preview" class="tab-panel">
-          <div class="preview-toolbar">
-            <div class="preview-info">
-              <span class="pulse-dot"></span>
-              <span>Live View: Sri Devi Arts &amp; Science College</span>
-            </div>
-            <div class="preview-actions">
-              <button type="button" id="btnReloadPreview" class="btn-secondary text-xs">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="23 4 23 10 17 10"></polyline>
-                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-                <span>Reload Preview</span>
-              </button>
-              <a href="/" target="_blank" class="btn-primary text-xs">
-                <span>Open in Full Screen ↗</span>
-              </a>
-            </div>
-          </div>
-          <div class="preview-frame-wrap">
-            <iframe id="collegeSiteFrame" src="/" title="Sri Devi Arts &amp; Science College Live Preview"></iframe>
           </div>
         </section>
 
@@ -925,11 +1117,11 @@
 
         <div class="form-group" style="margin-bottom: 14px;">
           <label for="newRole" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Assigned
-            Department &amp; Only Job <span style="color: #ef4444;">*</span></label>
+            Role &amp; Privilege <span style="color: #ef4444;">*</span></label>
           <select id="newRole" class="form-control" required
             style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
-            <option value="Sub-Admin" selected>Sub-Admin — Admissions &amp; Enquiries Only</option>
-            <option value="Content Editor">Content Editor — Website Content, Gallery &amp; Notices Only</option>
+            <option value="Content Editor" selected>Content Editor — Department Page Contributor</option>
+            <option value="Sub-Admin">Sub-Admin — Admissions &amp; Enquiries Only</option>
             <option value="Admin">Administrator — User Accounts &amp; Access Management Only</option>
             <option value="Super Admin">Super Administrator — Full System Access (All Modules)</option>
           </select>
@@ -938,6 +1130,19 @@
             <strong>Strict Role Segregation:</strong> Each account only has access to their assigned part and cannot
             access or modify any other parts of the college CMS.
           </div>
+        </div>
+
+        <div class="form-group" id="groupNewDepartment" style="margin-bottom: 14px;">
+          <label for="newDepartment" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">
+            Assigned Department for Candidate <span style="color: #ef4444;">*</span>
+          </label>
+          <select id="newDepartment" class="form-control"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+            <!-- Populated dynamically via JS -->
+          </select>
+          <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">
+            This candidate will be assigned as contributor for the selected department page.
+          </small>
         </div>
 
         <div class="form-group" style="margin-bottom: 20px;">
@@ -991,15 +1196,27 @@
 
         <div class="form-group" style="margin-bottom: 14px;">
           <label for="editRole"
-            style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Assigned Department &amp;
-            Role</label>
+            style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">Role &amp; Privilege</label>
           <select id="editRole" class="form-control"
             style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+            <option value="Content Editor">Content Editor — Department Page Contributor</option>
             <option value="Sub-Admin">Sub-Admin — Admissions &amp; Enquiries Only</option>
-            <option value="Content Editor">Content Editor — Website Content, Gallery &amp; Notices Only</option>
             <option value="Admin">Administrator — User Accounts &amp; Access Management Only</option>
             <option value="Super Admin">Super Administrator — Full System Access (All Modules)</option>
           </select>
+        </div>
+
+        <div class="form-group" id="groupEditDepartment" style="margin-bottom: 14px;">
+          <label for="editDepartment" style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">
+            Assigned Department for Candidate
+          </label>
+          <select id="editDepartment" class="form-control"
+            style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+            <!-- Populated dynamically via JS -->
+          </select>
+          <small style="font-size: 11px; color: var(--muted); display: block; margin-top: 3px;">
+            Department assigned to this contributor/staff member.
+          </small>
         </div>
 
         <div class="form-group" style="margin-bottom: 14px;">
@@ -1083,6 +1300,61 @@
         <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
           <button type="button" class="btn-secondary text-xs" id="btnCancelEditProg">Cancel</button>
           <button type="submit" class="btn-primary text-xs" id="btnSubmitEditProg">Save Programme</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Academic Programme -->
+  <div class="modal-overlay hidden" id="modalAddProg">
+    <div class="modal-card" style="max-width: 600px; padding: 28px;">
+      <button class="modal-close" id="btnCloseAddProgModal">&times;</button>
+      <div class="modal-header-custom" style="margin-bottom: 20px;">
+        <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--navy);">Add Academic Programme</h3>
+        <p style="font-size: 13px; color: var(--muted); margin: 0;">Add undergraduate or postgraduate degree offerings.</p>
+      </div>
+      <form id="formAddProg" class="standard-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="progNumber">Programme Badge / Code</label>
+            <input type="text" id="progNumber" placeholder="e.g. 13 / SCIENCE" value="13 / SCIENCE" required />
+          </div>
+          <div class="form-group">
+            <label for="progCategory">Category / Filter</label>
+            <select id="progCategory" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;">
+              <option value="Computer Science">Computer Science &amp; AI</option>
+              <option value="Commerce">Commerce &amp; CS</option>
+              <option value="Management">Management</option>
+              <option value="Arts">Arts &amp; Languages</option>
+              <option value="Science" selected>Science &amp; Mathematics</option>
+              <option value="Postgraduate">Postgraduate (PG)</option>
+              <option value="Athletics">Sports &amp; Placement</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="progTitle">Programme Title</label>
+          <input type="text" id="progTitle" placeholder="e.g. B.Sc (Data Science)" required />
+        </div>
+        <div class="form-group">
+          <label for="progDept">Academic Department</label>
+          <input type="text" id="progDept" placeholder="e.g. Department of Data Science" required />
+        </div>
+        <div class="form-group">
+          <label for="progDuration">Programme Duration</label>
+          <input type="text" id="progDuration" placeholder="e.g. 3 Years (UG)" value="3 Years (UG)" />
+        </div>
+        <div class="form-group">
+          <label for="progDesc">Description &amp; Highlights</label>
+          <textarea id="progDesc" rows="3" placeholder="Overview of the degree curriculum and scope..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="progLink">Action Link</label>
+          <input type="text" id="progLink" placeholder="#apply-modal" value="#apply-modal" />
+        </div>
+        <div class="modal-btns flex-end" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+          <button type="button" class="btn-secondary text-xs" id="btnCancelAddProg">Cancel</button>
+          <button type="submit" class="btn-primary text-xs" id="btnSubmitAddProg">Add Programme</button>
         </div>
       </form>
     </div>

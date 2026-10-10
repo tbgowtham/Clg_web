@@ -43,31 +43,31 @@ ROLE_PERMISSIONS = {
     "Admin": {
         "label": "Administrator",
         "job": "Administration & User Management",
-        "tabs": ["dashboard", "applications", "enquiries", "users", "preview"],
+        "tabs": ["dashboard", "applications", "enquiries", "users"],
         "apis": ["users", "auth", "applications", "enquiries"]
     },
     "Sub-Admin": {
         "label": "Sub-Admin",
         "job": "Admissions & Public Enquiries Only",
-        "tabs": ["applications", "enquiries", "preview"],
+        "tabs": ["applications", "enquiries"],
         "apis": ["applications", "enquiries"]
     },
     "Admissions Officer": {
         "label": "Admissions Officer",
         "job": "Admissions & Public Enquiries Only",
-        "tabs": ["applications", "enquiries", "preview"],
+        "tabs": ["applications", "enquiries"],
         "apis": ["applications", "enquiries"]
     },
     "Content Editor": {
         "label": "Content Editor",
-        "job": "Website Content, Gallery & Notices Only",
-        "tabs": ["content", "gallery", "notices", "programmes", "stats", "preview"],
+        "job": "Department Page & Website Content Only",
+        "tabs": ["programmes", "content", "gallery", "notices", "stats"],
         "apis": ["content", "gallery", "notices", "programmes", "stats"]
     },
     "Super Admin": {
         "label": "Super Administrator",
         "job": "Full System Oversight",
-        "tabs": ["dashboard", "gallery", "notices", "programmes", "stats", "content", "applications", "enquiries", "users", "preview"],
+        "tabs": ["dashboard", "gallery", "notices", "programmes", "stats", "content", "applications", "enquiries", "users"],
         "apis": ["*"]
     }
 }
@@ -217,10 +217,25 @@ def seed_default_admin():
                     users[i] = admin
             save_all_users(users)
 
+def sync_default_users():
+    """Ensures primary administrator and default contributors have full credentials."""
+    if mongo_available and db is not None:
+        try:
+            db.users.update_one(
+                {"username": "guru", "$or": [{"department": {"$exists": False}}, {"department": ""}]},
+                {"$set": {
+                    "department": "Department of Computer Science",
+                    "role_label": "Department Contributor",
+                    "assigned_job": "Department of Computer Science Contributor"
+                }}
+            )
+        except Exception as e:
+            print(f"[PyMongo] Error syncing guru: {e}")
 
-# Seed admin account on load
+# Seed admin account and sync default users on load
 import json
 seed_default_admin()
+sync_default_users()
 
 
 # ==================== ADMIN STATIC ROUTES ====================
@@ -275,12 +290,17 @@ def api_auth_login():
     raw_role = user.get("role", "Admin" if is_primary else "Sub-Admin")
     role_info = get_role_info(raw_role)
 
+    user_dept = user.get("department", "")
+    role_label = "Department Contributor" if user_dept and raw_role == "Content Editor" else user.get("role_label", role_info["label"])
+    assigned_job = f"{user_dept} Contributor" if user_dept and raw_role == "Content Editor" else user.get("assigned_job", role_info["job"])
+
     user_info = {
         "username": user.get("username"),
         "name": user.get("name", user.get("username").title()),
         "role": raw_role,
-        "role_label": role_info["label"],
-        "assigned_job": role_info["job"],
+        "role_label": role_label,
+        "department": user_dept,
+        "assigned_job": assigned_job,
         "allowed_tabs": role_info["tabs"],
         "is_primary_admin": is_primary,
         "view_scope": raw_role,
@@ -369,12 +389,16 @@ def api_get_users():
     for u in users:
         u_role = u.get("role", "Sub-Admin")
         r_info = get_role_info(u_role)
+        u_dept = u.get("department", "")
+        role_label = u.get("role_label") or ("Department Contributor" if u_dept and u_role == "Content Editor" else r_info["label"])
+        assigned_job = u.get("assigned_job") or (f"{u_dept} Contributor" if u_dept and u_role == "Content Editor" else r_info["job"])
         sanitized.append({
             "username": u.get("username"),
             "name": u.get("name", u.get("username")),
             "role": u_role,
-            "role_label": r_info["label"],
-            "assigned_job": r_info["job"],
+            "role_label": role_label,
+            "department": u_dept,
+            "assigned_job": assigned_job,
             "allowed_tabs": r_info["tabs"],
             "created_at": u.get("created_at", datetime.now().isoformat()),
             "phone": u.get("phone", ""),
@@ -396,6 +420,7 @@ def api_create_user():
     password = (data.get("password") or "").strip()
     name = (data.get("name") or "").strip()
     role = (data.get("role") or "Sub-Admin").strip()
+    department = (data.get("department") or "").strip()
 
     if not username or not password:
         return jsonify({"error": "Username and password are required"}), 400
@@ -410,14 +435,17 @@ def api_create_user():
         role = "Sub-Admin"
 
     role_info = get_role_info(role)
+    role_label = "Department Contributor" if department and role == "Content Editor" else role_info["label"]
+    assigned_job = f"{department} Contributor" if department and role == "Content Editor" else role_info["job"]
 
     new_user = {
         "username": username,
         "password_hash": generate_password_hash(password),
         "name": name if name else username.title(),
         "role": role,
-        "role_label": role_info["label"],
-        "assigned_job": role_info["job"],
+        "role_label": role_label,
+        "department": department,
+        "assigned_job": assigned_job,
         "created_at": datetime.now().isoformat(),
         "created_by": curr.get("username")
     }
@@ -434,13 +462,14 @@ def api_create_user():
 
     return jsonify({
         "success": True,
-        "message": f"User '{username}' created successfully with designated role '{role_info['label']}'.",
+        "message": f"User '{username}' created successfully for {department if department else role_info['label']}.",
         "user": {
             "username": new_user["username"],
             "name": new_user["name"],
             "role": new_user["role"],
-            "role_label": role_info["label"],
-            "assigned_job": role_info["job"],
+            "role_label": role_label,
+            "department": department,
+            "assigned_job": assigned_job,
             "created_at": new_user["created_at"],
             "is_primary_admin": False
         }
@@ -543,6 +572,18 @@ def api_update_user(username):
         r_info = get_role_info(role)
         target["role_label"] = r_info["label"]
         target["assigned_job"] = r_info["job"]
+
+    # Department update
+    if "department" in data:
+        dept = (data.get("department") or "").strip()
+        target["department"] = dept
+        if target.get("role") == "Content Editor" and dept:
+            target["role_label"] = "Department Contributor"
+            target["assigned_job"] = f"{dept} Contributor"
+        elif target.get("role") == "Content Editor" and not dept:
+            r_info = get_role_info("Content Editor")
+            target["role_label"] = r_info["label"]
+            target["assigned_job"] = r_info["job"]
 
     is_target_primary = bool(orig_uname == DEFAULT_ADMIN_USERNAME or target.get("is_primary_admin"))
     if is_target_primary:
@@ -664,8 +705,9 @@ def api_upload_image():
     save_path = os.path.join(UPLOADS_DIR, unique_filename)
     file.save(save_path)
 
-    label = request.form.get("label", "").strip() or "Campus image"
+    label = request.form.get("label", "").strip() or "Gallery image"
     section = request.form.get("section", "photos")
+    prog_id = request.form.get("prog_id", "").strip()
 
     photo_entry = {
         "id": f"photo-{uuid.uuid4().hex[:8]}",
@@ -675,15 +717,37 @@ def api_upload_image():
     }
 
     current = get_current_content()
-    if section == "photos":
-        if "photos" not in current:
-            current["photos"] = []
-        current["photos"].insert(0, photo_entry)
-        save_current_content(current)
+
+    # If uploaded for a specific department/programme, store exclusively in that department's gallery
+    if prog_id and prog_id != "campus":
+        target_prog = None
+        for p in current.get("programmes", []):
+            if p.get("id") == prog_id:
+                target_prog = p
+                break
+        if target_prog is not None:
+            if "gallery" not in target_prog or not isinstance(target_prog["gallery"], list):
+                target_prog["gallery"] = []
+            target_prog["gallery"].insert(0, photo_entry)
+            save_current_content(current)
+            return jsonify({
+                "success": True,
+                "message": f"Department image uploaded for {target_prog.get('title', 'Department')}",
+                "photo": photo_entry,
+                "prog_id": prog_id,
+                "url": f"/uploads/{unique_filename}",
+                "filename": unique_filename
+            }), 201
+
+    # Otherwise, it belongs to the Main College Campus Homepage Gallery
+    if "photos" not in current:
+        current["photos"] = []
+    current["photos"].insert(0, photo_entry)
+    save_current_content(current)
 
     return jsonify({
         "success": True,
-        "message": "Image uploaded successfully",
+        "message": "Campus image uploaded successfully to Main College Homepage Gallery",
         "photo": photo_entry,
         "url": f"/uploads/{unique_filename}",
         "filename": unique_filename
@@ -692,21 +756,41 @@ def api_upload_image():
 
 @admin_page_bp.route("/api/photos/<photo_id>", methods=["DELETE"])
 def api_delete_photo(photo_id):
-    """Removes a photo from gallery and deletes underlying file from disk."""
+    """Removes a photo from campus gallery or department gallery and deletes underlying file from disk."""
     is_ok, err_resp, status = check_permission("gallery")
     if not is_ok:
         return err_resp, status
 
+    prog_id = request.args.get("prog_id", "").strip()
     current = get_current_content()
-    photos = current.get("photos", [])
     target = None
-    remaining = []
 
-    for p in photos:
-        if p.get("id") == photo_id:
-            target = p
+    if prog_id and prog_id != "campus":
+        for p in current.get("programmes", []):
+            if p.get("id") == prog_id:
+                gallery = p.get("gallery", [])
+                p["gallery"] = [item for item in gallery if item.get("id") != photo_id]
+                target = next((item for item in gallery if item.get("id") == photo_id), None)
+                break
+    else:
+        # Check campus photos first
+        photos = current.get("photos", [])
+        for p in photos:
+            if p.get("id") == photo_id:
+                target = p
+                break
+        if target:
+            current["photos"] = [item for item in photos if item.get("id") != photo_id]
         else:
-            remaining.append(p)
+            # Check across all department galleries
+            for prog in current.get("programmes", []):
+                for item in prog.get("gallery", []):
+                    if item.get("id") == photo_id:
+                        target = item
+                        prog["gallery"] = [x for x in prog["gallery"] if x.get("id") != photo_id]
+                        break
+                if target:
+                    break
 
     if not target:
         return jsonify({"error": "Photo not found"}), 404
@@ -721,7 +805,6 @@ def api_delete_photo(photo_id):
             except Exception as e:
                 print(f"[File Delete Warning] Could not remove {file_path}: {e}")
 
-    current["photos"] = remaining
     save_current_content(current)
     return jsonify({"success": True, "message": "Photo deleted successfully", "id": photo_id})
 
@@ -812,7 +895,8 @@ def api_add_programme():
     }
 
     # Optional extended fields for full course page template
-    for ext_field in ["eligibility", "syllabus", "career_prospects", "highlights", "facilities", "slug"]:
+    extended_fields = ["eligibility", "syllabus", "career_prospects", "highlights", "facilities", "slug", "overview", "degree_level", "affiliation", "medium", "higher_studies", "duration_detail", "gallery"]
+    for ext_field in extended_fields:
         if ext_field in data:
             prog_entry[ext_field] = data[ext_field]
 
@@ -875,7 +959,8 @@ def api_update_programme(prog_id):
                 p["image"] = data["image"].strip()
             if "link" in data:
                 p["link"] = data["link"].strip()
-            for ext_field in ["eligibility", "syllabus", "career_prospects", "highlights", "facilities", "slug"]:
+            extended_fields = ["eligibility", "syllabus", "career_prospects", "highlights", "facilities", "slug", "overview", "degree_level", "affiliation", "medium", "higher_studies", "duration_detail", "gallery"]
+            for ext_field in extended_fields:
                 if ext_field in data:
                     p[ext_field] = data[ext_field]
             target = p

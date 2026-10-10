@@ -12,9 +12,32 @@
     "password_hash": "scrypt:32768:8:1$aoiUB5hFtiN3q9Dm$15983969f6ae03a3e8196666f35d55580b7c28896cb4884027916d78bbc2b688a5398f3fc94089a69f729dbf0098da904bf4ba2abed5ab3a8f2e6e86c55dc38e",
     "name": "Guru",
     "role": "Content Editor",
-    "role_label": "Content Editor",
-    "assigned_job": "Website Content, Gallery & Notices Only",
+    "role_label": "Department Contributor",
+    "assigned_job": "Department of Computer Science Contributor",
     "created_at": "2026-10-01T05:15:42.423117",
+    "created_by": "doomsday",
+    "department": "Department of Computer Science"
+  },
+  {
+    "username": "rohini",
+    "password_hash": "scrypt:32768:8:1$O65QT56v6d7dQpGk$85ff10cf5e872bf53d7249ccccc94dac1cc52172b17efc32960cb43fe85b011cbdabb1bb73af3a353bb137a45ec00ff98175ce488e8ca26f118d09ef4f89da1f",
+    "name": "rohini",
+    "role": "Content Editor",
+    "role_label": "Department Contributor",
+    "department": "Department of Computer Science",
+    "assigned_job": "Department of Computer Science Contributor",
+    "created_at": "2026-10-08T13:03:32.429449",
+    "created_by": "doomsday"
+  },
+  {
+    "username": "rohini",
+    "password_hash": "scrypt:32768:8:1$O65QT56v6d7dQpGk$85ff10cf5e872bf53d7249ccccc94dac1cc52172b17efc32960cb43fe85b011cbdabb1bb73af3a353bb137a45ec00ff98175ce488e8ca26f118d09ef4f89da1f",
+    "name": "rohini",
+    "role": "Content Editor",
+    "role_label": "Department Contributor",
+    "department": "Department of Computer Science",
+    "assigned_job": "Department of Computer Science Contributor",
+    "created_at": "2026-10-08T13:03:32.429449",
     "created_by": "doomsday"
   }
 ]

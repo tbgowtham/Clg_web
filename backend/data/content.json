@@ -114,10 +114,73 @@
       "category": "Commerce",
       "title": "B.Com (General)",
       "department": "Department of Commerce",
-      "duration": "3 Years (UG)",
-      "desc": "One of our premier founding departments with high-caliber faculty, advanced accounting labs, and comprehensive training in financial markets and corporate taxation.",
+      "duration": "3 Years (6 Semesters)",
+      "desc": "Founding department in accounting, corporate governance, and taxation.",
       "image": "assets/sdasc/departments/112226_1625242329.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "bcom-general",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English & Tamil Mentoring",
+      "eligibility": "Pass in Higher Secondary (+2) with Commerce and Accountancy.",
+      "overview": "Comprehensive department profile and academic curriculum updated by Department Contributor.",
+      "highlights": [
+        "Specialized Tally and GST digital computer laboratory.",
+        "Annual Corporate Commerce Expo and inter-collegiate symposium.",
+        "Guaranteed internship training with leading Chennai auditing firms."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "Financial Accounting I",
+            "Business Economics",
+            "Business Communication",
+            "Foundation Language"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "Financial Accounting II",
+            "Principles of Management",
+            "Business Law",
+            "General English"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Financial Analyst",
+        "Chartered Accountant Trainee",
+        "Tax Consultant"
+      ],
+      "higher_studies": [
+        "M.Com (Accounting & Finance)",
+        "MBA (Finance)",
+        "CA / CMA Professional Programs"
+      ],
+      "facilities": [
+        "Advanced Commerce Accounting & Taxation Simulation Lab",
+        "Department Reference Library with ICAI Journals"
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-bcom-1",
+          "label": "Department of Commerce Business Lab",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-bcom-2",
+          "label": "Commerce Seminar & Stock Market Trading Simulation",
+          "src": "photo/IMG20260228131225.jpg"
+        },
+        {
+          "id": "dept-photo-bcom-3",
+          "label": "Accounting & Tally ERP Computer Lab",
+          "src": "assets/sdasc/campus/112226_1625242314.jpeg"
+        }
+      ]
     },
     {
       "id": "prog-2",
@@ -128,7 +191,121 @@
       "duration": "3 Years (UG)",
       "desc": "Began in 2001, providing industry-aligned training in software development, web engineering, database architecture, and mobile applications.",
       "image": "assets/sdasc/departments/907227_1625278192.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "bca-computer-applications",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination with Mathematics / Business Mathematics / Computer Science / Statistics.",
+      "overview": "The Department of Computer Applications established the B.C.A programme in 2001 to bridge the gap between academic theory and real-world software engineering. The programme provides hands-on mastery in modern programming languages, database architecture, full-stack web development, and cloud tools. With state-of-the-art computer labs, high-speed fiber internet, and project-based learning, SDASC BCA graduates are prepared for high-impact software careers.",
+      "highlights": [
+        "Air-conditioned computing center with dedicated high-speed systems and Linux/Windows environments.",
+        "Active CodeCrafters Student Club hosting coding sprints, web design hackathons, and debugging contests.",
+        "Hands-on full stack project development from Semester IV onward.",
+        "Industry seminars led by tech architects from northern Chennai and TIDEL Park IT corridors.",
+        "Free technical aptitude and coding interview drills through the College Placement Cell."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "Programming Fundamentals in C",
+            "Digital Logic & Computer Organization",
+            "Mathematics for Computing - Paper I",
+            "C Programming Practical Laboratory",
+            "Communicative English & Technical Writing"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "Object-Oriented Programming with C++",
+            "Data Structures and Algorithms",
+            "Mathematics for Computing - Paper II",
+            "C++ & Data Structures Laboratory",
+            "Environmental Studies & Ethics"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "Programming in Core Java",
+            "Database Management Systems (DBMS) & SQL",
+            "Operating Systems Concepts & Linux",
+            "Java Programming Practical Laboratory",
+            "DBMS & Relational Query Laboratory"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "Python Programming & Scripting",
+            "Computer Networks & Data Communication",
+            "Software Engineering & Agile Methodologies",
+            "Python Programming Practical Laboratory",
+            "Quantitative Aptitude & Soft Skills"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "Web Engineering & Full Stack Web Development",
+            "Cloud Computing & Virtualization Essentials",
+            "Mobile Application Development (Android/Flutter)",
+            "Web Technologies & Mobile App Laboratory",
+            "Mini Project & Technology Seminar"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "Software Testing, QA & Automation",
+            "Information Security & Cyber Forensics",
+            "Introduction to Machine Learning & Data Mining",
+            "Major Industry Capstone Project Work",
+            "Project Viva Voce & Technical Evaluation"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Full Stack Software Developer & Web Engineer",
+        "Database Administrator (DBA) & SQL Specialist",
+        "Mobile App Developer (Android / iOS)",
+        "Cloud Support Engineer & DevOps Trainee",
+        "Quality Assurance (QA) & Software Test Engineer",
+        "Systems Analyst & Technical Support Engineer"
+      ],
+      "higher_studies": [
+        "M.C.A (Master of Computer Applications)",
+        "M.Sc in Information Technology (IT)",
+        "M.Sc in Data Science / Cyber Security",
+        "MBA in Information Systems & Technology Management",
+        "MS in Computing & Software Systems"
+      ],
+      "facilities": [
+        "High-Tech Computing Laboratory with 120+ modern workstations and high-speed gigabit connectivity.",
+        "Dedicated Software Development & Project Sandbox Lab.",
+        "High-Speed Campus Wi-Fi for research and repository access.",
+        "Digital Technology Library with IEEE/ACM e-resources and coding manuals."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-bca-1",
+          "label": "BCA Advanced Software Development Lab",
+          "src": "assets/sdasc/campus/112226_1625242314.jpeg"
+        },
+        {
+          "id": "dept-photo-bca-2",
+          "label": "Full-Stack Web Development Workshop",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-bca-3",
+          "label": "Database Systems & Network Administration Lab",
+          "src": "photo/IMG_20260723_150208_229.jpg"
+        }
+      ]
     },
     {
       "id": "prog-3",
@@ -139,7 +316,121 @@
       "duration": "3 Years (UG)",
       "desc": "Celebrating 25 years of excellence, this department builds strong foundations in algorithms, system programming, cloud computing, and cybersecurity.",
       "image": "assets/sdasc/departments/734395_1625242361.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "bsc-computer-science",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination with Mathematics and Physics / Chemistry / Computer Science.",
+      "overview": "Celebrating 25 years of educational service, the Department of Computer Science delivers a rigorous, foundational degree rooted in computational theory, algorithm design, system programming, and intelligent systems. Affiliated to the University of Madras, our B.Sc Computer Science program blends deep mathematical foundations with modern systems programming to cultivate visionary technologists and researchers.",
+      "highlights": [
+        "Rigorous theoretical and mathematical foundation in algorithms and computational theory.",
+        "State-of-the-art laboratory with advanced hardware, dual-boot Linux systems, and developer IDEs.",
+        "Student mentorship for national level coding competitions, paper presentations, and tech fests.",
+        "Hands-on exposure to cloud computing, relational database systems, and cybersecurity.",
+        "Consistent university rank holders and campus recruitment track in top MNCs."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "Problem Solving with Python",
+            "Discrete Mathematics for Computer Science",
+            "Python Programming Practical Laboratory",
+            "Foundation Language (Tamil / Hindi)",
+            "English for Science & Technology"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "Object-Oriented Programming via C++",
+            "Calculus & Analytical Geometry",
+            "C++ Programming Practical Laboratory",
+            "Value Education & Professional Ethics",
+            "Communicative English"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "Data Structures and Algorithm Design",
+            "Computer Architecture & Microprocessors",
+            "Programming in Java",
+            "Data Structures & Java Laboratory",
+            "Numerical Methods & Statistical Computing"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "Relational Database Management Systems",
+            "Operating Systems & Systems Programming",
+            "Computer Networks & Protocols",
+            "RDBMS & SQL Practical Laboratory",
+            "Soft Skills & Professional Reasoning"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "Web Technology with Modern JavaScript",
+            "Software Engineering & Object Modeling",
+            "Information & Network Security",
+            "Web Systems Practical Laboratory",
+            "Open Elective / Domain Specialization"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "Fundamentals of Artificial Intelligence",
+            "Cloud Computing & Distributed Systems",
+            "Data Analytics & Visualization Basics",
+            "Major Capstone Project Work",
+            "Comprehensive Project Viva Voce"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Software Development Engineer (SDE)",
+        "Systems Programmer & Kernel Engineer",
+        "Cloud Operations & Network Administrator",
+        "Data Analyst & Business Intelligence Specialist",
+        "Cybersecurity Associate & Vulnerability Analyst",
+        "Technical Consultant & IT Solution Specialist"
+      ],
+      "higher_studies": [
+        "M.Sc Computer Science",
+        "M.C.A (Master of Computer Applications)",
+        "M.Sc in Data Analytics / Artificial Intelligence",
+        "M.Sc in Information Security & Cyber Forensics",
+        "MBA in Technology Management"
+      ],
+      "facilities": [
+        "Advanced Computer Center equipped with high-performance multi-core processors.",
+        "Specialized System Software & Network Simulator Lab.",
+        "Central Library with extensive collection of computer science textbooks and reference manuals.",
+        "Campus Placement & Interview Preparation Suites."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-cs-1",
+          "label": "Computer Science Main Computing Laboratory",
+          "src": "assets/sdasc/campus/112226_1625242314.jpeg"
+        },
+        {
+          "id": "dept-photo-cs-2",
+          "label": "Algorithms & Programming Seminar Hall",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-cs-3",
+          "label": "Cloud Infrastructure & Open Source Lab",
+          "src": "photo/IMG_20260723_150208_229.jpg"
+        }
+      ]
     },
     {
       "id": "prog-4",
@@ -150,7 +441,120 @@
       "duration": "3 Years (UG)",
       "desc": "Renowned for producing University of Madras rank holders (including 90th and 31st university ranks) with deep analytical and quantitative rigor.",
       "image": "assets/sdasc/departments/224730_1625130953.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "bsc-mathematics",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English & Tamil Mentoring",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination with Mathematics as a core subject.",
+      "overview": "The Department of Mathematics has built an enviable legacy of academic excellence, consistently producing prestigious University of Madras rank holders (including 90th and 31st university ranks). The B.Sc Mathematics program trains students in analytical rigor, abstract thinking, mathematical modeling, and statistical problem-solving.",
+      "highlights": [
+        "Celebrated department with consistent University of Madras rank holders.",
+        "Ramanujan Mathematical Association organizing inter-collegiate symposiums and puzzle arenas.",
+        "Integrated coaching for TNPSC, SSC, UPSC, and Banking quantitative aptitude exams.",
+        "Hands-on statistical computing laboratory using R and Python tools.",
+        "High percentage of alumni advancing to prestigious postgraduate research programs."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "Classical Algebra and Trigonometry",
+            "Differential Calculus & Curvature",
+            "Allied Physics - Paper I",
+            "Allied Physics Practical Laboratory",
+            "Foundation Language & English"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "Integral Calculus & Reduction Formulae",
+            "Analytical Geometry of 3D & Vector Calculus",
+            "Allied Physics - Paper II",
+            "Allied Physics Practical Laboratory",
+            "Value Education"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "Differential Equations & Laplace Transforms",
+            "Classical Mechanics & Kinematics",
+            "Allied Mathematical Statistics - Paper I",
+            "Mathematical Statistics Practical Lab",
+            "Communicative English"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "Real Analysis - Paper I",
+            "Numerical Methods & Finite Differences",
+            "Allied Mathematical Statistics - Paper II",
+            "Computational Statistics Laboratory",
+            "Environmental Studies"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "Real Analysis - Paper II (Metric Spaces)",
+            "Modern Abstract Algebra (Groups & Rings)",
+            "Operations Research - Paper I (LPP, Simplex)",
+            "Statics & Particle Dynamics",
+            "Linear Algebra & Vector Spaces"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "Complex Analysis & Conformal Mapping",
+            "Graph Theory & Combinatorics",
+            "Operations Research - Paper II (Transportation, Queuing)",
+            "Hydrostatics & Dynamics",
+            "Mathematical Modeling Project & Viva"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Data Analyst & Quantitative Research Associate",
+        "Statistical Investigator & Government Statistical Officer",
+        "Actuarial Science Analyst (Insurance & Risk)",
+        "Banking & Finance Probationary Officer (IBPS/SBI)",
+        "Public Service Commission Officer (TNPSC Group I & II)",
+        "Mathematics Lecturer & Secondary School Educator"
+      ],
+      "higher_studies": [
+        "M.Sc Mathematics",
+        "M.Sc Statistics & Applied Probability",
+        "M.Sc Actuarial Science / Financial Mathematics",
+        "M.C.A (Master of Computer Applications)",
+        "B.Ed / M.Ed in Mathematical Pedagogy"
+      ],
+      "facilities": [
+        "Mathematical Computing Suite equipped with R, Python, and Scientific Computing tools.",
+        "Dedicated departmental seminar library with comprehensive reference treatises.",
+        "Problem-Solving Tutorial rooms with individualized faculty mentoring."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-math-1",
+          "label": "Mathematics Statistical Modeling & Analytics Lab",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-math-2",
+          "label": "Mathematical Olympiad & Research Seminar",
+          "src": "photo/IMG20260228131225.jpg"
+        },
+        {
+          "id": "dept-photo-math-3",
+          "label": "Computational Mathematics Workstation",
+          "src": "assets/sdasc/campus/112226_1625242314.jpeg"
+        }
+      ]
     },
     {
       "id": "prog-5",
@@ -161,7 +565,115 @@
       "duration": "3 Years (UG)",
       "desc": "Specialized curriculum focusing on company secretarial practices, corporate law, auditing, governance, and business communication.",
       "image": "assets/sdasc/departments/433611_1625217308.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "bcom-corporate-secretaryship",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English & Tamil Mentoring",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination with Commerce, Accountancy, and Mathematics or Economics.",
+      "overview": "The Department of Corporate Secretaryship provides a specialized, professionalized curriculum tailored for careers in corporate governance, secretarial audit, company law, and compliance. Designed in close alignment with the Institute of Company Secretaries of India (ICSI) syllabus, B.Com Corporate Secretaryship equips students to serve as executive bridge builders between corporate boards, legal regulators, and shareholders.",
+      "highlights": [
+        "Syllabus synergized with ICSI Company Secretary (Executive Programme) standards.",
+        "Mandatory 30-day Institutional Training in registered corporate organizations or CS firms.",
+        "Specialized coaching in corporate drafting, board meeting procedures, and ROC filing.",
+        "Corporate Governance & Secretarial Forum conducting mock board meetings and moot tribunals.",
+        "High placement track in corporate legal departments, secretarial firms, and MNCs."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "Financial Accounting - Paper I",
+            "Corporate Communication & Office Systems",
+            "Secretarial Practice - Paper I (Secretarial Standards)",
+            "Allied Business Economics",
+            "Foundation Language & English"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "Financial Accounting - Paper II",
+            "Company Law & Secretarial Practice - Paper I",
+            "Secretarial Practice - Paper II",
+            "Business Regulatory Framework",
+            "Value Education & Human Rights"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "Corporate Accounting - Paper I",
+            "Company Law & Secretarial Practice - Paper II",
+            "General Commercial Knowledge",
+            "Allied Business Statistics",
+            "Soft Skills Enrichment"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "Corporate Accounting - Paper II",
+            "Securities Laws & Financial Markets",
+            "Industrial & Labour Legislation",
+            "Corporate Governance & Business Ethics",
+            "Environmental Studies"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "Cost and Management Accounting - Paper I",
+            "Direct Taxation (Income Tax Law)",
+            "Corporate Restructuring & Mergers",
+            "Institutional Training in Corporate Organization",
+            "Institutional Training Report & Viva Voce"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "Cost and Management Accounting - Paper II",
+            "Indirect Taxation & Goods and Services Tax (GST)",
+            "Secretarial Audit & Compliance Management",
+            "Entrepreneurial Development",
+            "Major Project Work & Comprehensive Viva"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Company Secretary Trainee & Legal Compliance Associate",
+        "Corporate Governance Analyst in Listed Companies",
+        "Registrar and Transfer Agent (RTA) Operations Executive",
+        "Internal Auditor & Corporate Legal Assistant",
+        "Accounts Manager & Tax Filing Executive",
+        "Secretarial Consultant in Chartered & CS Firms"
+      ],
+      "higher_studies": [
+        "ICSI Company Secretaryship (CS Executive / Professional)",
+        "M.Com (Corporate Secretaryship)",
+        "LL.B (Bachelor of Legislative Law / Corporate Law)",
+        "MBA in Corporate Governance / Finance",
+        "CMA (Cost and Management Accountant)"
+      ],
+      "facilities": [
+        "Corporate Mock Board Room for procedural simulation and secretarial drills.",
+        "Corporate Law Documentation & Reference Library.",
+        "Computerized Secretarial Filings & MCA21 Portal Training Center."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-cs-corp-1",
+          "label": "Corporate Secretaryship Boardroom Simulation",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-cs-corp-2",
+          "label": "Corporate Law & Secretarial Audit Practice Lab",
+          "src": "assets/sdasc/campus/112226_1625242314.jpeg"
+        }
+      ]
     },
     {
       "id": "prog-6",
@@ -172,7 +684,115 @@
       "duration": "3 Years (UG)",
       "desc": "Empowering future managers and entrepreneurs through practical case studies, Bizmind Club forums, business simulations, and executive mentoring.",
       "image": "assets/sdasc/departments/270117_1625239793.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "bba-business-administration",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination in any academic or vocational stream.",
+      "overview": "The Department of Business Administration is dedicated to sculpting modern business managers, entrepreneurial trailblazers, and corporate executives. Through case-study pedagogy, business simulation labs, leadership summits, and rural enterprise projects, SDASC BBA empowers students with the managerial competence, emotional intelligence, and strategic vision required in modern enterprises.",
+      "highlights": [
+        "Bizmind Entrepreneurship Club organizing campus business stalls and startup pitch competitions.",
+        "Continuous case-study pedagogy based on real-world Indian and international corporate dilemmas.",
+        "Mandatory Summer Internship Program connecting students with northern Chennai industrial firms.",
+        "Executive leadership workshops covering negotiation, corporate etiquette, and public speaking.",
+        "Strong track record of graduates launching family ventures or joining top MBA programs."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "Principles of Management & Organization Theory",
+            "Business Communication & Executive Writing",
+            "Managerial Economics & Decision Making",
+            "Financial Accounting for Managers",
+            "Foundation Language & English"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "Organizational Behaviour & Group Dynamics",
+            "Business Environment & Macroeconomic Policy",
+            "Business Mathematics & Statistics for Managers",
+            "Fundamentals of Marketing Management",
+            "Value Education & Ethics"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "Human Resource Management & Talent Acquisition",
+            "Production & Operations Management",
+            "Management Accounting & Budgetary Control",
+            "Business Regulatory Framework & Mercantile Law",
+            "Soft Skills & Leadership Laboratory"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "Financial Management & Working Capital",
+            "Research Methodology in Business",
+            "Logistics & Supply Chain Management",
+            "Business Analytics & Spreadsheet Modeling",
+            "Environmental Studies & Sustainable Management"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "Strategic Management & Corporate Policy",
+            "Entrepreneurship & Small Business Management",
+            "Advertising, Brand & Sales Promotion",
+            "Retail Management & Modern Store Formats",
+            "Institutional Summer Internship Project Report"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "International Business & Global Trade",
+            "Digital Marketing, E-Commerce & Social Media",
+            "Corporate Social Responsibility & Business Ethics",
+            "Comprehensive Business Plan Project",
+            "Project Viva Voce & Executive Board Presentation"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Business Development Executive & Client Relationship Manager",
+        "Marketing Associate & Digital Brand Strategist",
+        "Human Resource Executive & Talent Acquisition Specialist",
+        "Operations Supervisor & Logistics Coordinator",
+        "Retail Store Manager & Commercial Branch Trainee",
+        "Independent Entrepreneur & Startup Founder"
+      ],
+      "higher_studies": [
+        "MBA (Master of Business Administration) in Finance, Marketing, HR, or Supply Chain",
+        "Post Graduate Diploma in Management (PGDM - IIMs / Premier B-Schools)",
+        "Master of Human Resource Management (MHRM)",
+        "M.Com (Business Administration)",
+        "Master in International Business (MIB)"
+      ],
+      "facilities": [
+        "Executive Management Seminar Hall for guest lectures and case discussions.",
+        "Business Simulation & Spreadsheets Computing Lab.",
+        "Innovation & Incubation Cell supporting student entrepreneurship ventures."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-bba-1",
+          "label": "Management Studies Executive Discussion Hall",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-bba-2",
+          "label": "Entrepreneurship Development Cell & Incubation Hub",
+          "src": "photo/IMG_20260701_110148.jpg"
+        }
+      ]
     },
     {
       "id": "prog-7",
@@ -183,7 +803,115 @@
       "duration": "3 Years (UG)",
       "desc": "Home to the English Literary Association, cultivating mastery in critical reading, communication, journalism, and public discourse.",
       "image": "assets/sdasc/departments/586820_1625240572.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "ba-english-literature",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination in any stream with English as a compulsory subject.",
+      "overview": "The Department of English at Sridevi Arts and Science College cultivates eloquent communicators, critical scholars, creative writers, and global citizens. The Bachelor of Arts in English Literature (B.A English) program immerses students in classic British canons, postcolonial world literatures, American prose, literary criticism, linguistics, and communicative journalism.",
+      "highlights": [
+        "Home to the English Literary Association organizing Shakespearean plays, poetry slams, and elocution fests.",
+        "Digital Language Laboratory equipped with interactive software for phonetics and accent neutralization.",
+        "Integrated training in Content Writing, Digital Journalism, Public Relations, and Technical Writing.",
+        "Specialized coaching for civil services exams (UPSC / TNPSC General English & Essays).",
+        "Annual publication of the college student literary magazine showcasing student prose and poetry."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "British Literature - Part I (Chaucer to Renaissance)",
+            "Social History of England & Cultural Contexts",
+            "Communicative English & Language Mastery",
+            "Foundation Language (Tamil / Hindi)",
+            "Phonetics & Spoken English Laboratory"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "British Literature - Part II (Restoration to Romantic Age)",
+            "History of English Literature - Part I",
+            "Literary Forms, Genres and Terms",
+            "Language through Literature",
+            "Value Education"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "Victorian Age Literature & Prose Canons",
+            "American Literature - Prose, Poetry & Drama",
+            "History of the English Language & Linguistics",
+            "Literary Criticism - Part I (Classical to Romantic)",
+            "Soft Skills & Professional Communication"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "Indian Writing in English (Prose, Poetry, Fiction)",
+            "Twentieth Century British Literature",
+            "Allied Journalism & Mass Media Communication",
+            "Print Media Writing Practical Workshop",
+            "Environmental Studies"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "Shakespeare Studies (Comedies, Tragedies, Sonnets)",
+            "Postcolonial Literatures in English",
+            "English Language Teaching (ELT) & Pedagogy",
+            "Introduction to Translation Studies & Theory",
+            "Creative Writing in Practice"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "World Literature in Translation",
+            "Women's Writing in English & Gender Studies",
+            "Media Studies, Copywriting & Technical Documentation",
+            "Literary Research Dissertation / Project",
+            "Project Viva Voce"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Content Writer, Copywriter & Digital Editor",
+        "Journalist, News Reporter & Media Correspondent",
+        "Technical Writer & Corporate Documentation Specialist",
+        "Public Relations Executive & Corporate Communications Officer",
+        "Civil Services Officer (UPSC / TNPSC)",
+        "English Language Trainer & International Educator"
+      ],
+      "higher_studies": [
+        "M.A in English Literature",
+        "M.A in Journalism and Mass Communication",
+        "M.A in Linguistics / English Language Teaching (ELT)",
+        "B.Ed / M.Ed in English Pedagogy",
+        "MBA in Human Resources / Public Relations"
+      ],
+      "facilities": [
+        "State-of-the-art Digital Language Laboratory with interactive audio-visual booths.",
+        "English Literary Reference Library with classical anthologies and literary journals.",
+        "Open-Air Amphitheater for theatrical enactments and literary recitations."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-eng-1",
+          "label": "Digital English Language Communication Skills Lab",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-eng-2",
+          "label": "Literary Theatre & Phonetics Audio Suite",
+          "src": "photo/IMG_20260701_132844.jpg"
+        }
+      ]
     },
     {
       "id": "prog-8",
@@ -194,7 +922,115 @@
       "duration": "3 Years (UG)",
       "desc": "Fosters profound scholarship in classical and modern Tamil literature, linguistics, grammar, media studies, and cultural heritage.",
       "image": "assets/sdasc/departments/76783_1625277585.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "ba-tamil-literature",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "Tamil",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination with Tamil as a subject.",
+      "overview": "தமிழ்ப் பண்பாட்டையும், செம்மொழித் தமிழ் இலக்கியச் செல்வங்களையும் இளைய தலைமுறையிடம் ஆழமாகக் கொண்டுசேர்க்கும் உன்னத நோக்குடன் தொடங்கப்பட்ட துறை தமிழ்த்துறையாகும். சென்னை பல்கலைக்கழகத்தின் அங்கீகாரத்துடன் இயங்கும் இளங்கலைத் தமிழ் (B.A Tamil) பட்டப்படிப்பு சங்க இலக்கியம், காப்பியங்கள், பக்தி இலக்கியம், இலக்கணம், தொல்லியல் மற்றும் நவீன ஊடகத் தமிழ் ஆகியவற்றை முழுமையாகக் கற்பிக்கிறது.",
+      "highlights": [
+        "செம்மொழித் தமிழ் ஆய்வரங்கம் மற்றும் கவியரங்கங்கள் தொடர்ச்சியாக நடத்துதல்.",
+        "தமிழ் இதழியல், கணினித் தமிழ் மற்றும் எழுத்துப் பயிற்சிப் பட்டறைகள்.",
+        "TNPSC குரூப் தேர்வுகள் மற்றும் ஆசிரியர் பணிக்கான சிறப்பு வழிகாட்டல் வகுப்புகள்.",
+        "பழமையான கல்வெட்டுகள், அகழாய்வுத் தளங்களுக்கான களப்பயணங்கள்.",
+        "மாணவர்களின் படைப்பாற்றலை வளர்க்கும் சிறப்பு இலக்கிய மன்றம்."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "இக்காலக் கவிதை (பாரதி, பாரதிதாசன் முதல் புதுக்கவிதை வரை)",
+            "தமிழ் இலக்கிய வரலாறு - பகுதி I (தொடக்க காலம் முதல் பல்லவர் காலம் வரை)",
+            "சிற்றிலக்கியங்கள் (கலம்பகம், உலா, பரணி)",
+            "அடிப்படைத் தமிழ் இலக்கணம்",
+            "பயன்பாட்டு ஆங்கிலம்"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "பக்தி இலக்கியமும் அற இலக்கியங்களும் (திருக்குறள், நாலடியார்)",
+            "தமிழ் இலக்கிய வரலாறு - பகுதி II (சோழர் காலம் முதல் இக்காலம் வரை)",
+            "நன்னூல் - எழுத்ததிகாரம்",
+            "தமிழக வரலாறும் பண்பாடும்",
+            "மதிப்புக் கல்வி"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "காப்பிய இலக்கியம் (சிலப்பதிகாரம், மணிமேகலை, கம்பராமாயணம்)",
+            "நன்னூல் - சொல்லதிகாரம்",
+            "நாட்டுப்புறவியல் மற்றும் மானிடவியல்",
+            "ஊடகத் தமிழ் மற்றும் செய்தி எழுத்தாக்கம்",
+            "மென்திறன் பயிற்சி"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "சங்க இலக்கியம் - எட்டுத்தொகை (நற்றிணை, குறுந்தொகை, புறநானூறு)",
+            "தொல்காப்பியம் - பொருளதிகாரம் (அகத்திணையியல், புறத்திணையியல்)",
+            "கல்வெட்டியலும் தொல்லியலும்",
+            "கணினித் தமிழ் பயன்பாடு",
+            "சுற்றுச்சூழல் கல்வி"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "சங்க இலக்கியம் - பத்துப்பாட்டு (முல்லைப்பாட்டு, நெடுநல்வாடை)",
+            "நம்பியகப்பொருள் - அகப்பொருள் இலக்கணம்",
+            "ஒப்பிலக்கியக் கொள்கைகள் மற்றும் அறிமுகம்",
+            "தமிழ் இதழியல் வரலாறு மற்றும் செயல்முறைப் பயிற்சி",
+            "படைப்பிலக்கியப் பட்டறை"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "புறப்பொருள் வெண்பாமாலை",
+            "யாப்பருங்கலக்காரிகை & தண்டியலங்காரம்",
+            "உரைநடை இலக்கிய வளர்ச்சி (நாவல், சிறுகதை, நாடகம்)",
+            "களஆய்வு மற்றும் இளங்கலை ஆய்வேடு",
+            "ஆய்வேடு வாய்மொழித் தேர்வு"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "பள்ளித் தமிழாசிரியர் மற்றும் பயிற்றுநர் (TRB / TET)",
+        "தமிழ் செய்தி வாசிப்பாளர், ஊடக நிருபர் மற்றும் நிகழ்ச்சித் தொகுப்பாளர்",
+        "அரசுப் பணியாளர் (TNPSC குரூப் I, II, IV அரசு அலுவலர்)",
+        "தமிழ்க் கணினி உள்ளடக்க எழுத்தாளர் மற்றும் மொழிபெயர்ப்பாளர்",
+        "தொல்லியல் துறை மற்றும் கல்வெட்டு ஆய்வு உதவியாளர்",
+        "பதிப்பகப் பதிப்பாசிரியர் மற்றும் நூலக அலுவலர்"
+      ],
+      "higher_studies": [
+        "M.A தமிழ் முதுகலை",
+        "B.Ed / M.Ed கல்வியியல் பட்டப்படிப்பு",
+        "M.A இதழியல் மற்றும் மக்கள் தகவல் தொடர்பியல்",
+        "முனைவர் பட்ட ஆய்வு (Ph.D in Tamil Literature)",
+        "M.A நாட்டுப்புறவியல் / திராவிட மொழியியல்"
+      ],
+      "facilities": [
+        "தமிழ்த்துறை நூலகம் - அரிய சங்க இலக்கிய மற்றும் இலக்கண உரைநூல்கள் தொகுப்பு.",
+        "பாரதி தமிழ் இலக்கிய மன்ற அரங்கம்.",
+        "கணினித் தமிழ் ஆய்வகம்."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-tam-1",
+          "label": "Tamil Classical Literature Reference Library",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        },
+        {
+          "id": "dept-photo-tam-2",
+          "label": "Tamil Literary Forum & Symposium Hall",
+          "src": "photo/IMG_20260701_132844.jpg"
+        }
+      ]
     },
     {
       "id": "prog-9",
@@ -205,7 +1041,125 @@
       "duration": "3 Years (UG)",
       "desc": "Next-generation degree integrating deep learning, neural networks, machine intelligence, natural language processing, and automated systems.",
       "image": "assets/sdasc/departments/50152_1709103994.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "bsc-computer-science-ai",
+      "degree_level": "Undergraduate (UG)",
+      "duration_detail": "3 Years (6 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "English",
+      "eligibility": "Pass in Higher Secondary (+2) Examination conducted by the Government of Tamil Nadu or equivalent examination with Mathematics and Computer Science / Physics / Chemistry.",
+      "overview": "The Bachelor of Science in Computer Science with Artificial Intelligence (B.Sc CS with AI) is our flagship next-generation degree program designed to prepare students for the fourth industrial revolution. Affiliated to the historic University of Madras, this forward-looking degree seamlessly fuses fundamental computer science principles with deep neural networks, machine learning algorithms, natural language processing, computer vision, and generative intelligence.",
+      "highlights": [
+        "Cutting-edge syllabus covering Python for AI, TensorFlow, PyTorch, Scikit-Learn, and OpenCV.",
+        "Dedicated AI & Deep Learning Sandbox with GPU-accelerated computing nodes.",
+        "Hands-on projects in Chatbots, Automated Predictive Modeling, Computer Vision, and Generative AI.",
+        "Industry masterclasses and webinars conducted by AI Research Scientists and Data Architects.",
+        "Prime placement pathway into modern high-paying technology roles."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "Problem Solving with Advanced Python",
+            "Mathematical Foundations for Artificial Intelligence",
+            "Python for AI Practical Laboratory",
+            "Foundation Language & Communicative English",
+            "Professional Ethics & Responsible AI"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "Object-Oriented Programming with Modern C++",
+            "Linear Algebra, Matrices & Probability for AI",
+            "Data Structures & Algorithms Laboratory",
+            "Scientific Computing with NumPy & Pandas",
+            "Value Education"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "Foundations of Artificial Intelligence & Search Algorithms",
+            "Knowledge Representation & Expert Systems",
+            "Relational & NoSQL Databases for Big Data",
+            "AI Algorithms Practical Laboratory",
+            "Statistical Inference & Hypothesis Testing"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "Machine Learning Core Algorithms (Supervised & Unsupervised)",
+            "Neural Networks & Deep Learning Architectures",
+            "Computer Vision Fundamentals & Image Processing",
+            "Machine Learning with Scikit-Learn Lab",
+            "Quantitative Aptitude & Interview Readiness"
+          ]
+        },
+        {
+          "semester": "Semester V",
+          "subjects": [
+            "Natural Language Processing (NLP) & Text Analytics",
+            "Deep Learning Frameworks (TensorFlow & PyTorch)",
+            "Cloud AI Systems & Edge AI Deployment (AWS/Azure)",
+            "Deep Learning & NLP Practical Laboratory",
+            "AI Mini-Project & Technology Showcase"
+          ]
+        },
+        {
+          "semester": "Semester VI",
+          "subjects": [
+            "Generative AI, Large Language Models (LLMs) & Prompt Engineering",
+            "AI Ethics, Explainable AI (XAI) & Data Governance",
+            "Reinforcement Learning & Autonomous Agents",
+            "Major Industry Capstone AI Project Work",
+            "Comprehensive Project Viva Voce & Model Defense"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "AI / Machine Learning Junior Engineer",
+        "Data Scientist & Predictive Analytics Associate",
+        "Computer Vision & Image Processing Engineer",
+        "NLP Specialist & Conversational AI Developer",
+        "Prompt Engineer & GenAI Application Builder",
+        "Business Intelligence & Data Visualization Analyst"
+      ],
+      "higher_studies": [
+        "M.Sc in Artificial Intelligence / Data Science",
+        "M.C.A (Master of Computer Applications)",
+        "MS in Machine Learning & Robotics",
+        "MBA in Business Analytics / Data Strategy",
+        "M.Tech / ME in Computer Science (via entrance examinations)"
+      ],
+      "facilities": [
+        "State-of-the-Art AI Computing Laboratory with GPU-accelerated computing nodes.",
+        "High-Speed Internet for cloud model training and Hugging Face / Kaggle sandbox access.",
+        "Digital Technology Innovation Center with extensive library of ML research papers."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-ai-1",
+          "label": "AI & Deep Learning Computing Lab",
+          "src": "uploads/upload_1791053198_9a86e1.png"
+        },
+        {
+          "id": "dept-photo-ai-2",
+          "label": "AI Department Student Symposium & Cultural Event",
+          "src": "uploads/upload_1791489888_37afba.jpg"
+        },
+        {
+          "id": "dept-photo-ai-3",
+          "label": "Computer Science & Machine Intelligence Workstation",
+          "src": "assets/sdasc/campus/112226_1625242314.jpeg"
+        },
+        {
+          "id": "dept-photo-ai-4",
+          "label": "AI Robotics & Embedded Systems Research Bench",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        }
+      ]
     },
     {
       "id": "prog-10",
@@ -216,7 +1170,88 @@
       "duration": "2 Years (PG)",
       "desc": "Advanced master's research degree concentrating on ancient epigraphy, Sangam literature, comparative literary theory, and higher pedagogy.",
       "image": "assets/sdasc/departments/781424_1709104179.jpeg",
-      "link": "#apply-modal"
+      "link": "#apply-modal",
+      "slug": "ma-tamil-literature",
+      "degree_level": "Postgraduate (PG)",
+      "duration_detail": "2 Years (4 Semesters Full-Time)",
+      "affiliation": "Affiliated to University of Madras",
+      "medium": "Tamil",
+      "eligibility": "Bachelor's Degree in Tamil (B.A Tamil) or any undergraduate degree (B.A / B.Sc / B.Com) with Foundation Tamil Part-I under University of Madras or recognized statutory university.",
+      "overview": "முதுகலைத் தமிழ் (M.A Tamil) பட்டப்படிப்பு செம்மொழித் தமிழின் உயரிய தொன்மை, தொல்காப்பியக் கோட்பாடுகள், சங்க இலக்கிய அக-புற நுணுக்கங்கள், உரைமரபுகள் மற்றும் நவீன ஒப்பிலக்கிய ஆய்வுத் தளங்களில் மாணவர்களை ஆழமாக வழிநடத்தும் உயர்கல்வித் திட்டமாகும். பேராசிரியர்கள், தமிழ் அறிஞர்கள், மற்றும் மத்திய/மாநில அரசு உயர் ஆய்வுப் பணிகளுக்கான தகுதியை உருவாக்குவதே இத்துறையின் முதன்மை இலக்காகும்.",
+      "highlights": [
+        "UGC-NET / SET விரிவுரையாளர் தகுதித் தேர்வுகளுக்கான சிறப்புப் பயிற்சி மற்றும் வழிகாட்டல்.",
+        "தொல்காப்பிய உரைமரபுகள் மற்றும் சங்க இலக்கிய ஒப்பாய்வில் தனித்துவக் கவனம்.",
+        "கல்வெட்டியல், தொல்லியல் ஆய்வுப் பயிற்சி மற்றும் சுவடியியல் களப்பயணங்கள்.",
+        "முதுகலை மாணவர்களுக்கான ஆய்வேடு (Master's Dissertation) மற்றும் ஆய்வுக்கட்டுரை வெளியீடுகள்.",
+        "பல்கலைக்கழகத் தரவரிசைப் பட்டியலில் தொடர்ந்து இடம்பெறும் உயரிய கல்வித்தரம்."
+      ],
+      "syllabus": [
+        {
+          "semester": "Semester I",
+          "subjects": [
+            "தொல்காப்பியம் - எழுத்ததிகாரம் (இளம்பூரணர் உரை)",
+            "சங்க இலக்கியம் - அகம் (நற்றிணை, குறுந்தொகை, கலித்தொகை, அகநானூறு)",
+            "தற்காலத் தமிழ் இலக்கியங்கள் (கவிதை, நாவல், நாடகம்)",
+            "கல்வெட்டியலும் தொல்லியலும்",
+            "ஆராய்ச்சி நெறிமுறைகள்"
+          ]
+        },
+        {
+          "semester": "Semester II",
+          "subjects": [
+            "தொல்காப்பியம் - சொல்லதிகாரம் (சேனாவரையர் உரை)",
+            "சங்க இலக்கியம் - புறம் (புறநானூறு, பதிற்றுப்பத்து)",
+            "காப்பியங்களும் பக்தி இலக்கியமும் (சிலம்பு, கம்பன், பெரியபுராணம்)",
+            "உரைமரபுகளும் உரையாசிரியர்களும்",
+            "மனித உரிமைகள் மற்றும் விழுமியக் கல்வி"
+          ]
+        },
+        {
+          "semester": "Semester III",
+          "subjects": [
+            "தொல்காப்பியம் - பொருளதிகாரம் (பேராசிரியர் உரை)",
+            "அற இலக்கியமும் நீதி நூல்களும்",
+            "நாட்டுப்புறவியல் மற்றும் மானிடவியல் களஆய்வு",
+            "ஒப்பிலக்கிய ஆய்வு மற்றும் கோட்பாடுகள்",
+            "மொழிபெயர்ப்பியல் கோட்பாடுகள்"
+          ]
+        },
+        {
+          "semester": "Semester IV",
+          "subjects": [
+            "யாப்பருங்கலக்காரிகை & தண்டியலங்காரம் (உரைமரபு)",
+            "திராவிட மொழியியலும் தமிழ் மொழியியல் வரலாறும்",
+            "உயர் ஆய்வு நெறிமுறைகள் மற்றும் கருத்தரங்கக் கட்டுரை",
+            "முதுகலை ஆய்வேடு (Master's Dissertation)",
+            "ஆய்வேடு வாய்மொழித் தேர்வு (Viva Voce)"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "கல்லூரி உதவிப் பேராசிரியர் / விரிவுரையாளர் (UGC-NET / SET வழியே)",
+        "தமிழ் ஆராய்ச்சி அறிஞர் & UGC ஆய்வு நிதியுதவி (JRF / SRF)",
+        "மாநில அரசு உயர் அலுவலர் (TNPSC குரூப் I / II முதன்மைப் பணிகள்)",
+        "செம்மொழித் தமிழாய்வு மத்திய நிறுவனம் (CICT) ஆய்வு அலுவலர்",
+        "ஊடக முதன்மை ஆசிரியர், செய்தி ஆசிரியர் மற்றும் ஆவணப்பட எழுத்தாளர்",
+        "அரசு மொழிபெயர்ப்புத் துறை மற்றும் அகராதியியல் வல்லுநர்"
+      ],
+      "higher_studies": [
+        "முனைவர் பட்ட ஆய்வு (Ph.D in Tamil Literature & Epigraphy)",
+        "UGC-JRF வழியான முதுமுனைவர் ஆய்வு (Post-Doctoral Research)",
+        "கல்வியியல் முதுகலை (M.Ed / Ph.D in Education)"
+      ],
+      "facilities": [
+        "முதுகலைத் தமிழ் உயர் ஆராய்ச்சி நூலகம் - பழமையான சுவடிகள் மற்றும் அகராதிகள்.",
+        "கணினித் தமிழ் மற்றும் மின்னிதழ் ஆராய்ச்சி மையம்.",
+        "கருத்தரங்க அரங்கம் மற்றும் ஆய்வுக் கலந்துரையாடல் கூடம்."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-matam-1",
+          "label": "Postgraduate Tamil Epigraphy & Manuscript Archive",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        }
+      ]
     },
     {
       "id": "prog-11",
@@ -227,7 +1262,65 @@
       "duration": "Annual Coaching",
       "desc": "Expansive athletic facilities, multi-sport training grounds, inter-collegiate tournaments, martial arts, and annual athletic meets.",
       "image": "assets/sdasc/departments/482769_1655287421.jpeg",
-      "link": "#campus"
+      "link": "#campus",
+      "slug": "physical-education-sports",
+      "degree_level": "Annual Co-Curricular & Sports Academy",
+      "duration_detail": "Annual Continuous Coaching & Multi-Sport Tournaments",
+      "affiliation": "University of Madras Zonal & Inter-Collegiate Tournaments",
+      "medium": "English & Tamil",
+      "eligibility": "Open to all enrolled undergraduate and postgraduate students across all disciplines of Sridevi Arts and Science College.",
+      "overview": "The Department of Physical Education and Sports fosters physical fitness, athletic discipline, leadership, and competitive sporting excellence. Equipped with expansive outdoor fields, multi-sport training grounds, professional athletic tracks, and indoor sports arenas, SDASC students actively represent the college at University of Madras Zonal Meets, Chief Minister's Trophy, and All-India Inter-University Tournaments.",
+      "highlights": [
+        "Multi-acre sporting grounds featuring 200m track, cricket pitch, football turf, and volleyball courts.",
+        "Specialized coaching by experienced physical directors and national-level sports trainers.",
+        "Annual Sridevi Trophy Inter-Collegiate Tournaments hosting colleges across northern Tamil Nadu.",
+        "Special fee concessions and merit sports scholarships for state and national athletes.",
+        "Integrated physical training for students preparing for Defense (Army/Navy/Air Force) and Police Sub-Inspector recruitment."
+      ],
+      "syllabus": [
+        {
+          "semester": "Year Round Training",
+          "subjects": [
+            "Track and Field Athletics (Sprints, Long Distance, Relay, Jumps, Throws)",
+            "Cricket Team Coaching & League Tournament Preparation",
+            "Volleyball & Throwball Systematic Drills",
+            "Kabaddi & Kho-Kho Physical Conditioning",
+            "Badminton, Table Tennis & Chess Indoor Coaching",
+            "Daily Aerobic Fitness, Yoga & Functional Endurance"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Direct Recruitment in Indian Army, Navy, Air Force, and Paramilitary Forces",
+        "Tamil Nadu Uniformed Services (Sub-Inspector & Police Constable)",
+        "Physical Education Director & School Physical Training Instructor (PET)",
+        "Fitness Trainer, Strength & Conditioning Coach, Gym Manager",
+        "Sports Academy Administrator and Tournament Referee"
+      ],
+      "higher_studies": [
+        "B.P.Ed (Bachelor of Physical Education)",
+        "M.P.Ed (Master of Physical Education)",
+        "Diploma in Sports Coaching (NIS Patiala / SAI)"
+      ],
+      "facilities": [
+        "Multi-Sport Campus Grounds with 200-meter athletic running track.",
+        "Standard Volleyball, Throwball, and Kabaddi Courts with floodlight facilities.",
+        "Cricket Practice Nets and match turf wicket.",
+        "Indoor Sports Arena for Table Tennis, Badminton, Chess, and Carrom.",
+        "Campus Gymnasium with modern strength and cardio equipment."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-sports-1",
+          "label": "College Athletics Grounds & Sports Complex",
+          "src": "photo/IMG_20260701_104825_496.jpg"
+        },
+        {
+          "id": "dept-photo-sports-2",
+          "label": "Indoor Games Pavilion & Fitness Center",
+          "src": "photo/IMG_20260701_133523_953.jpg"
+        }
+      ]
     },
     {
       "id": "prog-12",
@@ -238,7 +1331,94 @@
       "duration": "3-Year Continuous Support",
       "desc": "Dedicated corporate platform providing aptitude coaching, mock interviews, foreign university counselling, and campus recruitment drives.",
       "image": "assets/sdasc/departments/211040_1696842795.jpeg",
-      "link": "#placement"
+      "link": "#placement",
+      "slug": "employability-placement-cell",
+      "degree_level": "Career Advancement & Corporate Interface",
+      "duration_detail": "3-Year Continuous Employability Pipeline",
+      "affiliation": "Central Placement Division",
+      "medium": "English & Professional Communication",
+      "eligibility": "Open to all pre-final and final-year students of Arts, Science, Commerce, and Management programmes.",
+      "overview": "The Sridevi Placement & Employability Cell serves as a dedicated corporate bridge connecting students with leading multinational conglomerates, IT giants, financial institutions, and corporate enterprises. Nurturing a comprehensive 3-year continuous training roadmap, the cell imparts free quantitative aptitude, soft skills, resume engineering, and mock interviews resulting in a stellar 92% placement and higher education success rate.",
+      "highlights": [
+        "92% Placement & Higher Studies track record across all 12 academic streams.",
+        "50+ corporate tie-ups and on-campus recruitment drives annually.",
+        "100% Free pre-placement training integrated into the academic timetable.",
+        "Corporate HR mock interview panels and individual personality profiling.",
+        "Dedicated alumni mentorship network guiding students on career transitions."
+      ],
+      "syllabus": [
+        {
+          "semester": "Year 1: Foundation",
+          "subjects": [
+            "Diagnostic Employability Assessment",
+            "Spoken English, Accent Neutralization & Active Listening",
+            "Public Speaking, Group Presentation & Etiquette",
+            "Self-Awareness & Goal Setting Workshop"
+          ]
+        },
+        {
+          "semester": "Year 2: Skill Acceleration",
+          "subjects": [
+            "Quantitative Aptitude Drills & Speed Mathematics",
+            "Logical & Analytical Reasoning Mastery",
+            "Technical Coding Bootcamps & Domain Certifications",
+            "Resume Engineering & LinkedIn Professional Branding"
+          ]
+        },
+        {
+          "semester": "Year 3: Corporate Transition",
+          "subjects": [
+            "HR & Technical Mock Interview Panels with Industry Experts",
+            "Group Discussion (GD) Simulations & Body Language Coaching",
+            "On-Campus Company Recruitment Drives",
+            "Offer Letter Negotiations & Corporate Onboarding Support"
+          ]
+        }
+      ],
+      "career_prospects": [
+        "Campus placements in Top IT companies, MNC banks, and corporate audit firms",
+        "Corporate Finance, BPO/KPO, Logistics, and E-commerce management trainee roles",
+        "Fast-track entry into postgraduate management institutions"
+      ],
+      "higher_studies": [
+        "Higher Education Counseling for MCA, MBA, M.Com, M.Sc, and Foreign Universities",
+        "Guidance for CAT, MAT, TANCET, and competitive entrance examinations"
+      ],
+      "facilities": [
+        "Dedicated Corporate Interview Suites & Group Discussion Conference Rooms.",
+        "Computerized Online Aptitude Assessment Center with 100+ testing nodes.",
+        "Corporate Relations Office in main administrative complex."
+      ],
+      "gallery": [
+        {
+          "id": "dept-photo-place-1",
+          "label": "Corporate Placement & Campus Interview Suites",
+          "src": "photo/IMG_20260227_142615_304.jpg"
+        },
+        {
+          "id": "dept-photo-place-2",
+          "label": "Pre-Placement Aptitude & Technical Training Hall",
+          "src": "photo/IMG_20260723_150208_229.jpg"
+        }
+      ]
+    },
+    {
+      "id": "prog-9f41ab12",
+      "number": "13 / SCIENCE",
+      "category": "Science",
+      "title": "data science",
+      "department": "datya",
+      "duration": "3 Years (UG)",
+      "desc": "dfgsdfge",
+      "image": "assets/sdasc/departments/112226_1625242329.jpeg",
+      "link": "#apply-modal",
+      "gallery": [
+        {
+          "id": "dept-photo-prog-9f41ab12-1",
+          "label": "datya Dedicated Facility",
+          "src": "assets/sdasc/departments/112226_1625242329.jpeg"
+        }
+      ]
     }
   ],
   "usps": [
@@ -306,43 +1486,43 @@
   "photos": [
     {
       "id": "photo-1",
-      "src": "photo/IMG20260228131225.jpg",
-      "label": "Awards and Academic Honors Ceremony"
+      "label": "Awards and Academic Honors Ceremony",
+      "src": "photo/IMG20260228131225.jpg"
     },
     {
       "id": "photo-2",
-      "src": "photo/IMG_20260227_142615_304.jpg",
-      "label": "Proud Convocation & Graduation Moment"
+      "label": "Proud Convocation & Graduation Moment",
+      "src": "photo/IMG_20260227_142615_304.jpg"
     },
     {
       "id": "photo-3",
-      "src": "photo/IMG_20260701_104825_496.jpg",
-      "label": "Vibrant Campus Life at Sridevi College"
+      "label": "Vibrant Campus Life at Sridevi College",
+      "src": "photo/IMG_20260701_104825_496.jpg"
     },
     {
       "id": "photo-4",
-      "src": "photo/IMG_20260701_104949.jpg",
-      "label": "Student Recognition & Merit Felicitations"
+      "label": "Student Recognition & Merit Felicitations",
+      "src": "photo/IMG_20260701_104949.jpg"
     },
     {
       "id": "photo-5",
-      "src": "photo/IMG_20260701_110148.jpg",
-      "label": "Cultural Spirit & Stage Performances"
+      "label": "Cultural Spirit & Stage Performances",
+      "src": "photo/IMG_20260701_110148.jpg"
     },
     {
       "id": "photo-6",
-      "src": "photo/IMG_20260701_132844.jpg",
-      "label": "Sridevi College Central Auditorium"
+      "label": "Sridevi College Central Auditorium",
+      "src": "photo/IMG_20260701_132844.jpg"
     },
     {
       "id": "photo-7",
-      "src": "photo/IMG_20260701_133523_953.jpg",
-      "label": "Together on Campus: Student Community"
+      "label": "Together on Campus: Student Community",
+      "src": "photo/IMG_20260701_133523_953.jpg"
     },
     {
       "id": "photo-8",
-      "src": "photo/IMG_20260723_150208_229.jpg",
-      "label": "Interactive Classroom & Lab Learning"
+      "label": "Interactive Classroom & Lab Learning",
+      "src": "photo/IMG_20260723_150208_229.jpg"
     }
   ],
   "contact": {

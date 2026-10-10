@@ -258,7 +258,25 @@
       affiliation: c.affiliation || "Affiliated to University of Madras",
       medium: c.medium || "English & Tamil Mentoring",
       duration_detail: c.duration_detail || c.duration || (isPG ? "2 Years (4 Semesters)" : "3 Years (6 Semesters)"),
-      slug: c.slug || c.id || "course"
+      slug: c.slug || c.id || "course",
+      gallery: (c.gallery && c.gallery.length) ? c.gallery : (
+        isCS || isAI ? [
+          { src: "photo/IMG_20260723_150208_229.jpg", label: "Specialized Computer Science & AI High-Tech Lab" },
+          { src: "assets/sdasc/departments/734395_1625242361.jpeg", label: "Interactive System Programming & Coding Workstations" },
+          { src: "assets/sdasc/departments/50152_1709103994.jpeg", label: "Machine Learning & Neural Networks Project Showcase" },
+          { src: "photo/IMG_20260701_132844.jpg", label: "Tech Seminars & Technical Symposium Presentations" }
+        ] : isComm || isMgmt ? [
+          { src: "assets/sdasc/departments/112226_1625242329.jpeg", label: "Commerce Accounting Simulation & Financial Lab" },
+          { src: "assets/sdasc/departments/907227_1625278192.jpeg", label: "Annual Corporate Commerce Expo & Inter-Collegiate Meet" },
+          { src: "photo/IMG_20260701_104949.jpg", label: "Merit Awards in University Taxation Examinations" },
+          { src: "photo/IMG20260228131225.jpg", label: "Business Ethics & Entrepreneurship Guest Lectures" }
+        ] : [
+          { src: "photo/IMG_20260723_150208_229.jpg", label: `${c.department || c.title} Dedicated Lecture Theatre` },
+          { src: "assets/sdasc/departments/224730_1625130953.jpeg", label: "Specialized Department Reference Library & Archive" },
+          { src: "photo/IMG_20260701_104825_496.jpg", label: "Student Collaborative Learning & Study Forums" },
+          { src: "photo/IMG_20260701_133523_953.jpg", label: "Academic Block Courtyard & Field Demonstrations" }
+        ]
+      )
     };
   }
 
@@ -664,19 +682,26 @@
 
     stopMosaicMorph();
 
-    // Default photos if API photos list is empty
-    const fallbackPhotos = [
-      { src: "photo/IMG20260228131225.jpg", label: "Academic Honors & Student Felicitations" },
-      { src: "photo/IMG_20260227_142615_304.jpg", label: "Annual Convocation & Degree Conferral" },
-      { src: "photo/IMG_20260701_104825_496.jpg", label: "Vibrant Campus Life & Student Community" },
-      { src: "photo/IMG_20260701_104949.jpg", label: "Merit Awards & Scholarship Distribution" },
-      { src: "photo/IMG_20260701_110148.jpg", label: "Cultural Festivities & Stage Events" },
-      { src: "photo/IMG_20260701_132844.jpg", label: "Sridevi College Central Auditorium" },
-      { src: "photo/IMG_20260701_133523_953.jpg", label: "Campus Courtyard & Academic Blocks" },
-      { src: "photo/IMG_20260723_150208_229.jpg", label: "Interactive Classroom & Lab Learning" }
-    ];
+    // Dedicated department gallery photos ONLY (separated from college homepage)
+    const displayPhotos = (currentCourse && currentCourse.gallery && currentCourse.gallery.length)
+      ? currentCourse.gallery
+      : [];
 
-    const displayPhotos = (allPhotos && allPhotos.length) ? allPhotos : fallbackPhotos;
+    // Dynamically update section header to reflect THIS department
+    const galEyebrow = document.querySelector("#gallery .eyebrow");
+    const galTitle = document.querySelector("#gallery h2");
+    const galDesc = document.querySelector("#gallery p");
+    if (currentCourse) {
+      if (galEyebrow) galEyebrow.textContent = `${currentCourse.department || currentCourse.title} • Visual Gallery`;
+      if (galTitle) galTitle.textContent = `${currentCourse.title} Photo Gallery & Facilities`;
+      if (galDesc) galDesc.textContent = `Specialized laboratories, classroom learning, workshops, and student achievements in the ${currentCourse.department || currentCourse.title}.`;
+    }
+
+    if (!displayPhotos.length) {
+      photoMosaic.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--muted); font-size: 14px;">No department photographs added yet.</div>`;
+      return;
+    }
+
     const rowSize = window.innerWidth < 600 ? 2 : 4;
     const rows = [];
 
